@@ -1,10 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Printer, MapPin } from 'lucide-react';
+import { Printer } from 'lucide-react';
 import { Language, DayKey } from '../types/schedule';
-import { SCHEDULE_DATA, SUBJECT_METADATA } from '../data/scheduleData';
+import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo } from '../utils/vietnamTime';
-import { CustomSubjectIcon, RecessIcon, LunchIcon } from './CustomSubjectIcons';
+import { RecessIcon, LunchIcon } from './CustomSubjectIcons';
 
 interface WeeklyMatrixViewProps {
   language: Language;
@@ -64,7 +64,7 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
       </div>
 
       {/* Weekly Matrix Table */}
-      <table className="w-full min-w-[760px] border-collapse text-xs">
+      <table className="w-full min-w-[700px] border-collapse text-xs">
         <thead>
           <tr className="text-left bg-slate-50/90 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700">
             <th className="p-1.5 font-bold text-slate-600 dark:text-slate-300 rounded-l-xl w-20 text-center">
@@ -78,8 +78,8 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                     <span>{language === 'vi' ? d.dayNameVi : d.dayNameEn}</span>
                     <span className="text-[10px] font-normal text-slate-400">({d.date.slice(0, 5)})</span>
                     {isToday && (
-                      <span className="ml-1 px-1.5 py-0.2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded text-[9px] font-extrabold uppercase shadow-2xs">
-                        HÔM NAY
+                      <span className="ml-1 px-1.5 py-0.2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded text-[9px] font-bold shadow-2xs">
+                        Hôm nay
                       </span>
                     )}
                   </div>
@@ -88,16 +88,16 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
             })}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
           {periodsConfig.map((row, rIdx) => {
             if (row.isLunch) {
               return (
-                <tr key={rIdx} className="bg-amber-500/10 dark:bg-amber-500/15 font-semibold text-amber-900 dark:text-amber-300">
-                  <td className="p-1 font-mono text-[10px] text-amber-700 dark:text-amber-400 text-center whitespace-nowrap">
+                <tr key={rIdx} className="bg-slate-50/60 dark:bg-slate-900/40 font-semibold text-slate-700 dark:text-slate-300">
+                  <td className="p-1 font-mono text-[10px] text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
                     11:30 - 13:30
                   </td>
-                  <td colSpan={5} className="p-1.5 text-center text-[11px] tracking-wide">
-                    <div className="flex items-center justify-center gap-1.5 font-bold">
+                  <td colSpan={5} className="p-1 text-center text-[11px] tracking-wide">
+                    <div className="flex items-center justify-center gap-1.5">
                       <LunchIcon className="w-3.5 h-3.5" />
                       <span>{language === 'vi' ? 'NGHỈ TRƯA & DÙNG BỮA' : 'LUNCH BREAK & REST'}</span>
                     </div>
@@ -108,14 +108,14 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
 
             if (row.isBreak) {
               return (
-                <tr key={rIdx} className="bg-slate-50/60 dark:bg-slate-900/40 text-slate-500 dark:text-slate-400">
+                <tr key={rIdx} className="bg-slate-50/40 dark:bg-slate-900/20 text-slate-500 dark:text-slate-400">
                   <td className="p-1 font-mono text-[10px] text-center whitespace-nowrap">
                     {row.time.split(' - ')[0]}
                   </td>
-                  <td colSpan={5} className="p-1 text-center text-[10px] italic text-slate-500 dark:text-slate-400">
+                  <td colSpan={5} className="p-1 text-center text-[10px] italic text-slate-400 dark:text-slate-400">
                     <div className="flex items-center justify-center gap-1.5">
                       <RecessIcon className="w-3.5 h-3.5" />
-                      <span>{language === 'vi' ? 'Ra chơi giải lao (15–20 phút)' : 'Recess break'}</span>
+                      <span>{language === 'vi' ? 'Ra chơi giải lao' : 'Recess'}</span>
                     </div>
                   </td>
                 </tr>
@@ -159,7 +159,6 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                     return <td key={day.dayKey} className="p-1 text-slate-300 dark:text-slate-600 text-center">-</td>;
                   }
 
-                  const style = SUBJECT_METADATA[item.type] || SUBJECT_METADATA.event;
                   const subjectName = language === 'vi' ? item.subjectVi : item.subjectEn;
 
                   let isHighlighted = true;
@@ -172,56 +171,32 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                   }
 
                   const opacityClass = isHighlighted 
-                    ? (isPast ? 'opacity-80' : 'opacity-100') 
+                    ? (isPast ? 'opacity-55' : 'opacity-100') 
                     : 'opacity-20 grayscale';
 
                   return (
-                    <td key={day.dayKey} className={`p-1 align-top ${isToday ? 'bg-slate-50/40 dark:bg-slate-800/20' : ''}`}>
+                    <td key={day.dayKey} className={`p-1 align-top ${isToday ? 'bg-slate-50/30 dark:bg-slate-800/20' : ''}`}>
                       <motion.div 
                         whileHover={{ scale: 1.02 }}
-                        className={`p-2 rounded-2xl transition-all relative flex items-center gap-2 border ${
+                        className={`p-1.5 rounded-xl transition-all relative ${
                           isCurrent 
-                            ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-slate-900 dark:border-slate-600 shadow-md ring-2 ring-emerald-400/50' 
+                            ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-2 border-slate-700 shadow-sm ring-2 ring-emerald-400/40' 
                             : isPast 
-                              ? 'bg-white/80 dark:bg-slate-900/70 border-slate-200/80 dark:border-slate-800/80' 
-                              : `bg-white/90 dark:bg-slate-900/80 ${style.border} shadow-2xs`
+                              ? 'bg-white/60 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80' 
+                              : 'bg-white/90 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800'
                         } ${opacityClass}`}
                       >
-                        {/* Custom Illustrated SVG Icon */}
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
-                          <CustomSubjectIcon type={item.type} className="w-7 h-7 sm:w-8 sm:h-8" />
+                        {isCurrent && (
+                          <div className="text-[9px] font-black uppercase text-emerald-400 tracking-wider mb-0.5 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>Đang học</span>
+                          </div>
+                        )}
+                        <div className={`font-display font-bold text-xs leading-tight truncate ${isCurrent ? 'text-white font-black' : isPast ? 'text-slate-500 dark:text-slate-400 line-through decoration-slate-400 dark:decoration-slate-500' : 'text-slate-900 dark:text-slate-100'}`}>
+                          {subjectName}
                         </div>
-
-                        {/* Subject Details */}
-                        <div className="min-w-0 flex-1">
-                          {isCurrent && (
-                            <div className="text-[8px] font-extrabold uppercase text-emerald-400 tracking-wider mb-0.5 flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                              <span>Đang học</span>
-                            </div>
-                          )}
-                          <div className={`font-display font-bold text-xs leading-tight truncate ${
-                            isCurrent 
-                              ? 'text-white font-extrabold' 
-                              : isPast 
-                                ? 'text-slate-500 dark:text-slate-400 line-through decoration-slate-400 dark:decoration-slate-500' 
-                                : 'text-slate-900 dark:text-slate-100'
-                          }`}>
-                            {subjectName}
-                          </div>
-                          <div className={`text-[10px] font-medium truncate ${
-                            isCurrent 
-                              ? 'text-slate-300' 
-                              : isPast 
-                                ? 'text-slate-400 dark:text-slate-500' 
-                                : 'text-slate-500 dark:text-slate-400'
-                          }`}>
-                            {item.teacher || ''}
-                          </div>
-                          <div className="text-[9px] text-slate-400 dark:text-slate-500 flex items-center gap-0.5 mt-0.5 truncate">
-                            <MapPin className="w-2.5 h-2.5 shrink-0" />
-                            <span>{item.room || '504'}</span>
-                          </div>
+                        <div className={`text-[10px] font-semibold truncate ${isCurrent ? 'text-slate-300' : isPast ? 'text-slate-400 dark:text-slate-500' : 'text-slate-500 dark:text-slate-400'}`}>
+                          {item.teacher || ''}
                         </div>
                       </motion.div>
                     </td>

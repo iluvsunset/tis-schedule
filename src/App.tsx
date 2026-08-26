@@ -15,7 +15,6 @@ import { checkAndTriggerEveningReminder } from './utils/notificationService';
 
 export const App: React.FC = () => {
   const [scheduleData, setScheduleData] = useState<ScheduleData>(INITIAL_DATA);
-  const [isSyncing, setIsSyncing] = useState(false);
   const [language, setLanguage] = useState<Language>('vi');
   const [theme, setTheme] = useState<ThemeKey>('sakura');
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
@@ -26,16 +25,13 @@ export const App: React.FC = () => {
 
   const mouse = useParallaxMouse();
 
-  // Sync with Google Sheet live
+  // Sync with Google Sheet live on background startup
   const handleSyncLive = useCallback(async () => {
-    setIsSyncing(true);
     try {
       const freshData = await fetchLiveSchedule();
       setScheduleData(freshData);
     } catch (e) {
       console.warn('Sync failed, keeping current data:', e);
-    } finally {
-      setIsSyncing(false);
     }
   }, []);
 
@@ -132,8 +128,6 @@ export const App: React.FC = () => {
           onSelectDay={setSelectedDay}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
-          isSyncing={isSyncing}
-          onSyncLive={handleSyncLive}
           onOpenTeacherModal={() => setIsTeacherModalOpen(true)}
         />
 

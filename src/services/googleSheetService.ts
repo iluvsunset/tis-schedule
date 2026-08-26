@@ -119,20 +119,22 @@ export function parseSheetCSV(csvText: string): ScheduleData {
         ? teacherPart
         : `Thầy/Cô ${teacherPart}`;
 
+      const isTinHoc = subjectPart.toLowerCase().includes('tin');
       return {
         subjectVi: subjectPart,
         subjectEn: subjectPart,
         teacher: teacherFormatted,
-        room: defaultRoom,
+        room: isTinHoc ? 'Lab Tin' : defaultRoom,
         note: raw
       };
     }
 
+    const isTinHoc = raw.toLowerCase().includes('tin');
     return {
       subjectVi: raw,
       subjectEn: raw,
       teacher: '',
-      room: defaultRoom,
+      room: isTinHoc ? 'Lab Tin' : defaultRoom,
       note: raw
     };
   };

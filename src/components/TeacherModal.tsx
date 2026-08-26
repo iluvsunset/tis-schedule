@@ -1,8 +1,9 @@
 import React from 'react';
-import { X, GraduationCap, MapPin, Calendar } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, GraduationCap, Sparkles } from 'lucide-react';
 import { Language } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
-import { DynamicIcon } from '../utils/iconHelper';
+import { CustomSubjectIcon } from './CustomSubjectIcons';
 
 interface TeacherModalProps {
   isOpen: boolean;
@@ -15,86 +16,122 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
   onClose,
   language
 }) => {
-  if (!isOpen) return null;
-
   const { teachers, homeroomTeacher } = SCHEDULE_DATA;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
-      <div 
-        className="glass-card border border-white rounded-3xl p-5 sm:p-6 shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center">
-              <GraduationCap className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-lg font-display font-bold text-slate-900">
-                {language === 'vi' ? 'Đội Ngũ Giáo Viên Lớp 11-TN' : 'Grade 11-TN Faculty Directory'}
-              </h3>
-              <p className="text-xs text-slate-500">
-                {language === 'vi' ? `GVQN: ${homeroomTeacher.name} • Phòng học 504` : `Homeroom: ${homeroomTeacher.name} • Room 504`}
-              </p>
-            </div>
-          </div>
-          <button
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          {/* Animated Ambient Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition cursor-pointer"
+          />
+
+          {/* Animated Spring Modal Container */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 25, rotateX: 6 }}
+            animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ type: "spring", stiffness: 420, damping: 28 }}
+            className="relative z-10 bg-white/95 backdrop-blur-2xl border border-rose-200/90 rounded-[32px] p-5 sm:p-6 shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
           >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Teacher Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          {teachers.map((t, idx) => {
-            const subject = language === 'vi' ? t.subjectVi : t.subjectEn;
-
-            return (
-              <div 
-                key={idx}
-                className="p-3 rounded-2xl bg-white border border-slate-100 shadow-2xs hover:shadow-soft hover:border-purple-200 transition-all flex flex-col justify-between"
-              >
-                <div className="flex items-start gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center shrink-0">
-                    <DynamicIcon name={t.icon} className="w-4 h-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="font-display font-bold text-slate-900 text-xs sm:text-sm truncate">{t.name}</h4>
-                    <div className="text-[11px] font-semibold text-purple-600 truncate">{t.role}</div>
-                    <div className="text-xs text-slate-600 mt-0.5 leading-snug">{subject}</div>
-                  </div>
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-500 text-white flex items-center justify-center shadow-sm">
+                  <GraduationCap className="w-6 h-6" />
                 </div>
-
-                <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-2.5 h-2.5" />
-                    {t.room}
-                  </span>
-                  <span className="font-medium text-slate-600 flex items-center gap-1">
-                    <Calendar className="w-2.5 h-2.5" />
-                    {t.days}
-                  </span>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-1.5 py-0.2 rounded-md border border-purple-100">
+                      TIS Faculty 11-TN
+                    </span>
+                    <Sparkles className="w-3 h-3 text-purple-400" />
+                  </div>
+                  <h3 className="text-base sm:text-lg font-display font-extrabold text-slate-900 mt-0.5">
+                    {language === 'vi' ? 'Đội Ngũ Giáo Viên Lớp 11-TN' : 'Grade 11-TN Faculty Directory'}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    {language === 'vi' ? `GVQN: ${homeroomTeacher.name} • Phòng học 504` : `Homeroom: ${homeroomTeacher.name} • Room 504`}
+                  </p>
                 </div>
               </div>
-            );
-          })}
-        </div>
 
-        {/* Modal Footer */}
-        <div className="mt-4 pt-3 border-t border-slate-100 text-right">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition cursor-pointer"
-          >
-            {language === 'vi' ? 'Đóng' : 'Close'}
-          </button>
-        </div>
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={onClose}
+                className="w-9 h-9 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </motion.button>
+            </div>
 
-      </div>
-    </div>
+            {/* Teacher Cards Grid */}
+            <motion.div 
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.04 }
+                }
+              }}
+            >
+              {teachers.map((t, idx) => {
+                const subject = language === 'vi' ? t.subjectVi : t.subjectEn;
+                const subLower = t.subjectVi.toLowerCase();
+                let subType: import('../types/schedule').SubjectType = 'event';
+                if (subLower.includes('toán')) subType = 'math';
+                else if (subLower.includes('anh')) subType = 'english';
+                else if (subLower.includes('văn')) subType = 'literature';
+                else if (subLower.includes('lý')) subType = 'physics';
+                else if (subLower.includes('hóa')) subType = 'chemistry';
+                else if (subLower.includes('sinh')) subType = 'biology';
+                else if (subLower.includes('tin')) subType = 'cs';
+                else if (subLower.includes('gdtc') || subLower.includes('thể dục')) subType = 'pe';
+
+                return (
+                  <motion.div
+                    key={idx}
+                    variants={{
+                      hidden: { opacity: 0, y: 12, scale: 0.96 },
+                      visible: { opacity: 1, y: 0, scale: 1 }
+                    }}
+                    whileHover={{ y: -3, scale: 1.02 }}
+                    className="p-3.5 rounded-2xl bg-white border border-slate-100 shadow-2xs hover:shadow-soft hover:border-purple-200 transition-all flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2.5 mb-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">
+                          <CustomSubjectIcon type={subType} className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-bold text-xs text-slate-800 truncate">{t.name}</h4>
+                          <span className="text-[11px] font-semibold text-purple-600 block truncate">{subject}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium pt-2 border-t border-slate-50">
+                      <span>{t.room}</span>
+                      <span className="bg-purple-50 text-purple-600 font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider">TIS</span>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 };

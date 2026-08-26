@@ -96,7 +96,7 @@ export const SCHEDULE_DATA: ScheduleData = {
           subjectEn: "Computer Science",
           teacher: "Thầy Quân",
           type: "cs",
-          room: "504 / Lab Tin",
+          room: "Lab Tin",
           note: "TIN-QUÂN"
         },
         {
@@ -108,7 +108,7 @@ export const SCHEDULE_DATA: ScheduleData = {
           subjectEn: "Computer Science",
           teacher: "Thầy Quân",
           type: "cs",
-          room: "504 / Lab Tin",
+          room: "Lab Tin",
           note: "TIN-QUÂN"
         },
         {
@@ -277,7 +277,7 @@ export const SCHEDULE_DATA: ScheduleData = {
           subjectEn: "Computer Science",
           teacher: "Thầy Quân",
           type: "cs",
-          room: "504 / Lab Tin",
+          room: "Lab Tin",
           note: "TIN-QUÂN"
         },
         {
@@ -289,7 +289,7 @@ export const SCHEDULE_DATA: ScheduleData = {
           subjectEn: "Computer Science",
           teacher: "Thầy Quân",
           type: "cs",
-          room: "504 / Lab Tin",
+          room: "Lab Tin",
           note: "TIN-QUÂN"
         },
         {
@@ -645,7 +645,7 @@ export const SCHEDULE_DATA: ScheduleData = {
     { name: "Cô Thuận", role: "Bộ môn Vật Lý", subjectVi: "Vật Lý", subjectEn: "Physics", room: "Phòng 504", color: "indigo", icon: "Zap", days: "T3 Sáng" },
     { name: "Thầy Tân", role: "Bộ môn Hóa Học", subjectVi: "Hóa Học", subjectEn: "Chemistry", room: "Phòng 504", color: "emerald", icon: "FlaskConical", days: "T3, T5" },
     { name: "Thầy Công", role: "Bộ môn Sinh Học", subjectVi: "Sinh Học", subjectEn: "Biology", room: "Phòng 504", color: "green", icon: "Leaf", days: "T6 Sáng" },
-    { name: "Thầy Quân", role: "Bộ môn Tin Học", subjectVi: "Tin Học", subjectEn: "Computer Science", room: "Lab Tin / 504", color: "amber", icon: "Laptop", days: "T2 Chiều, T4 Sáng" },
+    { name: "Thầy Quân", role: "Bộ môn Tin Học", subjectVi: "Tin Học", subjectEn: "Computer Science", room: "Lab Tin", color: "amber", icon: "Laptop", days: "T2 Chiều, T4 Sáng" },
     { name: "Thầy Hải", role: "Bộ môn GDTC", subjectVi: "Giáo Dục Thể Chất", subjectEn: "Physical Education", room: "Sân Thể Thao", color: "orange", icon: "Activity", days: "T5 Sáng" },
     { name: "Mr. Steven", role: "English Faculty", subjectVi: "Tiếng Anh Level 10", subjectEn: "English (Eng 1,2,5,6)", room: "Phòng 504", color: "pink", icon: "Globe", days: "T2, T4 Sáng" },
     { name: "Ms. Phương Anh", role: "English Faculty", subjectVi: "Tiếng Anh Level 10", subjectEn: "English (Eng 3,4,7,8,9,10)", room: "Phòng 504", color: "pink", icon: "Globe", days: "T3, T5, T6 Sáng" },

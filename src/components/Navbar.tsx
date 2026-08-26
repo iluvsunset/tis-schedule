@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, MoreVertical, RefreshCw, Palette, CalendarPlus, Printer, Users, Globe, Bell, BellRing, Clock } from 'lucide-react';
+import { Search, X, MoreVertical, Palette, CalendarPlus, Printer, Users, Globe, Bell, BellRing, Clock } from 'lucide-react';
 import { Language, ThemeKey, ViewMode, DayKey } from '../types/schedule';
 import { exportScheduleToICS } from '../utils/icsExport';
 import { VietnamTimeInfo } from '../utils/vietnamTime';
@@ -25,8 +25,6 @@ interface NavbarProps {
   onSelectDay: (day: DayKey) => void;
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
-  isSyncing?: boolean;
-  onSyncLive?: () => void;
   onOpenTeacherModal: () => void;
 }
 
@@ -42,8 +40,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectDay,
   viewMode,
   onViewModeChange,
-  isSyncing,
-  onSyncLive,
   onOpenTeacherModal
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -310,12 +306,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                     onClick={() => setIsMenuOpen(false)}
                   />
 
-                  {/* Floating Card Panel */}
+                  {/* Floating Card Panel with Spring Pop-up Physics */}
                   <motion.div 
-                    initial={{ opacity: 0, scale: 0.9, y: -8 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: -8 }}
-                    transition={{ type: "spring", stiffness: 450, damping: 28 }}
+                    initial={{ opacity: 0, scale: 0.82, y: -12, rotateX: 10, transformOrigin: 'top right' }}
+                    animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
+                    exit={{ opacity: 0, scale: 0.85, y: -8 }}
+                    transition={{ type: "spring", stiffness: 480, damping: 25 }}
                     className="absolute right-0 top-full mt-2 w-64 z-[100] bg-white/95 backdrop-blur-xl border border-white rounded-3xl shadow-2xl p-2.5 divide-y divide-slate-100 text-xs ring-1 ring-black/5"
                   >
                     
@@ -387,25 +383,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                         </div>
                       )}
                     </div>
-
-                    {/* Google Sheet Sync */}
-                    {onSyncLive && (
-                      <div className="py-2">
-                        <motion.button
-                          whileHover={{ x: 3 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => {
-                            onSyncLive();
-                            setIsMenuOpen(false);
-                          }}
-                          disabled={isSyncing}
-                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-2xl font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition cursor-pointer"
-                        >
-                          <RefreshCw className={`w-4 h-4 text-emerald-500 ${isSyncing ? 'animate-spin' : ''}`} />
-                          <span>{isSyncing ? (language === 'vi' ? 'Đang đồng bộ...' : 'Syncing...') : (language === 'vi' ? 'Đồng bộ Google Sheet' : 'Sync Google Sheet')}</span>
-                        </motion.button>
-                      </div>
-                    )}
 
                     {/* Color Theme Selector */}
                     <div className="py-2">

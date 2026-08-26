@@ -162,6 +162,19 @@ export const App: React.FC = () => {
           )}
         </main>
 
+        {/* Sleek Minimal Transparent Footer */}
+        <footer className="mt-auto pt-6 pb-3 text-center text-[11px] text-slate-400 dark:text-slate-500 no-print">
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
+            <span className="font-semibold text-slate-600 dark:text-slate-400">Lớp 11-TN • TIS Schedule</span>
+            <span>•</span>
+            <span>Phòng {scheduleData.room || '504'}</span>
+            <span>•</span>
+            <span>GVQN: {scheduleData.homeroomTeacher.name}</span>
+            <span>•</span>
+            <span>Giờ Việt Nam (UTC+7)</span>
+          </div>
+        </footer>
+
         {/* Teacher Roster Modal */}
         <TeacherModal
           isOpen={isTeacherModalOpen}
@@ -170,15 +183,6 @@ export const App: React.FC = () => {
         />
 
       </div>
-
-      {/* Sleek Minimal Footer */}
-      <footer className="relative z-10 py-1.5 text-center text-[10px] text-slate-400 no-print border-t border-slate-100 bg-white/40 backdrop-blur-xs">
-        <span className="font-semibold text-slate-600">Lớp 11-TN • TIS Schedule</span>
-        <span className="mx-2">•</span>
-        <span>Phòng {scheduleData.room || '504'} • GVQN: {scheduleData.homeroomTeacher.name}</span>
-        <span className="mx-2">•</span>
-        <span>Giờ Việt Nam (UTC+7)</span>
-      </footer>
 
     </div>
   );

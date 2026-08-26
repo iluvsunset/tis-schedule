@@ -161,25 +161,23 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </motion.div>
 
-          {/* Class & Room */}
+          {/* Class, Room & Live Clock */}
           <div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <h1 className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none">
                 Lớp 11-TN
               </h1>
-              <span className="px-1.5 py-0.2 rounded-md text-[10px] font-extrabold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                P.504
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/80">
+                Phòng 504
               </span>
             </div>
-            <div className="text-[10px] text-slate-500 dark:text-slate-300 font-semibold mt-0.5">
-              GVQN: Cô Tiềng
+            <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+              <span>GVQN: Cô Tiềng</span>
+              <span className="text-slate-300 dark:text-slate-700">•</span>
+              <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-slate-300 tabular-nums">
+                {vnTime.timeWithSeconds}
+              </span>
             </div>
-          </div>
-
-          {/* Live Vietnam Time */}
-          <div className="flex items-center gap-1.5 px-2 py-0.8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-800 dark:text-slate-100 text-xs font-mono font-bold shadow-2xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="tabular-nums">{vnTime.timeWithSeconds}</span>
           </div>
         </div>
 

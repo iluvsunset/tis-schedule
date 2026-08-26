@@ -70,8 +70,8 @@ export const App: React.FC = () => {
       {/* Non-intrusive First-Time Notification Permission & Install Prompt */}
       <NotificationPermissionModal language={language} />
 
-      {/* iPhone Best Experience Guidance Screen (Request Desktop & Add to Home Screen) */}
-      <IPhoneInstallGuideModal language={language} />
+      {/* iPhone Best Experience Guidance Screen (Add to Home Screen) */}
+      <IPhoneInstallGuideModal language={language} onLanguageChange={setLanguage} />
 
       {/* Interactive Parallax & Organic Floating Background Orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 no-print opacity-60">

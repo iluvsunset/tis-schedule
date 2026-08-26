@@ -30,6 +30,7 @@ self.addEventListener('push', (event) => {
   const options = {
     body: data.body,
     icon: data.icon || '/tis-logo.png',
+    image: data.image || undefined,
     badge: '/favicon.png',
     tag: 'tis-schedule-reminder',
     renotify: true,
@@ -55,10 +56,11 @@ self.addEventListener('periodicsync', (event) => {
 // 3. Background message handler
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'TRIGGER_TEST_NOTIF') {
-    const { title, body, icon } = event.data;
+    const { title, body, icon, image } = event.data;
     self.registration.showNotification(title, {
       body,
       icon: icon || '/tis-logo.png',
+      image: image || undefined,
       badge: '/favicon.png',
       tag: 'tis-test-notif',
       renotify: true,

@@ -1,6 +1,7 @@
 import { DayKey, Language } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { getVietnamTime } from './vietnamTime';
+import { generateScheduleCardDataUrl } from './scheduleCardGenerator';
 
 const NOTIF_STORAGE_KEY = 'tis_notifications_enabled';
 const NOTIF_LAST_SENT_KEY = 'tis_last_notif_date';
@@ -136,9 +137,15 @@ export function getTomorrowScheduleSummary(language: Language = 'vi'): { title: 
 }
 
 /**
- * Sends an immediate native browser notification using Service Worker & direct Notification API
+ * Sends an immediate native browser Rich Notification with attached graphic card image
  */
-export async function sendBrowserNotification(title: string, body: string, icon = '/tis-logo.png'): Promise<boolean> {
+export async function sendBrowserNotification(
+  title: string, 
+  body: string, 
+  icon = '/tis-logo.png',
+  imageUrl?: string,
+  language: Language = 'vi'
+): Promise<boolean> {
   // 1. Play soft audio chime
   playNotificationChime();
 
@@ -153,7 +160,17 @@ export async function sendBrowserNotification(title: string, body: string, icon 
     return false;
   }
 
-  // 4. Try Service Worker ShowNotification first
+  // 3. Generate rich 16:9 schedule card graphic
+  let cardImage = imageUrl;
+  if (!cardImage && typeof document !== 'undefined') {
+    try {
+      cardImage = await generateScheduleCardDataUrl(language);
+    } catch (e) {
+      console.warn('Could not generate schedule card image:', e);
+    }
+  }
+
+  // 4. Try Service Worker ShowNotification first (supports rich image on Android/PWA/Desktop)
   try {
     if ('serviceWorker' in navigator) {
       const reg = await navigator.serviceWorker.getRegistration();
@@ -161,10 +178,11 @@ export async function sendBrowserNotification(title: string, body: string, icon 
         await reg.showNotification(title, {
           body,
           icon,
+          image: cardImage,
           badge: '/favicon.png',
           tag: 'tis-schedule-reminder',
           requireInteraction: false
-        });
+        } as NotificationOptions);
         return true;
       }
     }
@@ -177,9 +195,10 @@ export async function sendBrowserNotification(title: string, body: string, icon 
     new Notification(title, {
       body,
       icon,
+      image: cardImage,
       badge: '/favicon.png',
       tag: 'tis-schedule-reminder'
-    });
+    } as NotificationOptions);
     return true;
   } catch (error) {
     console.error('Failed to dispatch native notification:', error);
@@ -188,11 +207,11 @@ export async function sendBrowserNotification(title: string, body: string, icon 
 }
 
 /**
- * Sends a test notification with pure text
+ * Sends a test rich notification with attached image
  */
 export async function sendTestNotification(language: Language = 'vi'): Promise<boolean> {
   const summary = getTomorrowScheduleSummary(language);
-  return await sendBrowserNotification(summary.title, summary.body);
+  return await sendBrowserNotification(summary.title, summary.body, '/tis-logo.png', undefined, language);
 }
 
 /**

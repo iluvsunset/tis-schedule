@@ -1,0 +1,11 @@
+name = "tis11schedule"
+main = "cloudflare-worker/src/index.js"
+compatibility_date = "2024-01-01"
+
+# ⏰ Cron Trigger: Runs automatically every 15 minutes (100% Free on Cloudflare)
+[triggers]
+crons = ["*/15 * * * *"]
+
+[[kv_namespaces]]
+binding = "SCHEDULE_KV"
+id = "08acb034393e4088bc6cb45dde70dcfb"

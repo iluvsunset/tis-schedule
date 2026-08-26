@@ -13,8 +13,8 @@ self.addEventListener('activate', (event) => {
 // 1. Web Push Notification Event (fires when server sends push or when background trigger fires)
 self.addEventListener('push', (event) => {
   let data = {
-    title: '🔔 Lịch học ngày mai • Lớp 11-TN',
-    body: 'Nhắc nhở lịch học: Kiểm tra các môn học và phòng học ngày mai.',
+    title: 'Có thời khóa biểu mới',
+    body: 'Lịch học Lớp 11-TN đã được cập nhật.',
     icon: '/tis-logo.png',
     badge: '/favicon.png'
   };

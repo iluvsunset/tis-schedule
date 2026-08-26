@@ -1,0 +1,786 @@
+import { ScheduleData, SubjectType } from '../types/schedule';
+
+export const SCHEDULE_DATA: ScheduleData = {
+  grade: "11-TN",
+  gradeTitleVi: "Lớp 11 - Tự Nhiên",
+  gradeTitleEn: "Grade 11 - Natural Sciences",
+  room: "504",
+  homeroomTeacher: {
+    name: "Cô Tiềng",
+    titleVi: "Giáo Viên Chủ Nhiệm (GVQN)",
+    titleEn: "Homeroom Teacher",
+    subject: "Sinh Hoạt Lớp"
+  },
+  weekSchedule: [
+    {
+      dayKey: "mon",
+      dayNameVi: "Thứ Hai",
+      dayNameEn: "Monday",
+      date: "24/8/2026",
+      morning: [
+        {
+          period: 1,
+          time: "08:00 - 08:45",
+          startTime: "08:00",
+          endTime: "08:45",
+          subjectVi: "Good Morning TIS",
+          subjectEn: "School Assembly / Good Morning TIS",
+          teacher: "Toàn Trường (All School)",
+          type: "event",
+          room: "Sân trường / Assembly",
+          note: "8:00 - 9:00 Hoạt động đầu tuần"
+        },
+        {
+          period: 2,
+          time: "08:50 - 09:35",
+          startTime: "08:50",
+          endTime: "09:35",
+          subjectVi: "Toán (Math)",
+          subjectEn: "Mathematics",
+          teacher: "Thầy Thành",
+          type: "math",
+          room: "504",
+          note: "TOÁN-THÀNH"
+        },
+        {
+          period: "recess",
+          time: "09:35 - 09:55",
+          startTime: "09:35",
+          endTime: "09:55",
+          subjectVi: "Ra chơi sáng",
+          subjectEn: "Morning Recess",
+          teacher: "",
+          type: "break",
+          room: "",
+          note: "20 phút giải lao"
+        },
+        {
+          period: 3,
+          time: "09:55 - 10:40",
+          startTime: "09:55",
+          endTime: "10:40",
+          subjectVi: "Tiếng Anh (Eng 1)",
+          subjectEn: "English Level 10 (Period 1)",
+          teacher: "Mr. Steven",
+          type: "english",
+          room: "504",
+          note: "Level 10 - Room 504"
+        },
+        {
+          period: 4,
+          time: "10:45 - 11:30",
+          startTime: "10:45",
+          endTime: "11:30",
+          subjectVi: "Tiếng Anh (Eng 2)",
+          subjectEn: "English Level 10 (Period 2)",
+          teacher: "Mr. Steven",
+          type: "english",
+          room: "504",
+          note: "Level 10 - Room 504"
+        }
+      ],
+      lunch: {
+        time: "11:30 - 13:30",
+        startTime: "11:30",
+        endTime: "13:30",
+        titleVi: "Nghỉ trưa & Dùng bữa",
+        titleEn: "Lunch Break & Rest"
+      },
+      afternoon: [
+        {
+          period: 1,
+          time: "13:30 - 14:15",
+          startTime: "13:30",
+          endTime: "14:15",
+          subjectVi: "Tin Học",
+          subjectEn: "Computer Science",
+          teacher: "Thầy Quân",
+          type: "cs",
+          room: "504 / Lab Tin",
+          note: "TIN-QUÂN"
+        },
+        {
+          period: 2,
+          time: "14:20 - 15:05",
+          startTime: "14:20",
+          endTime: "15:05",
+          subjectVi: "Tin Học",
+          subjectEn: "Computer Science",
+          teacher: "Thầy Quân",
+          type: "cs",
+          room: "504 / Lab Tin",
+          note: "TIN-QUÂN"
+        },
+        {
+          period: "recess",
+          time: "15:05 - 15:20",
+          startTime: "15:05",
+          endTime: "15:20",
+          subjectVi: "Ra chơi chiều",
+          subjectEn: "Afternoon Recess",
+          teacher: "",
+          type: "break",
+          room: "",
+          note: "15 phút giải lao"
+        },
+        {
+          period: 3,
+          time: "15:20 - 16:05",
+          startTime: "15:20",
+          endTime: "16:05",
+          subjectVi: "Toán",
+          subjectEn: "Mathematics",
+          teacher: "Thầy Thành",
+          type: "math",
+          room: "504",
+          note: "TOÁN-THÀNH"
+        }
+      ]
+    },
+    {
+      dayKey: "tue",
+      dayNameVi: "Thứ Ba",
+      dayNameEn: "Tuesday",
+      date: "25/8/2026",
+      morning: [
+        {
+          period: 1,
+          time: "08:00 - 08:45",
+          startTime: "08:00",
+          endTime: "08:45",
+          subjectVi: "Vật Lý",
+          subjectEn: "Physics",
+          teacher: "Cô Thuận",
+          type: "physics",
+          room: "504",
+          note: "LÝ-THUẬN"
+        },
+        {
+          period: 2,
+          time: "08:50 - 09:35",
+          startTime: "08:50",
+          endTime: "09:35",
+          subjectVi: "Vật Lý",
+          subjectEn: "Physics",
+          teacher: "Cô Thuận",
+          type: "physics",
+          room: "504",
+          note: "LÝ-THUẬN"
+        },
+        {
+          period: "recess",
+          time: "09:35 - 09:55",
+          startTime: "09:35",
+          endTime: "09:55",
+          subjectVi: "Ra chơi sáng",
+          subjectEn: "Morning Recess",
+          teacher: "",
+          type: "break",
+          room: "",
+          note: "20 phút giải lao"
+        },
+        {
+          period: 3,
+          time: "09:55 - 10:40",
+          startTime: "09:55",
+          endTime: "10:40",
+          subjectVi: "Tiếng Anh (Eng 3)",
+          subjectEn: "English Level 10 (Period 3)",
+          teacher: "Ms. Phương Anh",
+          type: "english",
+          room: "504",
+          note: "Level 10 - Room 504"
+        },
+        {
+          period: 4,
+          time: "10:45 - 11:30",
+          startTime: "10:45",
+          endTime: "11:30",
+          subjectVi: "Tiếng Anh (Eng 4)",
+          subjectEn: "English Level 10 (Period 4)",
+          teacher: "Ms. Phương Anh",
+          type: "english",
+          room: "504",
+          note: "Level 10 - Room 504"
+        }
+      ],
+      lunch: {
+        time: "11:30 - 13:30",
+        startTime: "11:30",
+        endTime: "13:30",
+        titleVi: "Nghỉ trưa & Dùng bữa",
+        titleEn: "Lunch Break & Rest"
+      },
+      afternoon: [
+        {
+          period: 1,
+          time: "13:30 - 14:15",
+          startTime: "13:30",
+          endTime: "14:15",
+          subjectVi: "Ngữ Văn",
+          subjectEn: "Literature",
+          teacher: "Cô Cam",
+          type: "literature",
+          room: "504",
+          note: "VĂN-CAM"
+        },
+        {
+          period: 2,
+          time: "14:20 - 15:05",
+          startTime: "14:20",
+          endTime: "15:05",
+          subjectVi: "Ngữ Văn",
+          subjectEn: "Literature",
+          teacher: "Cô Cam",
+          type: "literature",
+          room: "504",
+          note: "VĂN-CAM"
+        },
+        {
+          period: "recess",
+          time: "15:05 - 15:20",
+          startTime: "15:05",
+          endTime: "15:20",
+          subjectVi: "Ra chơi chiều",
+          subjectEn: "Afternoon Recess",
+          teacher: "",
+          type: "break",
+          room: "",
+          note: "15 phút giải lao"
+        },
+        {
+          period: 3,
+          time: "15:20 - 16:05",
+          startTime: "15:20",
+          endTime: "16:05",
+          subjectVi: "Hóa Học",
+          subjectEn: "Chemistry",
+          teacher: "Thầy Tân",
+          type: "chemistry",
+          room: "504",
+          note: "HÓA-TÂN"
+        }
+      ]
+    },
+    {
+      dayKey: "wed",
+      dayNameVi: "Thứ Tư",
+      dayNameEn: "Wednesday",
+      date: "26/8/2026",
+      morning: [
+        {
+          period: 1,
+          time: "08:00 - 08:45",
+          startTime: "08:00",
+          endTime: "08:45",
+          subjectVi: "Tin Học",
+          subjectEn: "Computer Science",
+          teacher: "Thầy Quân",
+          type: "cs",
+          room: "504 / Lab Tin",
+          note: "TIN-QUÂN"
+        },
+        {
+          period: 2,
+          time: "08:50 - 09:35",
+          startTime: "08:50",
+          endTime: "09:35",
+          subjectVi: "Tin Học",
+          subjectEn: "Computer Science",
+          teacher: "Thầy Quân",
+          type: "cs",
+          room: "504 / Lab Tin",
+          note: "TIN-QUÂN"
+        },
+        {
+          period: "recess",
+          time: "09:35 - 09:55",
+          startTime: "09:35",
+          endTime: "09:55",
+          subjectVi: "Ra chơi sáng",
+          subjectEn: "Morning Recess",
+          teacher: "",
+          type: "break",
+          room: "",
+          note: "20 phút giải lao"
+        },
+        {
+          period: 3,
+          time: "09:55 - 10:40",
+          startTime: "09:55",
+          endTime: "10:40",
+          subjectVi: "Tiếng Anh (Eng 5)",
+          subjectEn: "English Level 10 (Period 5)",
+          teacher: "Mr. Steven",
+          type: "english",
+          room: "504",
+          note: "Level 10 - Room 504"
+        },
+        {
+          period: 4,
+          time: "10:45 - 11:30",
+          startTime: "10:45",
+          endTime: "11:30",
+          subjectVi: "Tiếng Anh (Eng 6)",
+          subjectEn: "English Level 10 (Period 6)",
+          teacher: "Mr. Steven",
+          type: "english",
+          room: "504",
+          note: "Level 10 - Room 504"
+        }
+      ],
+      lunch: {
+        time: "11:30 - 13:30",
+        startTime: "11:30",
+        endTime: "13:30",
+        titleVi: "Nghỉ trưa & Dùng bữa",
+        titleEn: "Lunch Break & Rest"
+      },
+      afternoon: [
+        {
+          period: 1,
+          time: "13:30 - 14:15",
+          startTime: "13:30",
+          endTime: "14:15",
+          subjectVi: "Science",
+          subjectEn: "Integrated Science",
+          teacher: "Ms. Hạnh",
+          type: "science",
+          room: "504",
+          note: "SCIENCE - Ms. Hạnh"
+        },
+        {
+          period: 2,
+          time: "14:20 - 15:05",
+          startTime: "14:20",
+          endTime: "15:05",
+          subjectVi: "Science",
+          subjectEn: "Integrated Science",
+          teacher: "Ms. Hạnh",
+          type: "science",
+          room: "504",
+          note: "SCIENCE - Ms. Hạnh"
+        },
+        {
+          period: "recess",
+          time: "15:05 - 15:20",
+          startTime: "15:05",
+          endTime: "15:20",
+          subjectVi: "Ra chơi chiều",
+          subjectEn: "Afternoon Recess",
+          teacher: "",
+          type: "break",
+          room: "",
+          note: "15 phút giải lao"
+        },
+        {
+          period: 3,
+          time: "15:20 - 16:05",
+          startTime: "15:20",
+          endTime: "16:05",
+          subjectVi: "Toán",
+          subjectEn: "Mathematics",
+          teacher: "Thầy Thành",
+          type: "math",
+          room: "504",
+          note: "TOÁN-THÀNH"
+        }
+      ]
+    },
+    {
+      dayKey: "thu",
+      dayNameVi: "Thứ Năm",
+      dayNameEn: "Thursday",
+      date: "27/8/2026",
+      morning: [
+        {
+          period: 1,
+          time: "08:00 - 08:45",
+          startTime: "08:00",
+          endTime: "08:45",
+          subjectVi: "Giáo Dục Thể Chất",
+          subjectEn: "Physical Education (PE)",
+          teacher: "Thầy Hải",
+          type: "pe",
+          room: "Sân thể thao",
+          note: "GDTC-HẢI"
+        },
+        {
+          period: 2,
+          time: "08:50 - 09:35",
+          startTime: "08:50",
+          endTime: "09:35",
+          subjectVi: "Giáo Dục Thể Chất",
+          subjectEn: "Physical Education (PE)",
+          teacher: "Thầy Hải",
+          type: "pe",
+          room: "Sân thể thao",
+          note: "GDTC-HẢI"
+        },
+        {
+          period: "recess",
+          time: "09:35 - 09:55",
+          startTime: "09:35",
+          endTime: "09:55",
+          subjectVi: "Ra chơi sáng",
+          subjectEn: "Morning Recess",
+          teacher: "",
+          type: "break",
+          room: "",
+          note: "20 phút giải lao"
+        },
+        {
+          period: 3,
+          time: "09:55 - 10:40",
+          startTime: "09:55",
+          endTime: "10:40",
+          subjectVi: "Tiếng Anh (Eng 7)",
+          subjectEn: "English Level 10 (Period 7)",
+          teacher: "Ms. Phương Anh",
+          type: "english",
+          room: "504",
+          note: "Level 10 - Room 504"
+        },
+        {
+          period: 4,
+          time: "10:45 - 11:30",
+          startTime: "10:45",
+          endTime: "11:30",
+          subjectVi: "Tiếng Anh (Eng 8)",
+          subjectEn: "English Level 10 (Period 8)",
+          teacher: "Ms. Phương Anh",
+          type: "english",
+          room: "504",
+          note: "Level 10 - Room 504"
+        }
+      ],
+      lunch: {
+        time: "11:30 - 13:30",
+        startTime: "11:30",
+        endTime: "13:30",
+        titleVi: "Nghỉ trưa & Dùng bữa",
+        titleEn: "Lunch Break & Rest"
+      },
+      afternoon: [
+        {
+          period: 1,
+          time: "13:30 - 14:15",
+          startTime: "13:30",
+          endTime: "14:15",
+          subjectVi: "Hóa Học",
+          subjectEn: "Chemistry",
+          teacher: "Thầy Tân",
+          type: "chemistry",
+          room: "504",
+          note: "HÓA-TÂN"
+        },
+        {
+          period: 2,
+          time: "14:20 - 15:05",
+          startTime: "14:20",
+          endTime: "15:05",
+          subjectVi: "Hóa Học",
+          subjectEn: "Chemistry",
+          teacher: "Thầy Tân",
+          type: "chemistry",
+          room: "504",
+          note: "HÓA-TÂN"
+        },
+        {
+          period: "recess",
+          time: "15:05 - 15:20",
+          startTime: "15:05",
+          endTime: "15:20",
+          subjectVi: "Ra chơi chiều",
+          subjectEn: "Afternoon Recess",
+          teacher: "",
+          type: "break",
+          room: "",
+          note: "15 phút giải lao"
+        },
+        {
+          period: 3,
+          time: "15:20 - 16:05",
+          startTime: "15:20",
+          endTime: "16:05",
+          subjectVi: "Sinh Hoạt Lớp (SHL)",
+          subjectEn: "Homeroom Activity",
+          teacher: "Cô Tiềng",
+          type: "homeroom",
+          room: "504",
+          note: "SHL-TIỀNG"
+        }
+      ]
+    },
+    {
+      dayKey: "fri",
+      dayNameVi: "Thứ Sáu",
+      dayNameEn: "Friday",
+      date: "28/8/2026",
+      morning: [
+        {
+          period: 1,
+          time: "08:00 - 08:45",
+          startTime: "08:00",
+          endTime: "08:45",
+          subjectVi: "Sinh Học",
+          subjectEn: "Biology",
+          teacher: "Thầy Công",
+          type: "biology",
+          room: "504",
+          note: "SINH-CÔNG"
+        },
+        {
+          period: 2,
+          time: "08:50 - 09:35",
+          startTime: "08:50",
+          endTime: "09:35",
+          subjectVi: "Toán",
+          subjectEn: "Mathematics",
+          teacher: "Thầy Thành",
+          type: "math",
+          room: "504",
+          note: "TOÁN-THÀNH"
+        },
+        {
+          period: "recess",
+          time: "09:35 - 09:55",
+          startTime: "09:35",
+          endTime: "09:55",
+          subjectVi: "Ra chơi sáng",
+          subjectEn: "Morning Recess",
+          teacher: "",
+          type: "break",
+          room: "",
+          note: "20 phút giải lao"
+        },
+        {
+          period: 3,
+          time: "09:55 - 10:40",
+          startTime: "09:55",
+          endTime: "10:40",
+          subjectVi: "Tiếng Anh (Eng 9)",
+          subjectEn: "English Level 10 (Period 9)",
+          teacher: "Ms. Phương Anh",
+          type: "english",
+          room: "504",
+          note: "Level 10 - Room 504"
+        },
+        {
+          period: 4,
+          time: "10:45 - 11:30",
+          startTime: "10:45",
+          endTime: "11:30",
+          subjectVi: "Tiếng Anh (Eng 10)",
+          subjectEn: "English Level 10 (Period 10)",
+          teacher: "Ms. Phương Anh",
+          type: "english",
+          room: "504",
+          note: "Level 10 - Room 504"
+        }
+      ],
+      lunch: {
+        time: "11:30 - 13:30",
+        startTime: "11:30",
+        endTime: "13:30",
+        titleVi: "Nghỉ trưa & Dùng bữa",
+        titleEn: "Lunch Break & Rest"
+      },
+      afternoon: [
+        {
+          period: 1,
+          time: "13:30 - 14:15",
+          startTime: "13:30",
+          endTime: "14:15",
+          subjectVi: "Ngữ Văn",
+          subjectEn: "Literature",
+          teacher: "Cô Cam",
+          type: "literature",
+          room: "504",
+          note: "VĂN-CAM"
+        },
+        {
+          period: 2,
+          time: "14:20 - 15:05",
+          startTime: "14:20",
+          endTime: "15:05",
+          subjectVi: "Ngữ Văn",
+          subjectEn: "Literature",
+          teacher: "Cô Cam",
+          type: "literature",
+          room: "504",
+          note: "VĂN-CAM"
+        },
+        {
+          period: "recess",
+          time: "15:05 - 15:20",
+          startTime: "15:05",
+          endTime: "15:20",
+          subjectVi: "Ra chơi chiều",
+          subjectEn: "Afternoon Recess",
+          teacher: "",
+          type: "break",
+          room: "",
+          note: "15 phút giải lao"
+        },
+        {
+          period: 3,
+          time: "15:20 - 16:05",
+          startTime: "15:20",
+          endTime: "16:05",
+          subjectVi: "Bầu cử BCH Hội Đồng Học Sinh",
+          subjectEn: "Student Council Election",
+          teacher: "Toàn Trường (School Activity)",
+          type: "event",
+          room: "Hội trường",
+          note: "Hoạt động chung toàn trường"
+        }
+      ]
+    }
+  ],
+  teachers: [
+    { name: "Cô Tiềng", role: "GVQN (Homeroom)", subjectVi: "Sinh Hoạt Lớp", subjectEn: "Homeroom Activities", room: "Phòng 504", color: "purple", icon: "HeartHandshake", days: "Thứ 5 Chiều" },
+    { name: "Thầy Thành", role: "Bộ môn Toán", subjectVi: "Toán Học", subjectEn: "Mathematics", room: "Phòng 504", color: "blue", icon: "Calculator", days: "T2, T4, T6" },
+    { name: "Cô Cam", role: "Bộ môn Ngữ Văn", subjectVi: "Ngữ Văn", subjectEn: "Literature", room: "Phòng 504", color: "rose", icon: "BookOpen", days: "T3, T6 Chiều" },
+    { name: "Cô Thuận", role: "Bộ môn Vật Lý", subjectVi: "Vật Lý", subjectEn: "Physics", room: "Phòng 504", color: "indigo", icon: "Zap", days: "T3 Sáng" },
+    { name: "Thầy Tân", role: "Bộ môn Hóa Học", subjectVi: "Hóa Học", subjectEn: "Chemistry", room: "Phòng 504", color: "emerald", icon: "FlaskConical", days: "T3, T5" },
+    { name: "Thầy Công", role: "Bộ môn Sinh Học", subjectVi: "Sinh Học", subjectEn: "Biology", room: "Phòng 504", color: "green", icon: "Leaf", days: "T6 Sáng" },
+    { name: "Thầy Quân", role: "Bộ môn Tin Học", subjectVi: "Tin Học", subjectEn: "Computer Science", room: "Lab Tin / 504", color: "amber", icon: "Laptop", days: "T2 Chiều, T4 Sáng" },
+    { name: "Thầy Hải", role: "Bộ môn GDTC", subjectVi: "Giáo Dục Thể Chất", subjectEn: "Physical Education", room: "Sân Thể Thao", color: "orange", icon: "Activity", days: "T5 Sáng" },
+    { name: "Mr. Steven", role: "English Faculty", subjectVi: "Tiếng Anh Level 10", subjectEn: "English (Eng 1,2,5,6)", room: "Phòng 504", color: "pink", icon: "Globe", days: "T2, T4 Sáng" },
+    { name: "Ms. Phương Anh", role: "English Faculty", subjectVi: "Tiếng Anh Level 10", subjectEn: "English (Eng 3,4,7,8,9,10)", room: "Phòng 504", color: "pink", icon: "Globe", days: "T3, T5, T6 Sáng" },
+    { name: "Ms. Hạnh", role: "Science Faculty", subjectVi: "Science", subjectEn: "Integrated Science", room: "Phòng 504", color: "teal", icon: "Microscope", days: "T4 Chiều" }
+  ]
+};
+
+export const SUBJECT_METADATA: Record<SubjectType, {
+  bg: string;
+  border: string;
+  text: string;
+  badgeBg: string;
+  badgeText: string;
+  iconName: string;
+  labelVi: string;
+  labelEn: string;
+}> = {
+  math: {
+    bg: "bg-blue-50/80",
+    border: "border-blue-100",
+    text: "text-blue-700",
+    badgeBg: "bg-blue-100/80",
+    badgeText: "text-blue-800",
+    iconName: "Calculator",
+    labelVi: "Toán",
+    labelEn: "Math"
+  },
+  english: {
+    bg: "bg-pink-50/80",
+    border: "border-pink-100",
+    text: "text-pink-700",
+    badgeBg: "bg-pink-100/80",
+    badgeText: "text-pink-800",
+    iconName: "Globe",
+    labelVi: "Tiếng Anh",
+    labelEn: "English"
+  },
+  literature: {
+    bg: "bg-rose-50/80",
+    border: "border-rose-100",
+    text: "text-rose-700",
+    badgeBg: "bg-rose-100/80",
+    badgeText: "text-rose-800",
+    iconName: "BookOpen",
+    labelVi: "Ngữ Văn",
+    labelEn: "Literature"
+  },
+  physics: {
+    bg: "bg-indigo-50/80",
+    border: "border-indigo-100",
+    text: "text-indigo-700",
+    badgeBg: "bg-indigo-100/80",
+    badgeText: "text-indigo-800",
+    iconName: "Zap",
+    labelVi: "Vật Lý",
+    labelEn: "Physics"
+  },
+  chemistry: {
+    bg: "bg-emerald-50/80",
+    border: "border-emerald-100",
+    text: "text-emerald-700",
+    badgeBg: "bg-emerald-100/80",
+    badgeText: "text-emerald-800",
+    iconName: "FlaskConical",
+    labelVi: "Hóa Học",
+    labelEn: "Chemistry"
+  },
+  biology: {
+    bg: "bg-green-50/80",
+    border: "border-green-100",
+    text: "text-green-700",
+    badgeBg: "bg-green-100/80",
+    badgeText: "text-green-800",
+    iconName: "Leaf",
+    labelVi: "Sinh Học",
+    labelEn: "Biology"
+  },
+  cs: {
+    bg: "bg-amber-50/80",
+    border: "border-amber-100",
+    text: "text-amber-700",
+    badgeBg: "bg-amber-100/80",
+    badgeText: "text-amber-800",
+    iconName: "Laptop",
+    labelVi: "Tin Học",
+    labelEn: "CompSci"
+  },
+  science: {
+    bg: "bg-teal-50/80",
+    border: "border-teal-100",
+    text: "text-teal-700",
+    badgeBg: "bg-teal-100/80",
+    badgeText: "text-teal-800",
+    iconName: "Microscope",
+    labelVi: "Science",
+    labelEn: "Science"
+  },
+  pe: {
+    bg: "bg-orange-50/80",
+    border: "border-orange-100",
+    text: "text-orange-700",
+    badgeBg: "bg-orange-100/80",
+    badgeText: "text-orange-800",
+    iconName: "Activity",
+    labelVi: "Thể Dục",
+    labelEn: "PE"
+  },
+  homeroom: {
+    bg: "bg-purple-50/80",
+    border: "border-purple-100",
+    text: "text-purple-700",
+    badgeBg: "bg-purple-100/80",
+    badgeText: "text-purple-800",
+    iconName: "HeartHandshake",
+    labelVi: "Sinh Hoạt Lớp",
+    labelEn: "Homeroom"
+  },
+  event: {
+    bg: "bg-fuchsia-50/80",
+    border: "border-fuchsia-100",
+    text: "text-fuchsia-700",
+    badgeBg: "bg-fuchsia-100/80",
+    badgeText: "text-fuchsia-800",
+    iconName: "Sparkles",
+    labelVi: "Sự Kiện",
+    labelEn: "Event"
+  },
+  break: {
+    bg: "bg-slate-50/90",
+    border: "border-dashed border-slate-200",
+    text: "text-slate-500",
+    badgeBg: "bg-slate-200/80",
+    badgeText: "text-slate-700",
+    iconName: "Coffee",
+    labelVi: "Ra Chơi",
+    labelEn: "Recess"
+  }
+};

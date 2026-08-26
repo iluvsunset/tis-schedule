@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Cute Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(243, 244, 246, 0.6);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Fluid Auto-Size Scale Rules for All Screens */
+html {
+  font-size: 15px;
+}
+
+@media (min-width: 640px) {
+  html {
+    font-size: 15.5px;
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1536px) {
+  html {
+    font-size: 17.5px;
+  }
+}
+
+@media (min-width: 1920px) {
+  html {
+    font-size: 19px;
+  }
+}
+
+@media (min-width: 2560px) {
+  html {
+    font-size: 23px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .shadow-soft, .shadow-soft-lg {
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+}
+
+/* Theme CSS Variables */
+:root[data-theme="sakura"] {
+  --bg-gradient: linear-gradient(135deg, #fff1f2 0%, #faf5ff 50%, #fdf2f8 100%);
+  --accent-primary: #fb7185;
+  --accent-secondary: #f43f5e;
+  --accent-soft: #ffe4e6;
+  --accent-text: #9f1239;
+  --badge-bg: #fff1f2;
+  --badge-border: #fecdd3;
+}
+:root[data-theme="mint"] {
+  --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 50%, #ecfdf5 100%);
+  --accent-primary: #34d399;
+  --accent-secondary: #10b981;
+  --accent-soft: #d1fae5;
+  --accent-text: #065f46;
+  --badge-bg: #f0fdf4;
+  --badge-border: #a7f3d0;
+}
+:root[data-theme="lavender"] {
+  --bg-gradient: linear-gradient(135deg, #f5f3ff 0%, #faf5ff 50%, #eff6ff 100%);
+  --accent-primary: #a78bfa;
+  --accent-secondary: #8b5cf6;
+  --accent-soft: #ede9fe;
+  --accent-text: #5b21b6;
+  --badge-bg: #f5f3ff;
+  --badge-border: #ddd6fe;
+}
+:root[data-theme="peach"] {
+  --bg-gradient: linear-gradient(135deg, #fff7ed 0%, #fff1f2 50%, #fef3c7 100%);
+  --accent-primary: #fb923c;
+  --accent-secondary: #f97316;
+  --accent-soft: #ffedd5;
+  --accent-text: #9a3412;
+  --badge-bg: #fff7ed;
+  --badge-border: #fed7aa;
+}
+
+body {
+  background: var(--bg-gradient);
+  min-height: 100vh;
+  color: #1e293b;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+}
+
+@keyframes gentle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.animate-gentle {
+  animation: gentle-bounce 3s ease-in-out infinite;
+}

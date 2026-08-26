@@ -7,7 +7,6 @@ import { Navbar } from './components/Navbar';
 import { TimelineView } from './components/TimelineView';
 import { WeeklyMatrixView } from './components/WeeklyMatrixView';
 import { TeacherModal } from './components/TeacherModal';
-import { NotificationToast } from './components/NotificationToast';
 import { NotificationPermissionModal } from './components/NotificationPermissionModal';
 import { getVietnamTime, VietnamTimeInfo } from './utils/vietnamTime';
 import { useParallaxMouse } from './hooks/useParallaxMouse';
@@ -67,9 +66,6 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen relative text-slate-800 selection:bg-pink-200 selection:text-pink-900 transition-colors duration-500 font-sans flex flex-col justify-between overflow-x-hidden">
       
-      {/* Floating In-App & Browser Notification Toast */}
-      <NotificationToast />
-
       {/* Non-intrusive First-Time Notification Permission & Install Prompt */}
       <NotificationPermissionModal language={language} />
 

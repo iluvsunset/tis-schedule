@@ -136,22 +136,15 @@ export function getTomorrowScheduleSummary(language: Language = 'vi'): { title: 
 }
 
 /**
- * Sends an immediate browser notification using both Service Worker & direct API + In-App Toast
+ * Sends an immediate native browser notification using Service Worker & direct Notification API
  */
 export async function sendBrowserNotification(title: string, body: string, icon = '/tis-logo.png'): Promise<boolean> {
   // 1. Play soft audio chime
   playNotificationChime();
 
-  // 2. Dispatch in-app toast event
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('tis-in-app-notification', {
-      detail: { title, body, icon, time: new Date().toLocaleTimeString() }
-    }));
-  }
-
   if (!isNotificationSupported()) return false;
 
-  // 3. Request permission if not already determined
+  // 2. Request permission if not already determined
   if (Notification.permission === 'default') {
     await Notification.requestPermission();
   }

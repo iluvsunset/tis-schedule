@@ -96,16 +96,16 @@ export function parseSheetCSV(csvText: string): ScheduleData {
 
     const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
     
-    // English block
+    // English block (Level 10)
     if (raw.toLowerCase().includes('level 10') || raw.toLowerCase().includes('eng')) {
       const teacherLine = lines.find(l => l.startsWith('Mr.') || l.startsWith('Ms.') || l.startsWith('C.') || l.startsWith('T.'));
-      const engLine = lines.find(l => l.toLowerCase().startsWith('eng')) || 'Tiếng Anh';
+      const engLine = lines.find(l => l.toLowerCase().startsWith('eng')) || 'Eng';
       return {
-        subjectVi: `Tiếng Anh (${engLine})`,
-        subjectEn: `English Level 10 (${engLine})`,
+        subjectVi: 'English (Level 10)',
+        subjectEn: 'English (Level 10)',
         teacher: teacherLine || 'English Faculty',
         room: defaultRoom,
-        note: 'Level 10 - Room ' + defaultRoom
+        note: `Level 10 - ${engLine}`
       };
     }
 

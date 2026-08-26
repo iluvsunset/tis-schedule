@@ -59,24 +59,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "09:55 - 10:40",
           startTime: "09:55",
           endTime: "10:40",
-          subjectVi: "Tiếng Anh (Eng 1)",
-          subjectEn: "English Level 10 (Period 1)",
+          subjectVi: "English (Level 10)",
+          subjectEn: "English (Level 10)",
           teacher: "Mr. Steven",
           type: "english",
           room: "504",
-          note: "Level 10 - Room 504"
+          note: "Level 10 - Eng 1"
         },
         {
           period: 4,
           time: "10:45 - 11:30",
           startTime: "10:45",
           endTime: "11:30",
-          subjectVi: "Tiếng Anh (Eng 2)",
-          subjectEn: "English Level 10 (Period 2)",
+          subjectVi: "English (Level 10)",
+          subjectEn: "English (Level 10)",
           teacher: "Mr. Steven",
           type: "english",
           room: "504",
-          note: "Level 10 - Room 504"
+          note: "Level 10 - Eng 2"
         }
       ],
       lunch: {
@@ -184,24 +184,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "09:55 - 10:40",
           startTime: "09:55",
           endTime: "10:40",
-          subjectVi: "Tiếng Anh (Eng 3)",
-          subjectEn: "English Level 10 (Period 3)",
+          subjectVi: "English (Level 10)",
+          subjectEn: "English (Level 10)",
           teacher: "Ms. Phương Anh",
           type: "english",
           room: "504",
-          note: "Level 10 - Room 504"
+          note: "Level 10 - Eng 3"
         },
         {
           period: 4,
           time: "10:45 - 11:30",
           startTime: "10:45",
           endTime: "11:30",
-          subjectVi: "Tiếng Anh (Eng 4)",
-          subjectEn: "English Level 10 (Period 4)",
+          subjectVi: "English (Level 10)",
+          subjectEn: "English (Level 10)",
           teacher: "Ms. Phương Anh",
           type: "english",
           room: "504",
-          note: "Level 10 - Room 504"
+          note: "Level 10 - Eng 4"
         }
       ],
       lunch: {
@@ -309,24 +309,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "09:55 - 10:40",
           startTime: "09:55",
           endTime: "10:40",
-          subjectVi: "Tiếng Anh (Eng 5)",
-          subjectEn: "English Level 10 (Period 5)",
+          subjectVi: "English (Level 10)",
+          subjectEn: "English (Level 10)",
           teacher: "Mr. Steven",
           type: "english",
           room: "504",
-          note: "Level 10 - Room 504"
+          note: "Level 10 - Eng 5"
         },
         {
           period: 4,
           time: "10:45 - 11:30",
           startTime: "10:45",
           endTime: "11:30",
-          subjectVi: "Tiếng Anh (Eng 6)",
-          subjectEn: "English Level 10 (Period 6)",
+          subjectVi: "English (Level 10)",
+          subjectEn: "English (Level 10)",
           teacher: "Mr. Steven",
           type: "english",
           room: "504",
-          note: "Level 10 - Room 504"
+          note: "Level 10 - Eng 6"
         }
       ],
       lunch: {
@@ -434,24 +434,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "09:55 - 10:40",
           startTime: "09:55",
           endTime: "10:40",
-          subjectVi: "Tiếng Anh (Eng 7)",
-          subjectEn: "English Level 10 (Period 7)",
+          subjectVi: "English (Level 10)",
+          subjectEn: "English (Level 10)",
           teacher: "Ms. Phương Anh",
           type: "english",
           room: "504",
-          note: "Level 10 - Room 504"
+          note: "Level 10 - Eng 7"
         },
         {
           period: 4,
           time: "10:45 - 11:30",
           startTime: "10:45",
           endTime: "11:30",
-          subjectVi: "Tiếng Anh (Eng 8)",
-          subjectEn: "English Level 10 (Period 8)",
+          subjectVi: "English (Level 10)",
+          subjectEn: "English (Level 10)",
           teacher: "Ms. Phương Anh",
           type: "english",
           room: "504",
-          note: "Level 10 - Room 504"
+          note: "Level 10 - Eng 8"
         }
       ],
       lunch: {
@@ -559,24 +559,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "09:55 - 10:40",
           startTime: "09:55",
           endTime: "10:40",
-          subjectVi: "Tiếng Anh (Eng 9)",
-          subjectEn: "English Level 10 (Period 9)",
+          subjectVi: "English (Level 10)",
+          subjectEn: "English (Level 10)",
           teacher: "Ms. Phương Anh",
           type: "english",
           room: "504",
-          note: "Level 10 - Room 504"
+          note: "Level 10 - Eng 9"
         },
         {
           period: 4,
           time: "10:45 - 11:30",
           startTime: "10:45",
           endTime: "11:30",
-          subjectVi: "Tiếng Anh (Eng 10)",
-          subjectEn: "English Level 10 (Period 10)",
+          subjectVi: "English (Level 10)",
+          subjectEn: "English (Level 10)",
           teacher: "Ms. Phương Anh",
           type: "english",
           room: "504",
-          note: "Level 10 - Room 504"
+          note: "Level 10 - Eng 10"
         }
       ],
       lunch: {
@@ -647,8 +647,8 @@ export const SCHEDULE_DATA: ScheduleData = {
     { name: "Thầy Công", role: "Bộ môn Sinh Học", subjectVi: "Sinh Học", subjectEn: "Biology", room: "Phòng 504", color: "green", icon: "Leaf", days: "T6 Sáng" },
     { name: "Thầy Quân", role: "Bộ môn Tin Học", subjectVi: "Tin Học", subjectEn: "Computer Science", room: "Lab Tin", color: "amber", icon: "Laptop", days: "T2 Chiều, T4 Sáng" },
     { name: "Thầy Hải", role: "Bộ môn GDTC", subjectVi: "Giáo Dục Thể Chất", subjectEn: "Physical Education", room: "Sân Thể Thao", color: "orange", icon: "Activity", days: "T5 Sáng" },
-    { name: "Mr. Steven", role: "English Faculty", subjectVi: "Tiếng Anh Level 10", subjectEn: "English (Eng 1,2,5,6)", room: "Phòng 504", color: "pink", icon: "Globe", days: "T2, T4 Sáng" },
-    { name: "Ms. Phương Anh", role: "English Faculty", subjectVi: "Tiếng Anh Level 10", subjectEn: "English (Eng 3,4,7,8,9,10)", room: "Phòng 504", color: "pink", icon: "Globe", days: "T3, T5, T6 Sáng" },
+    { name: "Mr. Steven", role: "English Faculty", subjectVi: "English (Level 10)", subjectEn: "English (Level 10)", room: "Phòng 504", color: "pink", icon: "Globe", days: "T2, T4 Sáng (Eng 1,2,5,6)" },
+    { name: "Ms. Phương Anh", role: "English Faculty", subjectVi: "English (Level 10)", subjectEn: "English (Level 10)", room: "Phòng 504", color: "pink", icon: "Globe", days: "T3, T5, T6 Sáng (Eng 3,4,7,8,9,10)" },
     { name: "Ms. Hạnh", role: "Science Faculty", subjectVi: "Science", subjectEn: "Integrated Science", room: "Phòng 504", color: "teal", icon: "Microscope", days: "T4 Chiều" }
   ]
 };

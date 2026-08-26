@@ -16,7 +16,9 @@ import { checkAndTriggerEveningReminder } from './utils/notificationService';
 export const App: React.FC = () => {
   const [scheduleData, setScheduleData] = useState<ScheduleData>(INITIAL_DATA);
   const [language, setLanguage] = useState<Language>('vi');
-  const [theme, setTheme] = useState<ThemeKey>('light');
+  const [theme, setTheme] = useState<ThemeKey>(() => {
+    return (localStorage.getItem('tis_theme_pref') as ThemeKey) || 'system';
+  });
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
   const [selectedDay, setSelectedDay] = useState<DayKey>('mon');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -46,13 +48,34 @@ export const App: React.FC = () => {
     handleSyncLive();
   }, [handleSyncLive]);
 
-  // Update root data-theme attribute & class
+  // Update root data-theme attribute & auto-detect device dark mode
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    localStorage.setItem('tis_theme_pref', theme);
+
+    const applyTheme = () => {
+      let isDark = false;
+      if (theme === 'system') {
+        isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      } else {
+        isDark = theme === 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+      }
+
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+
+    applyTheme();
+
+    if (theme === 'system' && window.matchMedia) {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const listener = () => applyTheme();
+      mediaQuery.addEventListener('change', listener);
+      return () => mediaQuery.removeEventListener('change', listener);
     }
   }, [theme]);
 

@@ -14,7 +14,7 @@ export type SubjectType =
 
 export type Language = 'vi' | 'en';
 
-export type ThemeKey = 'light' | 'dark';
+export type ThemeKey = 'system' | 'light' | 'dark';
 
 export type ViewMode = 'timeline' | 'grid';
 

@@ -8,6 +8,7 @@ import { TimelineView } from './components/TimelineView';
 import { WeeklyMatrixView } from './components/WeeklyMatrixView';
 import { TeacherModal } from './components/TeacherModal';
 import { NotificationPermissionModal } from './components/NotificationPermissionModal';
+import { IPhoneInstallGuideModal } from './components/IPhoneInstallGuideModal';
 import { getVietnamTime, VietnamTimeInfo } from './utils/vietnamTime';
 import { useParallaxMouse } from './hooks/useParallaxMouse';
 import { checkAndTriggerEveningReminder } from './utils/notificationService';
@@ -68,6 +69,9 @@ export const App: React.FC = () => {
       
       {/* Non-intrusive First-Time Notification Permission & Install Prompt */}
       <NotificationPermissionModal language={language} />
+
+      {/* iPhone Best Experience Guidance Screen (Request Desktop & Add to Home Screen) */}
+      <IPhoneInstallGuideModal language={language} />
 
       {/* Interactive Parallax & Organic Floating Background Orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 no-print opacity-60">

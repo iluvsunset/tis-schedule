@@ -141,12 +141,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, [isMenuOpen]);
 
   return (
-    <motion.header 
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="relative z-50 no-print mb-2.5"
-    >
+    <header className="relative z-50 no-print mb-2.5">
       <div className="glass-card border border-white/80 rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 shadow-soft flex flex-wrap items-center justify-between gap-2.5">
         
         {/* Left: TIS Logo, Class Info & Live Vietnam Clock */}
@@ -309,12 +304,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             <AnimatePresence>
               {isMenuOpen && (
                 <>
-                  {/* Ambient Clean Backdrop Overlay */}
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[90] bg-black/10 backdrop-blur-[2px] transition-all duration-200" 
+                  {/* Transparent Click-Away Overlay (No blur, no smudge) */}
+                  <div 
+                    className="fixed inset-0 z-[90]" 
                     onClick={() => setIsMenuOpen(false)}
                   />
 
@@ -519,6 +511,6 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
       </div>
-    </motion.header>
+    </header>
   );
 };

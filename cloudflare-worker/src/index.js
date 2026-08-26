@@ -1,10 +1,10 @@
 /**
- * Cloudflare Worker Cron Job: TIS Schedule 11-TN Auto Sync & Notification
+ * Cloudflare Worker: TIS Schedule 11-TN Web App + Auto Sync Cron
  * 
  * Features:
- * 1. Automatically checks Google Sheet every 15 minutes.
- * 2. Detects new weeks / modified subjects / changes.
- * 3. Broadcasts clean simplified notification: "Có thời khóa biểu mới".
+ * 1. Serves the full Vite React Frontend Web App (UI, Icons, PWA).
+ * 2. Runs background Cron check every 15 minutes.
+ * 3. Broadcasts "Có thời khóa biểu mới" when changes are detected.
  */
 
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/1H5U71l1QHVPwCBg9c3KPaADG_jjaaRmxfsCNIXpBQJ4/gviz/tq?tqx=out:csv&gid=209193378";
@@ -18,12 +18,12 @@ export default {
   },
 
   /**
-   * 🌐 HTTP API Handler (For manual sync, status check, or push subscriptions)
+   * 🌐 HTTP Handler (Serves React Web App + APIs)
    */
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // CORS Headers
+    // CORS Headers for API endpoints
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -34,16 +34,16 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
-    // 1. Manual Sync Endpoint: GET /sync
-    if (url.pathname === "/sync") {
+    // 1. Manual Sync API Endpoint: GET /api/sync or /sync
+    if (url.pathname === "/api/sync" || url.pathname === "/sync") {
       const result = await checkGoogleSheetForUpdates(env);
       return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
 
-    // 2. Status Endpoint: GET /status
-    if (url.pathname === "/status") {
+    // 2. Status API Endpoint: GET /api/status or /status
+    if (url.pathname === "/api/status" || url.pathname === "/status") {
       const lastHash = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_sheet_hash") : "KV_NOT_BOUND";
       const lastSync = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_sync_time") : "N/A";
       return new Response(JSON.stringify({ status: "running", lastSync, lastHash }), {
@@ -51,9 +51,12 @@ export default {
       });
     }
 
-    return new Response(JSON.stringify({ message: "TIS Schedule Sync Worker Active" }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    });
+    // 3. Serve Frontend Web App Assets (HTML, JS, CSS, PWA)
+    if (env.ASSETS) {
+      return env.ASSETS.fetch(request);
+    }
+
+    return new Response("TIS Schedule Active", { status: 200 });
   }
 };
 
@@ -120,7 +123,6 @@ async function checkGoogleSheetForUpdates(env) {
  * Broadcasts notification payload to Discord / Telegram webhook or Web Push subscribers
  */
 async function broadcastNotification(env, payload) {
-  // Optional: If you add a Discord Webhook URL to Cloudflare Worker variables:
   if (env.DISCORD_WEBHOOK_URL) {
     try {
       await fetch(env.DISCORD_WEBHOOK_URL, {
@@ -135,7 +137,6 @@ async function broadcastNotification(env, payload) {
     }
   }
 
-  // Optional: If you add a Telegram Bot Token & Chat ID:
   if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
     try {
       const tgUrl = `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`;

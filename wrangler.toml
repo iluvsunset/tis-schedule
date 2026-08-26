@@ -2,10 +2,16 @@ name = "tis11schedule"
 main = "cloudflare-worker/src/index.js"
 compatibility_date = "2024-01-01"
 
-# ⏰ Cron Trigger: Runs automatically every 15 minutes (100% Free on Cloudflare)
+# 🌐 Serve the entire Vite React Frontend Web App directly!
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+# ⏰ Cron Trigger: Runs automatically every 15 minutes
 [triggers]
 crons = ["*/15 * * * *"]
 
+# 📦 Cloudflare KV Namespace for storing schedule hashes
 [[kv_namespaces]]
 binding = "SCHEDULE_KV"
 id = "08acb034393e4088bc6cb45dde70dcfb"

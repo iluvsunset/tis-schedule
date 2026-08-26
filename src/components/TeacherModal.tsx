@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, GraduationCap, Sparkles } from 'lucide-react';
+import { X, GraduationCap } from 'lucide-react';
 import { Language } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { CustomSubjectIcon } from './CustomSubjectIcons';
@@ -27,47 +27,41 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm"
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-slate-950/50 backdrop-blur-md"
             onClick={onClose}
           />
 
           {/* Animated Spring Modal Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 25, rotateX: 6 }}
-            animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", stiffness: 420, damping: 28 }}
-            className="relative z-10 bg-white/95 backdrop-blur-2xl border border-rose-200/90 rounded-[32px] p-5 sm:p-6 shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto"
+            initial={{ opacity: 0, scale: 0.88, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.88, y: 15 }}
+            transition={{ type: "spring", stiffness: 450, damping: 28 }}
+            className="relative z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto text-slate-900 dark:text-slate-100"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-500 text-white flex items-center justify-center shadow-sm">
-                  <GraduationCap className="w-6 h-6" />
+                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 flex items-center justify-center shadow-sm">
+                  <GraduationCap className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-1.5 py-0.2 rounded-md border border-purple-100">
-                      TIS Faculty 11-TN
-                    </span>
-                    <Sparkles className="w-3 h-3 text-purple-400" />
-                  </div>
-                  <h3 className="text-base sm:text-lg font-display font-extrabold text-slate-900 mt-0.5">
+                  <h3 className="text-sm sm:text-base font-display font-extrabold text-slate-900 dark:text-slate-100">
                     {language === 'vi' ? 'Đội Ngũ Giáo Viên Lớp 11-TN' : 'Grade 11-TN Faculty Directory'}
                   </h3>
-                  <p className="text-xs text-slate-500">
-                    {language === 'vi' ? `GVQN: ${homeroomTeacher.name} • Phòng học 504` : `Homeroom: ${homeroomTeacher.name} • Room 504`}
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {language === 'vi' ? `GVQN: ${homeroomTeacher.name} • Phòng 504` : `Homeroom: ${homeroomTeacher.name} • Room 504`}
                   </p>
                 </div>
               </div>
 
               <motion.button
-                whileHover={{ scale: 1.1, rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
                 onClick={onClose}
-                className="w-9 h-9 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition cursor-pointer"
+                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center transition cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </motion.button>
@@ -75,14 +69,14 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
 
             {/* Teacher Cards Grid */}
             <motion.div 
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5"
               initial="hidden"
               animate="visible"
               variants={{
                 hidden: { opacity: 0 },
                 visible: {
                   opacity: 1,
-                  transition: { staggerChildren: 0.04 }
+                  transition: { staggerChildren: 0.03 }
                 }
               }}
             >
@@ -103,27 +97,27 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
                   <motion.div
                     key={idx}
                     variants={{
-                      hidden: { opacity: 0, y: 12, scale: 0.96 },
+                      hidden: { opacity: 0, y: 8, scale: 0.97 },
                       visible: { opacity: 1, y: 0, scale: 1 }
                     }}
-                    whileHover={{ y: -3, scale: 1.02 }}
-                    className="p-3.5 rounded-2xl bg-white border border-slate-100 shadow-2xs hover:shadow-soft hover:border-purple-200 transition-all flex flex-col justify-between"
+                    whileHover={{ y: -2 }}
+                    className="p-3 rounded-2xl bg-slate-50/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 transition-all flex flex-col justify-between"
                   >
                     <div>
-                      <div className="flex items-center gap-2.5 mb-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">
-                          <CustomSubjectIcon type={subType} className="w-5 h-5" />
+                      <div className="flex items-center gap-2.5 mb-2">
+                        <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700/70 flex items-center justify-center shrink-0">
+                          <CustomSubjectIcon type={subType} className="w-4 h-4" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h4 className="font-bold text-xs text-slate-800 truncate">{t.name}</h4>
-                          <span className="text-[11px] font-semibold text-purple-600 block truncate">{subject}</span>
+                          <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">{t.name}</h4>
+                          <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block truncate">{subject}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium pt-2 border-t border-slate-50">
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 font-medium pt-1.5 border-t border-slate-200/50 dark:border-slate-700/50">
                       <span>{t.room}</span>
-                      <span className="bg-purple-50 text-purple-600 font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider">TIS</span>
+                      <span className="bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold px-1.5 py-0.2 rounded uppercase tracking-wider">TIS</span>
                     </div>
                   </motion.div>
                 );

@@ -7,16 +7,16 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ language }) => {
   return (
-    <footer className="mt-12 pt-8 border-t border-slate-200/60 text-center text-xs text-slate-500 no-print pb-8">
-      <div className="flex items-center justify-center gap-2 mb-2 font-display font-bold text-slate-700">
+    <footer className="mt-8 pt-6 border-t border-slate-200/80 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400 no-print pb-6">
+      <div className="flex items-center justify-center gap-2 mb-1.5 font-display font-bold text-slate-800 dark:text-slate-200">
         <span>{language === 'vi' ? 'Trường Quốc Tế TIS' : 'The International School (TIS)'}</span>
         <span>•</span>
-        <span>{language === 'vi' ? 'Thời Khóa Biểu Khối Trung Học' : 'High School Schedule System'}</span>
+        <span>{language === 'vi' ? 'Thời Khóa Biểu Lớp 11-TN' : 'Grade 11-TN Schedule System'}</span>
       </div>
-      <p className="text-slate-400">
+      <p className="text-slate-400 dark:text-slate-500 text-[11px]">
         {language === 'vi' 
-          ? 'Dữ liệu đồng bộ trực tiếp từ bảng phân công TIS • Chúc các bạn học sinh Lớp 11-TN một năm học rực rỡ và thành công! ✨'
-          : 'Live synced from TIS Academic Schedule • Wishing Grade 11-TN students an extraordinary and successful school year! ✨'}
+          ? 'TIS Academic Schedule • Thiết kế tối giản, sang trọng'
+          : 'TIS Academic Schedule • Luxury Minimalist Edition'}
       </p>
     </footer>
   );

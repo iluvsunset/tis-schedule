@@ -16,7 +16,7 @@ import { checkAndTriggerEveningReminder } from './utils/notificationService';
 export const App: React.FC = () => {
   const [scheduleData, setScheduleData] = useState<ScheduleData>(INITIAL_DATA);
   const [language, setLanguage] = useState<Language>('vi');
-  const [theme, setTheme] = useState<ThemeKey>('sakura');
+  const [theme, setTheme] = useState<ThemeKey>('light');
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
   const [selectedDay, setSelectedDay] = useState<DayKey>('mon');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -46,9 +46,14 @@ export const App: React.FC = () => {
     handleSyncLive();
   }, [handleSyncLive]);
 
-  // Update root data-theme attribute
+  // Update root data-theme attribute & class
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, [theme]);
 
   // Real-time ticker strictly in Vietnam Time (UTC+7) + Evening Reminder Check
@@ -61,7 +66,7 @@ export const App: React.FC = () => {
   }, [language]);
 
   return (
-    <div className="min-h-screen relative text-slate-800 selection:bg-pink-200 selection:text-pink-900 transition-colors duration-500 font-sans flex flex-col justify-between overflow-x-hidden">
+    <div className="min-h-screen relative text-slate-900 dark:text-slate-100 selection:bg-slate-900 selection:text-white dark:selection:bg-white dark:selection:text-slate-900 transition-colors duration-300 font-sans flex flex-col justify-between overflow-x-hidden">
       
       {/* Non-intrusive First-Time Notification Permission & Install Prompt */}
       <NotificationPermissionModal language={language} />
@@ -69,46 +74,29 @@ export const App: React.FC = () => {
       {/* iPhone Best Experience Guidance Screen (Add to Home Screen) */}
       <IPhoneInstallGuideModal language={language} onLanguageChange={setLanguage} />
 
-      {/* Interactive Parallax & Organic Floating Background Orbs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 no-print opacity-60">
-        
-        {/* Top-Left Pink Parallax Orb */}
+      {/* Subtle Studio Ambient Lighting (Clean & Luxury) */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 no-print">
         <motion.div
           animate={{
-            x: [0, 30, -25, 0],
-            y: [0, -35, 20, 0],
+            x: [0, 15, -15, 0],
+            y: [0, -20, 10, 0],
           }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
           style={{
-            transform: `translate(${mouse.x * 25}px, ${mouse.y * 25}px)`
+            transform: `translate(${mouse.x * 12}px, ${mouse.y * 12}px)`
           }}
-          className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-pink-200/50 blur-3xl transition-transform duration-300 ease-out"
+          className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-slate-200/30 dark:bg-slate-800/20 blur-[120px] transition-transform duration-500 ease-out"
         />
-
-        {/* Right Purple Parallax Orb */}
         <motion.div
           animate={{
-            x: [0, -30, 20, 0],
-            y: [0, 40, -25, 0],
+            x: [0, -15, 10, 0],
+            y: [0, 20, -15, 0],
           }}
-          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
           style={{
-            transform: `translate(${mouse.x * -30}px, ${mouse.y * -30}px)`
+            transform: `translate(${mouse.x * -15}px, ${mouse.y * -15}px)`
           }}
-          className="absolute top-1/4 -right-32 w-96 h-96 rounded-full bg-purple-200/45 blur-3xl transition-transform duration-300 ease-out"
-        />
-
-        {/* Bottom Orange Parallax Orb */}
-        <motion.div
-          animate={{
-            x: [0, 25, -30, 0],
-            y: [0, -25, 30, 0],
-          }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-          style={{
-            transform: `translate(${mouse.x * 20}px, ${mouse.y * 20}px)`
-          }}
-          className="absolute -bottom-32 left-1/3 w-96 h-96 rounded-full bg-orange-200/35 blur-3xl transition-transform duration-300 ease-out"
+          className="absolute top-1/3 -right-40 w-[600px] h-[600px] rounded-full bg-slate-300/20 dark:bg-slate-800/15 blur-[140px] transition-transform duration-500 ease-out"
         />
       </div>
 

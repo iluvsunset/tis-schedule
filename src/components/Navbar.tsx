@@ -309,12 +309,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             <AnimatePresence>
               {isMenuOpen && (
                 <>
-                  {/* Full-Screen Frosted Glass Ambient Backdrop Blur */}
+                  {/* Ambient Clean Backdrop Overlay */}
                   <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[90] bg-slate-950/25 backdrop-blur-md transition-all duration-200" 
+                    className="fixed inset-0 z-[90] bg-black/10 backdrop-blur-[2px] transition-all duration-200" 
                     onClick={() => setIsMenuOpen(false)}
                   />
 
@@ -380,15 +380,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                           >
                             {testCountdown !== null ? (
                               <>
-                                <Clock className="w-3 h-3 text-rose-500 animate-spin" />
-                                <span>{language === 'vi' ? `⏳ Sẽ gửi sau ${testCountdown}s... (bạn có thể đổi tab)` : `⏳ Sending in ${testCountdown}s...`}</span>
+                                <Clock className="w-3.5 h-3.5 text-rose-500 animate-spin" />
+                                <span>{language === 'vi' ? `Gửi sau ${testCountdown}s... (bạn có thể đổi tab)` : `Sending in ${testCountdown}s...`}</span>
                               </>
                             ) : testSent ? (
-                              <span>{language === 'vi' ? '✓ Đã gửi thông báo thành công!' : '✓ Notification Sent!'}</span>
+                              <span>{language === 'vi' ? '✓ Đã gửi thông báo!' : '✓ Notification Sent!'}</span>
                             ) : (
                               <>
-                                <Bell className="w-3 h-3 text-amber-600" />
-                                <span>{language === 'vi' ? '🔔 Gửi thử (Hẹn 5 giây)' : '🔔 Test (5s Delay)'}</span>
+                                <Bell className="w-3.5 h-3.5 text-amber-600" />
+                                <span>{language === 'vi' ? 'Gửi thử (Hẹn 5 giây)' : 'Test (5s Delay)'}</span>
                               </>
                             )}
                           </motion.button>

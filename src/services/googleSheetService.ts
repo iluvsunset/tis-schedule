@@ -338,9 +338,10 @@ export function parseSheetCSV(csvText: string, targetClassId: string = '11-tn'):
       const row = rows[r];
       const sessionText = (row[1] || '').toUpperCase();
       const periodText = (row[2] || '').trim();
-      const timeText = (row[3] || '').trim();
+      const rawTime = (row[3] || '').trim();
+      const timeText = rawTime.replace(/[\u2010-\u2015\u2212]/g, '-').trim();
 
-      if (!timeText || !timeText.includes('-')) continue;
+      if (!timeText || !timeText.includes('-') || !/\d/.test(timeText)) continue;
 
       let cellValue = (row[gradeCol] || '').trim();
 

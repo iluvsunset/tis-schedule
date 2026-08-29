@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, GraduationCap, School, Check, Search, Sparkles } from 'lucide-react';
+import { X, GraduationCap, School, Check, Search } from 'lucide-react';
 import { ClassInfo, Language } from '../types/schedule';
 
 interface ClassSelectorModalProps {
@@ -66,16 +66,19 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
           className="relative w-full max-w-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 rounded-3xl shadow-2xl p-5 sm:p-7 z-10 my-auto max-h-[90vh] overflow-y-auto"
         >
           
-          {/* Header */}
-          <div className="flex items-start justify-between gap-4 mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-rose-500 text-white flex items-center justify-center shadow-md shadow-rose-500/20 shrink-0">
-                <School className="w-6 h-6" />
+          {/* Header with Official TIS Logo */}
+          <div className="flex items-start justify-between gap-4 mb-5">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 p-1 shadow-sm border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center shrink-0 overflow-hidden">
+                <img 
+                  src="/tis-logo.png" 
+                  alt="TIS Logo" 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
-                <div className="inline-flex items-center gap-1 text-[11px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-0.5">
-                  <Sparkles className="w-3 h-3" />
-                  <span>{language === 'vi' ? 'Thời Khóa Biểu Toàn Trường' : 'Universal School Schedule'}</span>
+                <div className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-0.5">
+                  The International School • TIS
                 </div>
                 <h3 className="font-display font-extrabold text-xl sm:text-2xl text-slate-900 dark:text-slate-100">
                   {language === 'vi' ? 'Chọn Lớp Học Của Bạn' : 'Select Your Class'}

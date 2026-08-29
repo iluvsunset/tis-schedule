@@ -324,6 +324,16 @@ export function parseSheetCSV(csvText: string, targetClassId: string = '11-tn'):
     const morningItems: ScheduleItem[] = [];
     const afternoonItems: ScheduleItem[] = [];
 
+    // Pre-scan day rows for whole-day holidays (e.g. Nghỉ Lễ 2/9)
+    let dayHolidayText = '';
+    for (let r = startRow + 1; r < nextDayStartRow; r++) {
+      const found = rows[r].find(c => /nghỉ lễ/i.test(c || ''));
+      if (found) {
+        dayHolidayText = found;
+        break;
+      }
+    }
+
     for (let r = startRow + 1; r < nextDayStartRow; r++) {
       const row = rows[r];
       const sessionText = (row[1] || '').toUpperCase();
@@ -334,8 +344,10 @@ export function parseSheetCSV(csvText: string, targetClassId: string = '11-tn'):
 
       let cellValue = (row[gradeCol] || '').trim();
 
-      // Check if merged whole-school row
-      if (!cellValue) {
+      // If whole day is a holiday, propagate holiday to all periods
+      if (dayHolidayText) {
+        cellValue = dayHolidayText;
+      } else if (!cellValue) {
         const wholeSchoolEvent = row.slice(4).find(c => {
           const u = (c || '').toUpperCase();
           return u.includes('NGHỈ LỄ') || u.includes('KHAI GIẢNG') || u.includes('REHEARSAL');

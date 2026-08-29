@@ -57,9 +57,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     : `${dayData.dayNameEn} • ${dayData.date}`;
 
   // Check if this entire day is a National Holiday (e.g. Nghỉ Lễ 2/9)
-  const isAllDayHoliday = dayData.morning.length > 0 && 
-    dayData.morning.every(i => i.subjectVi.toLowerCase().includes('nghỉ lễ') || i.type === 'break') &&
-    dayData.afternoon.every(i => i.subjectVi.toLowerCase().includes('nghỉ lễ') || i.type === 'break');
+  const isAllDayHoliday = 
+    dayData.morning.some(i => i.subjectVi.toLowerCase().includes('nghỉ lễ') || (i.note && i.note.toLowerCase().includes('nghỉ lễ'))) ||
+    dayData.afternoon.some(i => i.subjectVi.toLowerCase().includes('nghỉ lễ') || (i.note && i.note.toLowerCase().includes('nghỉ lễ'))) ||
+    (dayData.date && (dayData.date.startsWith('31/8') || dayData.date.startsWith('1/9') || dayData.date.startsWith('01/9') || dayData.date.startsWith('2/9') || dayData.date.startsWith('02/9')));
 
   const totalPeriods = dayData.morning.filter(i => i.type !== 'break').length + dayData.afternoon.filter(i => i.type !== 'break').length;
 

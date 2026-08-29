@@ -299,7 +299,7 @@ export const LunchIcon: React.FC<CustomIconProps> = ({ className = "w-4 h-4", si
 );
 
 /**
- * 13. Event Icon
+ * 13. Event Icon: Minimalist, luxury, elegant 1-stroke celestial star (no solid background)
  */
 export const EventIcon: React.FC<CustomIconProps> = ({ className = "w-6 h-6", size }) => (
   <svg 
@@ -310,13 +310,30 @@ export const EventIcon: React.FC<CustomIconProps> = ({ className = "w-6 h-6", si
     style={size ? { width: size, height: size } : undefined}
   >
     <defs>
-      <linearGradient id="eventGrad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#e879f9" />
-        <stop offset="1" stopColor="#a21caf" />
+      <linearGradient id="luxuryEventStroke" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#f472b6" />
+        <stop offset="0.5" stopColor="#d946ef" />
+        <stop offset="1" stopColor="#a855f7" />
       </linearGradient>
     </defs>
-    <rect x="2" y="2" width="32" height="32" rx="10" fill="url(#eventGrad)" stroke="rgba(255,255,255,0.4)" strokeWidth="1" />
-    <path d="M18 8L20.8 14.2L27.5 14.8L22.5 19.3L24.1 26L18 22.5L11.9 26L13.5 19.3L8.5 14.8L15.2 14.2L18 8Z" fill="#ffffff" fillOpacity="0.3" stroke="#ffffff" strokeWidth="2" strokeLinejoin="round" />
+    {/* Elegant 4-point luxury star emblem in 1 clean stroke */}
+    <path 
+      d="M18 3.5C18 11.5 11.5 18 3.5 18C11.5 18 18 24.5 18 32.5C18 24.5 24.5 18 32.5 18C24.5 18 18 11.5 18 3.5Z" 
+      stroke="url(#luxuryEventStroke)" 
+      strokeWidth="1.8" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+    />
+    {/* Subtle companion sparkle */}
+    <path 
+      d="M28 5.5C28 7.8 26.2 9.5 24 9.5C26.2 9.5 28 11.2 28 13.5C28 11.2 29.8 9.5 32 9.5C29.8 9.5 28 7.8 28 5.5Z" 
+      stroke="url(#luxuryEventStroke)" 
+      strokeWidth="1.4" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+    />
+    {/* Center luxury gemstone diamond dot */}
+    <circle cx="18" cy="18" r="1.75" stroke="url(#luxuryEventStroke)" strokeWidth="1.4" />
   </svg>
 );
 

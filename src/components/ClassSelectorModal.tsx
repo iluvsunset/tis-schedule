@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, GraduationCap, School, Check, Search } from 'lucide-react';
+import { X, GraduationCap, School, Search } from 'lucide-react';
 import { ClassInfo, Language } from '../types/schedule';
 
 interface ClassSelectorModalProps {
@@ -12,6 +12,48 @@ interface ClassSelectorModalProps {
   language: Language;
   allowClose?: boolean;
 }
+
+/**
+ * Minimalist luxury 1-stroke animated SVG checkmark
+ */
+const LuxuryAnimatedCheckmark: React.FC = () => (
+  <motion.div
+    initial={{ scale: 0.5, opacity: 0 }}
+    animate={{ scale: [0.5, 1.08, 1], opacity: 1 }}
+    exit={{ scale: 0.5, opacity: 0 }}
+    transition={{ duration: 0.35, ease: "easeOut" }}
+    className="w-7 h-7 rounded-full bg-emerald-500/20 dark:bg-emerald-400/20 border border-emerald-400/60 dark:border-emerald-400/70 flex items-center justify-center shrink-0 shadow-xs"
+  >
+    <svg 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg" 
+      className="w-4 h-4 text-emerald-400 dark:text-emerald-300"
+    >
+      <motion.circle
+        cx="12"
+        cy="12"
+        r="9"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 1 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+      />
+      <motion.path
+        d="M7.5 12.3L10.5 15.3L16.5 8.8"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 1 }}
+        transition={{ duration: 0.25, delay: 0.1, ease: "easeOut" }}
+      />
+    </svg>
+  </motion.div>
+);
 
 export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
   isOpen,
@@ -104,7 +146,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={language === 'vi' ? "Tìm theo tên lớp, phòng học, giáo viên..." : "Search by class, room, teacher..."}
-              className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 outline-none focus:border-amber-500 transition"
+              className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 outline-none focus:border-slate-400 dark:focus:border-slate-500 transition"
             />
           </div>
 
@@ -131,8 +173,8 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                         onClick={() => handleChoose(c.id)}
                         className={`p-3.5 rounded-2xl border text-left transition-all relative flex items-center justify-between gap-3 cursor-pointer ${
                           isSelected
-                            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white shadow-lg ring-2 ring-emerald-400/40'
-                            : 'bg-slate-50/70 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200/80 dark:border-slate-700/80 text-slate-800 dark:text-slate-200'
+                            ? 'bg-slate-900 dark:bg-slate-800 text-white border-slate-900 dark:border-slate-700 shadow-md ring-1 ring-emerald-400/40'
+                            : 'bg-white dark:bg-slate-850/60 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200/90 dark:border-slate-750 text-slate-900 dark:text-slate-100 shadow-2xs'
                         }`}
                       >
                         <div className="min-w-0 flex-1">
@@ -140,24 +182,20 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                             <span className="font-display font-extrabold text-base">
                               {language === 'vi' ? c.nameVi : c.nameEn}
                             </span>
-                            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md ${
+                            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${
                               isSelected
-                                ? 'bg-white/20 dark:bg-slate-900/20 text-white dark:text-slate-900 font-bold'
-                                : 'bg-slate-200/80 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300'
+                                ? 'bg-white/15 text-white border-white/20 font-bold'
+                                : 'bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
                             }`}>
                               Phòng {c.room}
                             </span>
                           </div>
-                          <div className={`text-xs mt-0.5 truncate ${isSelected ? 'opacity-85' : 'text-slate-400 dark:text-slate-500'}`}>
+                          <div className={`text-xs mt-0.5 truncate ${isSelected ? 'text-slate-300' : 'text-slate-400 dark:text-slate-500'}`}>
                             GVQN: {c.homeroomTeacher}
                           </div>
                         </div>
 
-                        {isSelected && (
-                          <div className="w-7 h-7 rounded-full bg-emerald-400 text-slate-950 flex items-center justify-center shrink-0 font-bold shadow-sm">
-                            <Check className="w-4 h-4" />
-                          </div>
-                        )}
+                        {isSelected && <LuxuryAnimatedCheckmark />}
                       </motion.button>
                     );
                   })}
@@ -185,8 +223,8 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                         onClick={() => handleChoose(c.id)}
                         className={`p-3.5 rounded-2xl border text-left transition-all relative flex items-center justify-between gap-3 cursor-pointer ${
                           isSelected
-                            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white shadow-lg ring-2 ring-emerald-400/40'
-                            : 'bg-slate-50/70 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200/80 dark:border-slate-700/80 text-slate-800 dark:text-slate-200'
+                            ? 'bg-slate-900 dark:bg-slate-800 text-white border-slate-900 dark:border-slate-700 shadow-md ring-1 ring-emerald-400/40'
+                            : 'bg-white dark:bg-slate-850/60 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200/90 dark:border-slate-750 text-slate-900 dark:text-slate-100 shadow-2xs'
                         }`}
                       >
                         <div className="min-w-0 flex-1">
@@ -194,24 +232,20 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                             <span className="font-display font-extrabold text-base">
                               {language === 'vi' ? c.nameVi : c.nameEn}
                             </span>
-                            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md ${
+                            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${
                               isSelected
-                                ? 'bg-white/20 dark:bg-slate-900/20 text-white dark:text-slate-900 font-bold'
-                                : 'bg-slate-200/80 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300'
+                                ? 'bg-white/15 text-white border-white/20 font-bold'
+                                : 'bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
                             }`}>
                               Phòng {c.room}
                             </span>
                           </div>
-                          <div className={`text-xs mt-0.5 truncate ${isSelected ? 'opacity-85' : 'text-slate-400 dark:text-slate-500'}`}>
+                          <div className={`text-xs mt-0.5 truncate ${isSelected ? 'text-slate-300' : 'text-slate-400 dark:text-slate-500'}`}>
                             GVQN: {c.homeroomTeacher}
                           </div>
                         </div>
 
-                        {isSelected && (
-                          <div className="w-7 h-7 rounded-full bg-emerald-400 text-slate-950 flex items-center justify-center shrink-0 font-bold shadow-sm">
-                            <Check className="w-4 h-4" />
-                          </div>
-                        )}
+                        {isSelected && <LuxuryAnimatedCheckmark />}
                       </motion.button>
                     );
                   })}

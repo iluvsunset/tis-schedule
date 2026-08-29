@@ -9,7 +9,7 @@ import { WeeklyMatrixView } from './components/WeeklyMatrixView';
 import { TeacherModal } from './components/TeacherModal';
 import { NotificationPermissionModal } from './components/NotificationPermissionModal';
 import { IPhoneInstallGuideModal } from './components/IPhoneInstallGuideModal';
-import { getVietnamTime, VietnamTimeInfo } from './utils/vietnamTime';
+import { getVietnamTime, VietnamTimeInfo, getDateStatus } from './utils/vietnamTime';
 import { useParallaxMouse } from './hooks/useParallaxMouse';
 import { checkAndTriggerEveningReminder } from './utils/notificationService';
 
@@ -41,12 +41,16 @@ export const App: React.FC = () => {
   useEffect(() => {
     const currentVn = getVietnamTime();
     setVnTime(currentVn);
-    if (currentVn.dayOfWeek >= 1 && currentVn.dayOfWeek <= 5) {
-      const map: Record<number, DayKey> = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
-      setSelectedDay(map[currentVn.dayOfWeek]);
+    
+    // Check if today matches any date in current week schedule
+    const todayInSchedule = scheduleData.weekSchedule.find(d => getDateStatus(d.date, currentVn.dateStr) === 'today');
+    if (todayInSchedule) {
+      setSelectedDay(todayInSchedule.dayKey);
+    } else {
+      setSelectedDay('mon');
     }
     handleSyncLive();
-  }, [handleSyncLive]);
+  }, [handleSyncLive, scheduleData.weekSchedule]);
 
   // Update root data-theme attribute & auto-detect device dark mode
   useEffect(() => {

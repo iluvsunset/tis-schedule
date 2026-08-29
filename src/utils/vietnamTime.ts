@@ -12,6 +12,22 @@ export interface VietnamTimeInfo {
   dayNameEn: string;
 }
 
+export function parseVnDateToTimestamp(dStr: string): number {
+  if (!dStr) return 0;
+  const parts = dStr.split(/[\/\-]/).map(s => parseInt(s.trim(), 10));
+  const day = parts[0];
+  const month = parts[1];
+  const year = parts[2] ? (parts[2] < 100 ? 2000 + parts[2] : parts[2]) : new Date().getFullYear();
+  return new Date(year, month - 1, day, 0, 0, 0, 0).getTime();
+}
+
+export function getDateStatus(scheduleDateStr: string, todayDateStr: string): 'past' | 'today' | 'future' {
+  const scTime = parseVnDateToTimestamp(scheduleDateStr);
+  const tdTime = parseVnDateToTimestamp(todayDateStr);
+  if (scTime === tdTime) return 'today';
+  return scTime < tdTime ? 'past' : 'future';
+}
+
 export function getVietnamTime(): VietnamTimeInfo {
   const now = new Date();
   

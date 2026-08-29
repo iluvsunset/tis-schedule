@@ -645,56 +645,8 @@ export const SCHEDULE_DATA: ScheduleData = {
       morning: [
         {
           period: 1,
-          time: "08:00 - 08:45",
+          time: "08:00 - 11:30",
           startTime: "08:00",
-          endTime: "08:45",
-          subjectVi: "Lễ Khai Giảng Năm Học 2026 - 2027",
-          subjectEn: "School Year Opening Ceremony",
-          teacher: "Toàn Trường (All School)",
-          type: "event",
-          room: "Hội trường / Sân trường",
-          note: "LỄ KHAI GIẢNG NĂM HỌC 2026 - 2027"
-        },
-        {
-          period: 2,
-          time: "08:50 - 09:35",
-          startTime: "08:50",
-          endTime: "09:35",
-          subjectVi: "Lễ Khai Giảng Năm Học 2026 - 2027",
-          subjectEn: "School Year Opening Ceremony",
-          teacher: "Toàn Trường (All School)",
-          type: "event",
-          room: "Hội trường / Sân trường",
-          note: "LỄ KHAI GIẢNG NĂM HỌC 2026 - 2027"
-        },
-        {
-          period: "recess",
-          time: "09:35 - 09:55",
-          startTime: "09:35",
-          endTime: "09:55",
-          subjectVi: "Ra chơi sáng",
-          subjectEn: "Morning Recess",
-          teacher: "",
-          type: "break",
-          room: "",
-          note: "20 phút giải lao"
-        },
-        {
-          period: 3,
-          time: "09:55 - 10:40",
-          startTime: "09:55",
-          endTime: "10:40",
-          subjectVi: "Lễ Khai Giảng Năm Học 2026 - 2027",
-          subjectEn: "School Year Opening Ceremony",
-          teacher: "Toàn Trường (All School)",
-          type: "event",
-          room: "Hội trường / Sân trường",
-          note: "LỄ KHAI GIẢNG NĂM HỌC 2026 - 2027"
-        },
-        {
-          period: 4,
-          time: "10:45 - 11:30",
-          startTime: "10:45",
           endTime: "11:30",
           subjectVi: "Lễ Khai Giảng Năm Học 2026 - 2027",
           subjectEn: "School Year Opening Ceremony",

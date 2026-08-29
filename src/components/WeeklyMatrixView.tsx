@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Printer } from 'lucide-react';
-import { Language, DayKey } from '../types/schedule';
+import { Language } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
-import { VietnamTimeInfo } from '../utils/vietnamTime';
+import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { RecessIcon, LunchIcon } from './CustomSubjectIcons';
 
 interface WeeklyMatrixViewProps {
@@ -33,8 +33,6 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
   ];
 
   const days = SCHEDULE_DATA.weekSchedule;
-  const dayKeyToNum: Record<DayKey, number> = { mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
-  const currentDayNum = vnTime.dayOfWeek;
 
   return (
     <motion.div 
@@ -71,9 +69,9 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
               {language === 'vi' ? 'Tiết / Giờ' : 'Period'}
             </th>
             {days.map((d) => {
-              const isToday = dayKeyToNum[d.dayKey] === currentDayNum;
+              const isToday = getDateStatus(d.date, vnTime.dateStr) === 'today';
               return (
-                <th key={d.dayKey} className={`p-1.5 font-bold w-1/5 ${isToday ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-t-xl' : 'text-slate-700 dark:text-slate-300'}`}>
+                <th key={d.dayKey} className={`p-1.5 font-bold ${isToday ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-t-xl' : 'text-slate-700 dark:text-slate-300'}`}>
                   <div className="flex items-center gap-1">
                     <span>{language === 'vi' ? d.dayNameVi : d.dayNameEn}</span>
                     <span className="text-[10px] font-normal text-slate-400">({d.date.slice(0, 5)})</span>
@@ -96,7 +94,7 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                   <td className="p-1 font-mono text-[10px] text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
                     11:30 - 13:30
                   </td>
-                  <td colSpan={5} className="p-1 text-center text-[11px] tracking-wide">
+                  <td colSpan={days.length} className="p-1 text-center text-[11px] tracking-wide">
                     <div className="flex items-center justify-center gap-1.5">
                       <LunchIcon className="w-3.5 h-3.5" />
                       <span>{language === 'vi' ? 'NGHỈ TRƯA & DÙNG BỮA' : 'LUNCH BREAK & REST'}</span>
@@ -112,7 +110,7 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                   <td className="p-1 font-mono text-[10px] text-center whitespace-nowrap">
                     {row.time.split(' - ')[0]}
                   </td>
-                  <td colSpan={5} className="p-1 text-center text-[10px] italic text-slate-400 dark:text-slate-400">
+                  <td colSpan={days.length} className="p-1 text-center text-[10px] italic text-slate-400 dark:text-slate-400">
                     <div className="flex items-center justify-center gap-1.5">
                       <RecessIcon className="w-3.5 h-3.5" />
                       <span>{language === 'vi' ? 'Ra chơi giải lao' : 'Recess'}</span>
@@ -138,9 +136,9 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                 </td>
 
                 {days.map((day) => {
-                  const dayNum = dayKeyToNum[day.dayKey];
-                  const isToday = dayNum === currentDayNum;
-                  const isPastDay = currentDayNum >= 1 && currentDayNum <= 5 ? dayNum < currentDayNum : false;
+                  const dateStatus = getDateStatus(day.date, vnTime.dateStr);
+                  const isToday = dateStatus === 'today';
+                  const isPastDay = dateStatus === 'past';
 
                   let isCurrent = false;
                   let isPast = false;

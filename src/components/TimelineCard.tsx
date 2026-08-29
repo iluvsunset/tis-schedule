@@ -85,9 +85,9 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({
       {/* Left: Vibrant Icon, Subject & Teacher */}
       <div className="flex items-center gap-3 sm:gap-3.5 min-w-0 flex-1 relative z-10">
         
-        {/* Vibrant Custom Illustrated Subject Icon */}
-        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm overflow-hidden transform group-hover:scale-105 transition-transform">
-          <CustomSubjectIcon type={item.type} className="w-11 h-11 sm:w-12 sm:h-12" />
+        {/* Minimalist Luxury 1-Stroke Subject Icon */}
+        <div className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center shrink-0 transform group-hover:scale-110 transition-transform">
+          <CustomSubjectIcon type={item.type} className="w-8 h-8 sm:w-9 sm:h-9" />
         </div>
 
         <div className="min-w-0 flex-1">

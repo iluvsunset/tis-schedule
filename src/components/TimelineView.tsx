@@ -5,7 +5,7 @@ import { DayKey, Language, ScheduleItem, ScheduleData } from '../types/schedule'
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { TimelineCard } from './TimelineCard';
-import { RecessIcon, LunchIcon } from './CustomSubjectIcons';
+import { RecessIcon, LunchIcon, VietnamHolidayEmblem } from './CustomSubjectIcons';
 
 interface TimelineViewProps {
   selectedDay: DayKey;
@@ -142,8 +142,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
           animate={{ opacity: 1, scale: 1 }}
           className="glass-card rounded-3xl p-6 sm:p-10 border border-rose-200/80 dark:border-rose-900/40 bg-gradient-to-br from-rose-500/10 via-amber-500/5 to-transparent text-center space-y-4 shadow-sm"
         >
-          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-gradient-to-tr from-rose-500 to-amber-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/20 text-3xl sm:text-4xl">
-            🇻🇳
+          <div className="flex items-center justify-center">
+            <VietnamHolidayEmblem className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-sm transform hover:scale-105 transition-transform" />
           </div>
           <div className="space-y-1.5">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-bold uppercase tracking-wider">

@@ -37,7 +37,7 @@ export const WeekSelectorButton: React.FC<WeekSelectorProps> = ({
   if (!availableWeeks || availableWeeks.length <= 1) return null;
 
   return (
-    <div className="relative inline-block no-print" ref={dropdownRef}>
+    <div className={`relative inline-block no-print ${isOpen ? 'z-50' : 'z-30'}`} ref={dropdownRef}>
       <motion.button
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
@@ -57,7 +57,7 @@ export const WeekSelectorButton: React.FC<WeekSelectorProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: -4 }}
             transition={{ type: "spring", stiffness: 450, damping: 30 }}
-            className="absolute right-0 top-full mt-1.5 w-44 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xl p-1.5 space-y-0.5 ring-1 ring-black/5"
+            className="absolute right-0 top-full mt-1.5 w-44 z-[100] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-2xl p-1.5 space-y-0.5 ring-1 ring-black/10"
           >
             <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2 py-1">
               {language === 'vi' ? 'Danh Sách Tuần' : 'School Weeks'}

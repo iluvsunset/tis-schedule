@@ -110,15 +110,15 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   })();
 
   return (
-    <div className="space-y-3 sm:space-y-4">
+    <div className="space-y-3 sm:space-y-4 relative z-20">
       
-      {/* Day Header Bar */}
+      {/* Day Header Bar with high z-index for floating dropdown */}
       <motion.div 
         key={`header-${selectedDay}`}
         initial={{ opacity: 0, y: -6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="glass-card rounded-2xl px-4 py-2 sm:px-4.5 sm:py-2.5 shadow-2xs flex items-center justify-between"
+        className="glass-card rounded-2xl px-4 py-2 sm:px-4.5 sm:py-2.5 shadow-2xs flex items-center justify-between relative z-40"
       >
         <div className="flex items-center gap-2 sm:gap-2.5">
           <Calendar className="w-4 h-4 text-slate-600 dark:text-slate-400" />

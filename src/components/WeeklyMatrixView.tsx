@@ -50,10 +50,10 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.99 }}
       transition={{ duration: 0.25 }}
-      className="glass-card rounded-2xl p-2.5 sm:p-3.5 shadow-soft overflow-x-auto border border-slate-200/80 dark:border-slate-800"
+      className="glass-card rounded-2xl p-2.5 sm:p-3.5 shadow-soft border border-slate-200/80 dark:border-slate-800 relative z-20"
     >
-      {/* Top Header Bar */}
-      <div className="flex items-center justify-between mb-2.5">
+      {/* Top Header Bar with high z-index for floating dropdown */}
+      <div className="flex items-center justify-between mb-2.5 relative z-40">
         <div className="flex items-center gap-2">
           <h2 className="text-xs sm:text-sm font-display font-bold text-slate-900 dark:text-slate-100">
             {language === 'vi' 
@@ -85,8 +85,9 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
         </div>
       </div>
 
-      {/* Weekly Matrix Table */}
-      <table className="w-full min-w-[700px] border-collapse text-xs">
+      {/* Weekly Matrix Table Scroll Container */}
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[700px] border-collapse text-xs">
         <thead>
           <tr className="text-left bg-slate-50/90 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700">
             <th className="p-1.5 font-bold text-slate-600 dark:text-slate-300 rounded-l-xl w-20 text-center">
@@ -229,6 +230,7 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
           })}
         </tbody>
       </table>
+      </div>
     </motion.div>
   );
 };

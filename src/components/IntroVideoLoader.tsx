@@ -11,30 +11,41 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
 
   const handleFinish = () => {
     setIsVisible(false);
-    setTimeout(onComplete, 350);
+    setTimeout(onComplete, 300);
   };
 
   useEffect(() => {
     const video = videoRef.current;
-    if (video) {
-      video.muted = true;
-      video.defaultMuted = true;
-      video.playsInline = true;
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Autoplay fallback: immediately proceed if policy blocked
-          setTimeout(handleFinish, 1200);
+    if (!video) return;
+
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('webkit-playsinline', 'true');
+
+    const startPlayback = () => {
+      const p = video.play();
+      if (p !== undefined) {
+        p.catch((err) => {
+          console.warn("Video autoplay pending:", err);
         });
       }
+    };
+
+    if (video.readyState >= 2) {
+      startPlayback();
+    } else {
+      video.addEventListener('loadedmetadata', startPlayback, { once: true });
+      video.addEventListener('canplay', startPlayback, { once: true });
     }
 
-    // Fast mobile failsafe (4.5s max duration)
-    const failsafe = setTimeout(() => {
+    // Safety timeout (5.5s) to guarantee app entry if video stalls
+    const timeout = setTimeout(() => {
       handleFinish();
-    }, 4500);
+    }, 5500);
 
-    return () => clearTimeout(failsafe);
+    return () => clearTimeout(timeout);
   }, []);
 
   return (
@@ -43,24 +54,21 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.35, ease: "easeInOut" }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
           className="fixed inset-0 z-[9999] bg-white flex items-center justify-center overflow-hidden cursor-pointer select-none"
           onClick={handleFinish}
         >
           <video
             ref={videoRef}
-            poster="/tis-intro-poster.webp"
+            src="/The_International_School_Logo_mobile.mp4"
             autoPlay
             muted
             playsInline
             preload="auto"
             onEnded={handleFinish}
             onError={handleFinish}
-            className="w-full h-full object-contain sm:object-cover"
-          >
-            <source src="/The_International_School_Logo_mobile.mp4" type="video/mp4" />
-            <source src="/The_International_School_Logo.mp4" type="video/mp4" />
-          </video>
+            className="w-full h-full object-contain"
+          />
         </motion.div>
       )}
     </AnimatePresence>

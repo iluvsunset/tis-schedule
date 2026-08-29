@@ -8,6 +8,7 @@ import { TimelineView } from './components/TimelineView';
 import { WeeklyMatrixView } from './components/WeeklyMatrixView';
 import { TeacherModal } from './components/TeacherModal';
 import { ClassSelectorModal } from './components/ClassSelectorModal';
+import { IntroVideoLoader } from './components/IntroVideoLoader';
 import { NotificationPermissionModal } from './components/NotificationPermissionModal';
 import { IPhoneInstallGuideModal } from './components/IPhoneInstallGuideModal';
 import { getVietnamTime, VietnamTimeInfo, getDateStatus } from './utils/vietnamTime';
@@ -25,6 +26,11 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [vnTime, setVnTime] = useState<VietnamTimeInfo>(getVietnamTime());
   
+  // Cinematic Intro Video Loader (plays on first access)
+  const [showIntroVideo, setShowIntroVideo] = useState<boolean>(() => {
+    return !sessionStorage.getItem('tis_intro_seen');
+  });
+
   // Universal Class & Multi-Week State
   const [selectedClassId, setSelectedClassId] = useState<string>(() => {
     return localStorage.getItem('tis_selected_class_id') || '11-tn';
@@ -37,6 +43,11 @@ export const App: React.FC = () => {
   const [selectedWeekGid, setSelectedWeekGid] = useState<string>('');
 
   const mouse = useParallaxMouse();
+
+  const handleIntroComplete = () => {
+    sessionStorage.setItem('tis_intro_seen', 'true');
+    setShowIntroVideo(false);
+  };
 
   // 1. Initialize day, load weeks & fetch schedule on startup
   useEffect(() => {
@@ -129,6 +140,11 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen relative text-slate-900 dark:text-slate-100 selection:bg-slate-900 selection:text-white dark:selection:bg-white dark:selection:text-slate-900 transition-colors duration-300 font-sans flex flex-col justify-between overflow-x-hidden">
       
+      {/* Cinematic First-Access Video Intro / Loading Screen */}
+      {showIntroVideo && (
+        <IntroVideoLoader onComplete={handleIntroComplete} />
+      )}
+
       {/* Non-intrusive First-Time Notification Permission & Install Prompt */}
       <NotificationPermissionModal language={language} />
 

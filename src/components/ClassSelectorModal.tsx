@@ -104,7 +104,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={allowClose ? onClose : undefined}
-          className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
+          className="fixed inset-0 bg-slate-950/75 backdrop-blur-md"
         />
 
         {/* Modal Window */}
@@ -113,13 +113,13 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.92, y: 15 }}
           transition={{ type: "spring", damping: 26, stiffness: 420 }}
-          className="relative w-full max-w-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 rounded-3xl shadow-2xl p-5 sm:p-7 z-10 my-auto max-h-[90vh] overflow-y-auto"
+          className="relative w-full max-w-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-5 sm:p-7 z-10 my-auto max-h-[90vh] overflow-y-auto"
         >
           
           {/* Header with Official TIS Logo */}
           <div className="flex items-start justify-between gap-4 mb-5">
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 p-1 shadow-sm border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center shrink-0 overflow-hidden">
+              <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 p-1 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 overflow-hidden">
                 <img 
                   src="/tis-logo.png" 
                   alt="TIS Logo" 
@@ -154,7 +154,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={language === 'vi' ? "Tìm theo tên lớp, phòng học, giáo viên..." : "Search by class, room, teacher..."}
-              className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 outline-none focus:border-slate-400 dark:focus:border-slate-500 transition"
+              className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 outline-none focus:border-slate-400 dark:focus:border-slate-500 transition"
             />
           </div>
 
@@ -181,24 +181,24 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                         onClick={() => handleChoose(c.id)}
                         className={`p-3.5 rounded-2xl border text-left transition-all relative flex items-center justify-between gap-3 cursor-pointer ${
                           isSelected
-                            ? 'bg-slate-900 dark:bg-slate-800 text-white border-slate-900 dark:border-slate-700 shadow-md ring-1 ring-emerald-400/40'
-                            : 'bg-white dark:bg-slate-850/60 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200/90 dark:border-slate-750 text-slate-900 dark:text-slate-100 shadow-2xs'
+                            ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-slate-900 dark:border-emerald-500/70 shadow-md ring-1 ring-emerald-400/40'
+                            : 'bg-slate-100/80 hover:bg-slate-200/70 dark:bg-slate-800/70 dark:hover:bg-slate-800 border-slate-200/90 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 shadow-2xs'
                         }`}
                       >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-display font-extrabold text-base">
+                            <span className={`font-display font-extrabold text-base ${isSelected ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>
                               {language === 'vi' ? c.nameVi : c.nameEn}
                             </span>
                             <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${
                               isSelected
                                 ? 'bg-white/15 text-white border-white/20 font-bold'
-                                : 'bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
+                                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'
                             }`}>
                               Phòng {c.room}
                             </span>
                           </div>
-                          <div className={`text-xs mt-0.5 truncate ${isSelected ? 'text-slate-300' : 'text-slate-400 dark:text-slate-500'}`}>
+                          <div className={`text-xs mt-0.5 truncate ${isSelected ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>
                             GVQN: {c.homeroomTeacher}
                           </div>
                         </div>
@@ -231,24 +231,24 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                         onClick={() => handleChoose(c.id)}
                         className={`p-3.5 rounded-2xl border text-left transition-all relative flex items-center justify-between gap-3 cursor-pointer ${
                           isSelected
-                            ? 'bg-slate-900 dark:bg-slate-800 text-white border-slate-900 dark:border-slate-700 shadow-md ring-1 ring-emerald-400/40'
-                            : 'bg-white dark:bg-slate-850/60 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200/90 dark:border-slate-750 text-slate-900 dark:text-slate-100 shadow-2xs'
+                            ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-slate-900 dark:border-emerald-500/70 shadow-md ring-1 ring-emerald-400/40'
+                            : 'bg-slate-100/80 hover:bg-slate-200/70 dark:bg-slate-800/70 dark:hover:bg-slate-800 border-slate-200/90 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 shadow-2xs'
                         }`}
                       >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-display font-extrabold text-base">
+                            <span className={`font-display font-extrabold text-base ${isSelected ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>
                               {language === 'vi' ? c.nameVi : c.nameEn}
                             </span>
                             <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${
                               isSelected
                                 ? 'bg-white/15 text-white border-white/20 font-bold'
-                                : 'bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
+                                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'
                             }`}>
                               Phòng {c.room}
                             </span>
                           </div>
-                          <div className={`text-xs mt-0.5 truncate ${isSelected ? 'text-slate-300' : 'text-slate-400 dark:text-slate-500'}`}>
+                          <div className={`text-xs mt-0.5 truncate ${isSelected ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>
                             GVQN: {c.homeroomTeacher}
                           </div>
                         </div>

@@ -14,10 +14,9 @@ import {
   Moon, 
   Laptop,
   ChevronDown,
-  Calendar,
   School
 } from 'lucide-react';
-import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, WeekTabInfo } from '../types/schedule';
+import { Language, ThemeKey, ViewMode, DayKey, ScheduleData } from '../types/schedule';
 import { exportScheduleToICS } from '../utils/icsExport';
 import { VietnamTimeInfo } from '../utils/vietnamTime';
 import { SCHEDULE_DATA } from '../data/scheduleData';
@@ -44,9 +43,6 @@ interface NavbarProps {
   onOpenTeacherModal: () => void;
   onOpenClassModal?: () => void;
   scheduleData?: ScheduleData;
-  availableWeeks?: WeekTabInfo[];
-  selectedWeekGid?: string;
-  onSelectWeek?: (gid: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -63,19 +59,14 @@ export const Navbar: React.FC<NavbarProps> = ({
   onViewModeChange,
   onOpenTeacherModal,
   onOpenClassModal,
-  scheduleData,
-  availableWeeks = [],
-  selectedWeekGid,
-  onSelectWeek
+  scheduleData
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isWeekDropdownOpen, setIsWeekDropdownOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
   const [notifActive, setNotifActive] = useState(isNotificationEnabled());
   const [testCountdown, setTestCountdown] = useState<number | null>(null);
   const countdownIntervalRef = useRef<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const weekRef = useRef<HTMLDivElement>(null);
 
   const days = (scheduleData || SCHEDULE_DATA).weekSchedule;
   const currentClassName = language === 'vi' 
@@ -83,9 +74,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     : (scheduleData?.gradeTitleEn || 'Grade 11-TN');
   const currentRoom = scheduleData?.room || '504';
   const currentTeacher = scheduleData?.homeroomTeacher?.name || 'Cô Tiềng';
-
-  const activeWeekObj = availableWeeks.find(w => w.gid === selectedWeekGid) || availableWeeks[availableWeeks.length - 1];
-  const activeWeekName = activeWeekObj?.name || 'Tuần 5/8';
 
   const dayLabelsVi: Record<DayKey, string> = { mon: 'T2', tue: 'T3', wed: 'T4', thu: 'T5', fri: 'T6', sat: 'T7' };
   const dayLabelsEn: Record<DayKey, string> = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat' };
@@ -147,14 +135,10 @@ export const Navbar: React.FC<NavbarProps> = ({
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false);
       }
-      if (weekRef.current && !weekRef.current.contains(event.target as Node)) {
-        setIsWeekDropdownOpen(false);
-      }
     };
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setIsMenuOpen(false);
-        setIsWeekDropdownOpen(false);
       }
     };
 
@@ -227,120 +211,59 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Center: Week Selector & Day / Week Tabs */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          
-          {/* Week Dropdown Selector */}
-          {availableWeeks.length > 0 && onSelectWeek && (
-            <div className="relative shrink-0" ref={weekRef}>
-              <motion.button
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => setIsWeekDropdownOpen(!isWeekDropdownOpen)}
-                className="px-2.5 py-1 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                title="Chọn tuần học"
+        {/* Center: Unified Day & Week Tabs */}
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 overflow-x-auto max-w-full relative">
+          {days.map((d) => {
+            const isSelected = viewMode === 'timeline' && selectedDay === d.dayKey;
+            const label = language === 'vi' ? dayLabelsVi[d.dayKey] : dayLabelsEn[d.dayKey];
+            const dateStr = d.date.split('/')[0] + '/' + d.date.split('/')[1];
+
+            return (
+              <button
+                key={d.dayKey}
+                onClick={() => {
+                  onSelectDay(d.dayKey);
+                  onViewModeChange('timeline');
+                }}
+                className={`relative px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 whitespace-nowrap z-10 ${
+                  isSelected 
+                    ? 'text-white dark:text-slate-900' 
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
               >
-                <Calendar className="w-3.5 h-3.5 text-amber-500" />
-                <span>{activeWeekName}</span>
-                <ChevronDown className={`w-3 h-3 transition-transform ${isWeekDropdownOpen ? 'rotate-180' : ''}`} />
-              </motion.button>
-
-              <AnimatePresence>
-                {isWeekDropdownOpen && (
+                {isSelected && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: -6 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: -6 }}
-                    className="absolute left-0 top-full mt-1.5 w-44 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-1.5 z-[100] space-y-1"
-                  >
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 py-1">
-                      {language === 'vi' ? 'Danh Sách Tuần' : 'School Weeks'}
-                    </div>
-                    {availableWeeks.slice().reverse().map((w) => {
-                      const isSelected = w.gid === selectedWeekGid || (!selectedWeekGid && w.isLatest);
-                      return (
-                        <button
-                          key={w.gid}
-                          onClick={() => {
-                            onSelectWeek(w.gid);
-                            setIsWeekDropdownOpen(false);
-                          }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center justify-between cursor-pointer ${
-                            isSelected
-                              ? 'bg-amber-500 text-slate-950 font-black shadow-xs'
-                              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                          }`}
-                        >
-                          <span>{w.name}</span>
-                          {w.isLatest && (
-                            <span className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold ${isSelected ? 'bg-slate-950 text-amber-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'}`}>
-                              Mới
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </motion.div>
+                    layoutId="active-nav-tab"
+                    className="absolute inset-0 bg-slate-900 dark:bg-white rounded-lg shadow-sm z-[-1]"
+                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                  />
                 )}
-              </AnimatePresence>
-            </div>
-          )}
+                <span>{label}</span>
+                <span className={`text-[10px] font-normal ${isSelected ? 'opacity-85' : 'text-slate-400 dark:text-slate-500'}`}>
+                  {dateStr}
+                </span>
+              </button>
+            );
+          })}
 
-          {/* Unified Day & Week Tabs */}
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 overflow-x-auto max-w-full relative">
-            {days.map((d) => {
-              const isSelected = viewMode === 'timeline' && selectedDay === d.dayKey;
-              const label = language === 'vi' ? dayLabelsVi[d.dayKey] : dayLabelsEn[d.dayKey];
-              const dateStr = d.date.split('/')[0] + '/' + d.date.split('/')[1];
-
-              return (
-                <button
-                  key={d.dayKey}
-                  onClick={() => {
-                    onSelectDay(d.dayKey);
-                    onViewModeChange('timeline');
-                  }}
-                  className={`relative px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 whitespace-nowrap z-10 ${
-                    isSelected 
-                      ? 'text-white dark:text-slate-900' 
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
-                  }`}
-                >
-                  {isSelected && (
-                    <motion.div
-                      layoutId="active-nav-tab"
-                      className="absolute inset-0 bg-slate-900 dark:bg-white rounded-lg shadow-sm z-[-1]"
-                      transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                    />
-                  )}
-                  <span>{label}</span>
-                  <span className={`text-[10px] font-normal ${isSelected ? 'opacity-85' : 'text-slate-400 dark:text-slate-500'}`}>
-                    {dateStr}
-                  </span>
-                </button>
-              );
-            })}
-
-            {/* Full Week Tab */}
-            <button
-              onClick={() => onViewModeChange('grid')}
-              className={`relative px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer whitespace-nowrap border-l border-slate-200 dark:border-slate-700 ml-0.5 pl-2 z-10 ${
-                viewMode === 'grid' 
-                  ? 'text-white dark:text-slate-900' 
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
-              }`}
-            >
-              {viewMode === 'grid' && (
-                <motion.div
-                  layoutId="active-nav-tab"
-                  className="absolute inset-0 bg-slate-900 dark:bg-white rounded-lg shadow-sm z-[-1]"
-                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                />
-              )}
-              {language === 'vi' ? 'Cả Tuần' : 'Full Week'}
-            </button>
-          </div>
-
+          {/* Full Week Tab */}
+          <button
+            onClick={() => onViewModeChange('grid')}
+            className={`relative px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer whitespace-nowrap border-l border-slate-200 dark:border-slate-700 ml-0.5 pl-2 z-10 ${
+              viewMode === 'grid' 
+                ? 'text-white dark:text-slate-900' 
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+            }`}
+          >
+            {viewMode === 'grid' && (
+              <motion.div
+                layoutId="active-nav-tab"
+                className="absolute inset-0 bg-slate-900 dark:bg-white rounded-lg shadow-sm z-[-1]"
+                transition={{ type: "spring", stiffness: 500, damping: 35 }}
+              />
+            )}
+            {language === 'vi' ? 'Cả Tuần' : 'Full Week'}
+          </button>
         </div>
 
         {/* Right: Quick Search, Theme Toggle, Notif Bell & Floating Action Menu */}

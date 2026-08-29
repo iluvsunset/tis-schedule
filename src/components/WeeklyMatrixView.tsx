@@ -1,10 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Printer } from 'lucide-react';
-import { Language, ScheduleData } from '../types/schedule';
+import { Language, ScheduleData, WeekTabInfo } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { RecessIcon, LunchIcon } from './CustomSubjectIcons';
+import { WeekSelectorButton } from './WeekSelectorButton';
 
 interface WeeklyMatrixViewProps {
   language: Language;
@@ -12,6 +13,9 @@ interface WeeklyMatrixViewProps {
   searchQuery: string;
   vnTime: VietnamTimeInfo;
   scheduleData?: ScheduleData;
+  availableWeeks?: WeekTabInfo[];
+  selectedWeekGid?: string;
+  onSelectWeek?: (gid: string) => void;
 }
 
 export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
@@ -19,7 +23,10 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
   activeFilter,
   searchQuery,
   vnTime,
-  scheduleData
+  scheduleData,
+  availableWeeks,
+  selectedWeekGid,
+  onSelectWeek
 }) => {
   const periodsConfig = [
     { labelVi: "S1", labelEn: "M1", time: "08:00 - 08:45", startTime: "08:00", endTime: "08:45", isMorning: true, period: 1 },
@@ -49,19 +56,33 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
       <div className="flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-2">
           <h2 className="text-xs sm:text-sm font-display font-bold text-slate-900 dark:text-slate-100">
-            {language === 'vi' ? 'Thời Khóa Biểu Tuần • Lớp 11-TN' : 'Full Weekly Matrix • Grade 11-TN'}
+            {language === 'vi' 
+              ? `Thời Khóa Biểu Tuần • ${currentSchedule.gradeTitleVi || 'Lớp 11-TN'}` 
+              : `Full Weekly Matrix • ${currentSchedule.gradeTitleEn || 'Grade 11-TN'}`}
           </h2>
-          <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium hidden md:inline">• Phòng 504 (GVQN: Cô Tiềng)</span>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium hidden md:inline">
+            • Phòng {currentSchedule.room || '504'} (GVQN: {currentSchedule.homeroomTeacher?.name})
+          </span>
         </div>
-        <motion.button 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => window.print()}
-          className="no-print px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
-        >
-          <Printer className="w-3.5 h-3.5" />
-          <span>{language === 'vi' ? 'In Lịch' : 'Print'}</span>
-        </motion.button>
+        <div className="flex items-center gap-2">
+          {availableWeeks && availableWeeks.length > 0 && onSelectWeek && (
+            <WeekSelectorButton
+              availableWeeks={availableWeeks}
+              selectedWeekGid={selectedWeekGid}
+              onSelectWeek={onSelectWeek}
+              language={language}
+            />
+          )}
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => window.print()}
+            className="no-print px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>{language === 'vi' ? 'In Lịch' : 'Print'}</span>
+          </motion.button>
+        </div>
       </div>
 
       {/* Weekly Matrix Table */}

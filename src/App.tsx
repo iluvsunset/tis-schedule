@@ -180,9 +180,6 @@ export const App: React.FC = () => {
           onOpenTeacherModal={() => setIsTeacherModalOpen(true)}
           onOpenClassModal={() => setIsClassModalOpen(true)}
           scheduleData={scheduleData}
-          availableWeeks={availableWeeks}
-          selectedWeekGid={selectedWeekGid}
-          onSelectWeek={handleSelectWeek}
         />
 
         {/* Primary Schedule View */}
@@ -195,6 +192,9 @@ export const App: React.FC = () => {
               searchQuery={searchQuery}
               vnTime={vnTime}
               scheduleData={scheduleData}
+              availableWeeks={availableWeeks}
+              selectedWeekGid={selectedWeekGid}
+              onSelectWeek={handleSelectWeek}
             />
           ) : (
             <WeeklyMatrixView
@@ -203,6 +203,9 @@ export const App: React.FC = () => {
               searchQuery={searchQuery}
               vnTime={vnTime}
               scheduleData={scheduleData}
+              availableWeeks={availableWeeks}
+              selectedWeekGid={selectedWeekGid}
+              onSelectWeek={handleSelectWeek}
             />
           )}
         </main>

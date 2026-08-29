@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar } from 'lucide-react';
-import { DayKey, Language, ScheduleItem, ScheduleData } from '../types/schedule';
+import { DayKey, Language, ScheduleItem, ScheduleData, WeekTabInfo } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { TimelineCard } from './TimelineCard';
 import { RecessIcon, LunchIcon, VietnamHolidayEmblem, MorningSessionIcon, AfternoonSessionIcon } from './CustomSubjectIcons';
+import { WeekSelectorButton } from './WeekSelectorButton';
 
 interface TimelineViewProps {
   selectedDay: DayKey;
@@ -14,6 +15,9 @@ interface TimelineViewProps {
   searchQuery: string;
   vnTime: VietnamTimeInfo;
   scheduleData?: ScheduleData;
+  availableWeeks?: WeekTabInfo[];
+  selectedWeekGid?: string;
+  onSelectWeek?: (gid: string) => void;
 }
 
 export const TimelineView: React.FC<TimelineViewProps> = ({
@@ -22,7 +26,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   activeFilter,
   searchQuery,
   vnTime,
-  scheduleData
+  scheduleData,
+  availableWeeks,
+  selectedWeekGid,
+  onSelectWeek
 }) => {
   const currentSchedule = scheduleData || SCHEDULE_DATA;
   const dayData = currentSchedule.weekSchedule.find(d => d.dayKey === selectedDay) || currentSchedule.weekSchedule[0];
@@ -123,15 +130,28 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
               {language === 'vi' ? 'Hôm Nay' : 'Today'}
             </span>
           )}
-          <span className="text-xs text-slate-400 dark:text-slate-500 font-medium hidden sm:inline">• Lớp 11-TN (Phòng 504)</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 font-medium hidden sm:inline">
+            • {currentSchedule.gradeTitleVi || 'Lớp 11-TN'} (Phòng {currentSchedule.room || '504'})
+          </span>
         </div>
 
-        <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
-          {isAllDayHoliday ? (
-            <span className="text-rose-600 dark:text-rose-400 font-bold">🇻🇳 Nghỉ Lễ</span>
-          ) : (
-            <span>{totalPeriods} {language === 'vi' ? 'Tiết học' : 'Periods'}</span>
+        <div className="flex items-center gap-2">
+          {availableWeeks && availableWeeks.length > 0 && onSelectWeek && (
+            <WeekSelectorButton
+              availableWeeks={availableWeeks}
+              selectedWeekGid={selectedWeekGid}
+              onSelectWeek={onSelectWeek}
+              language={language}
+            />
           )}
+
+          <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+            {isAllDayHoliday ? (
+              <span className="text-rose-600 dark:text-rose-400 font-bold">🇻🇳 Nghỉ Lễ</span>
+            ) : (
+              <span>{totalPeriods} {language === 'vi' ? 'Tiết học' : 'Periods'}</span>
+            )}
+          </div>
         </div>
       </motion.div>
 

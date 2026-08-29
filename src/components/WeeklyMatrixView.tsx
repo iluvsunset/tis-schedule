@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Printer } from 'lucide-react';
-import { Language } from '../types/schedule';
+import { Language, ScheduleData } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { RecessIcon, LunchIcon } from './CustomSubjectIcons';
@@ -11,13 +11,15 @@ interface WeeklyMatrixViewProps {
   activeFilter: string;
   searchQuery: string;
   vnTime: VietnamTimeInfo;
+  scheduleData?: ScheduleData;
 }
 
 export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
   language,
   activeFilter,
   searchQuery,
-  vnTime
+  vnTime,
+  scheduleData
 }) => {
   const periodsConfig = [
     { labelVi: "S1", labelEn: "M1", time: "08:00 - 08:45", startTime: "08:00", endTime: "08:45", isMorning: true, period: 1 },
@@ -32,7 +34,8 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
     { labelVi: "C3", labelEn: "A3", time: "15:20 - 16:05", startTime: "15:20", endTime: "16:05", isMorning: false, period: 3 },
   ];
 
-  const days = SCHEDULE_DATA.weekSchedule;
+  const currentSchedule = scheduleData || SCHEDULE_DATA;
+  const days = currentSchedule.weekSchedule;
 
   return (
     <motion.div 

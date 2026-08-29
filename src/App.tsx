@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Language, ThemeKey, ViewMode, DayKey, ScheduleData } from './types/schedule';
 import { SCHEDULE_DATA as INITIAL_DATA } from './data/scheduleData';
@@ -27,30 +27,25 @@ export const App: React.FC = () => {
 
   const mouse = useParallaxMouse();
 
-  // Sync with Google Sheet live on background startup
-  const handleSyncLive = useCallback(async () => {
-    try {
-      const freshData = await fetchLiveSchedule();
-      setScheduleData(freshData);
-    } catch (e) {
-      console.warn('Sync failed, keeping current data:', e);
-    }
-  }, []);
-
-  // Initialize day based on Vietnam Time & fetch live on start
+  // Initialize day once on mount & fetch live schedule
   useEffect(() => {
     const currentVn = getVietnamTime();
     setVnTime(currentVn);
     
-    // Check if today matches any date in current week schedule
-    const todayInSchedule = scheduleData.weekSchedule.find(d => getDateStatus(d.date, currentVn.dateStr) === 'today');
+    const todayInSchedule = INITIAL_DATA.weekSchedule.find(d => getDateStatus(d.date, currentVn.dateStr) === 'today');
     if (todayInSchedule) {
       setSelectedDay(todayInSchedule.dayKey);
     } else {
       setSelectedDay('mon');
     }
-    handleSyncLive();
-  }, [handleSyncLive, scheduleData.weekSchedule]);
+
+    // Fetch live schedule once in background
+    fetchLiveSchedule().then((freshData) => {
+      if (freshData) {
+        setScheduleData(freshData);
+      }
+    }).catch((e) => console.warn('Live sync fallback:', e));
+  }, []);
 
   // Update root data-theme attribute & auto-detect device dark mode
   useEffect(() => {
@@ -144,6 +139,7 @@ export const App: React.FC = () => {
           viewMode={viewMode}
           onViewModeChange={setViewMode}
           onOpenTeacherModal={() => setIsTeacherModalOpen(true)}
+          scheduleData={scheduleData}
         />
 
         {/* Primary Schedule View */}
@@ -155,6 +151,7 @@ export const App: React.FC = () => {
               activeFilter="all"
               searchQuery={searchQuery}
               vnTime={vnTime}
+              scheduleData={scheduleData}
             />
           ) : (
             <WeeklyMatrixView
@@ -162,6 +159,7 @@ export const App: React.FC = () => {
               activeFilter="all"
               searchQuery={searchQuery}
               vnTime={vnTime}
+              scheduleData={scheduleData}
             />
           )}
         </main>

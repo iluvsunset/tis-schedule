@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, MoreVertical, CalendarPlus, Printer, Users, Globe, Bell, BellRing, Clock, Sun, Moon, Laptop } from 'lucide-react';
-import { Language, ThemeKey, ViewMode, DayKey } from '../types/schedule';
+import { Language, ThemeKey, ViewMode, DayKey, ScheduleData } from '../types/schedule';
 import { exportScheduleToICS } from '../utils/icsExport';
 import { VietnamTimeInfo } from '../utils/vietnamTime';
 import { SCHEDULE_DATA } from '../data/scheduleData';
@@ -26,6 +26,7 @@ interface NavbarProps {
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
   onOpenTeacherModal: () => void;
+  scheduleData?: ScheduleData;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -40,7 +41,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectDay,
   viewMode,
   onViewModeChange,
-  onOpenTeacherModal
+  onOpenTeacherModal,
+  scheduleData
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
@@ -50,7 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const countdownIntervalRef = useRef<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const days = SCHEDULE_DATA.weekSchedule;
+  const days = (scheduleData || SCHEDULE_DATA).weekSchedule;
 
   const dayLabelsVi: Record<DayKey, string> = { mon: 'T2', tue: 'T3', wed: 'T4', thu: 'T5', fri: 'T6', sat: 'T7' };
   const dayLabelsEn: Record<DayKey, string> = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat' };

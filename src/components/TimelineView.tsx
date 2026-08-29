@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Sparkles } from 'lucide-react';
-import { DayKey, Language, ScheduleItem } from '../types/schedule';
+import { DayKey, Language, ScheduleItem, ScheduleData } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { TimelineCard } from './TimelineCard';
@@ -13,6 +13,7 @@ interface TimelineViewProps {
   activeFilter: string;
   searchQuery: string;
   vnTime: VietnamTimeInfo;
+  scheduleData?: ScheduleData;
 }
 
 export const TimelineView: React.FC<TimelineViewProps> = ({
@@ -20,9 +21,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   language,
   activeFilter,
   searchQuery,
-  vnTime
+  vnTime,
+  scheduleData
 }) => {
-  const dayData = SCHEDULE_DATA.weekSchedule.find(d => d.dayKey === selectedDay) || SCHEDULE_DATA.weekSchedule[0];
+  const currentSchedule = scheduleData || SCHEDULE_DATA;
+  const dayData = currentSchedule.weekSchedule.find(d => d.dayKey === selectedDay) || currentSchedule.weekSchedule[0];
 
   // Determine relative day state by comparing actual calendar dates
   const dateStatus = getDateStatus(dayData.date, vnTime.dateStr);

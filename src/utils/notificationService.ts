@@ -108,6 +108,7 @@ export function getTomorrowScheduleSummary(language: Language = 'vi'): { title: 
   else if (currentDayOfWeek === 2) nextDayKey = 'wed';
   else if (currentDayOfWeek === 3) nextDayKey = 'thu';
   else if (currentDayOfWeek === 4) nextDayKey = 'fri';
+  else if (currentDayOfWeek === 5) nextDayKey = 'sat';
   else {
     nextDayKey = 'mon';
   }

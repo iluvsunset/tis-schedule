@@ -18,7 +18,7 @@ export type ThemeKey = 'system' | 'light' | 'dark';
 
 export type ViewMode = 'timeline' | 'grid';
 
-export type DayKey = 'mon' | 'tue' | 'wed' | 'thu' | 'fri';
+export type DayKey = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat';
 
 export interface ScheduleItem {
   period: number | 'recess';
@@ -58,8 +58,8 @@ export interface TeacherInfo {
   subjectEn: string;
   room: string;
   color: string;
-  icon: string;
-  days: string;
+  icon?: string;
+  days?: string;
 }
 
 export interface HomeroomTeacher {

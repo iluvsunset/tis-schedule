@@ -16,31 +16,31 @@ export const SCHEDULE_DATA: ScheduleData = {
       dayKey: "mon",
       dayNameVi: "Thứ Hai",
       dayNameEn: "Monday",
-      date: "24/8/2026",
+      date: "31/8/2026",
       morning: [
         {
           period: 1,
           time: "08:00 - 08:45",
           startTime: "08:00",
           endTime: "08:45",
-          subjectVi: "Good Morning TIS",
-          subjectEn: "School Assembly / Good Morning TIS",
-          teacher: "Toàn Trường (All School)",
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
           type: "event",
-          room: "Sân trường / Assembly",
-          note: "8:00 - 9:00 Hoạt động đầu tuần"
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: 2,
           time: "08:50 - 09:35",
           startTime: "08:50",
           endTime: "09:35",
-          subjectVi: "Toán (Math)",
-          subjectEn: "Mathematics",
-          teacher: "Thầy Thành",
-          type: "math",
-          room: "504",
-          note: "TOÁN-THÀNH"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: "recess",
@@ -59,24 +59,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "09:55 - 10:40",
           startTime: "09:55",
           endTime: "10:40",
-          subjectVi: "English (Level 10)",
-          subjectEn: "English (Level 10)",
-          teacher: "Mr. Steven",
-          type: "english",
-          room: "504",
-          note: "Level 10 - Eng 1"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: 4,
           time: "10:45 - 11:30",
           startTime: "10:45",
           endTime: "11:30",
-          subjectVi: "English (Level 10)",
-          subjectEn: "English (Level 10)",
-          teacher: "Mr. Steven",
-          type: "english",
-          room: "504",
-          note: "Level 10 - Eng 2"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         }
       ],
       lunch: {
@@ -92,24 +92,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "13:30 - 14:15",
           startTime: "13:30",
           endTime: "14:15",
-          subjectVi: "Tin Học",
-          subjectEn: "Computer Science",
-          teacher: "Thầy Quân",
-          type: "cs",
-          room: "Lab Tin",
-          note: "TIN-QUÂN"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: 2,
           time: "14:20 - 15:05",
           startTime: "14:20",
           endTime: "15:05",
-          subjectVi: "Tin Học",
-          subjectEn: "Computer Science",
-          teacher: "Thầy Quân",
-          type: "cs",
-          room: "Lab Tin",
-          note: "TIN-QUÂN"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: "recess",
@@ -128,12 +128,12 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "15:20 - 16:05",
           startTime: "15:20",
           endTime: "16:05",
-          subjectVi: "Toán",
-          subjectEn: "Mathematics",
-          teacher: "Thầy Thành",
-          type: "math",
-          room: "504",
-          note: "TOÁN-THÀNH"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         }
       ]
     },
@@ -141,31 +141,31 @@ export const SCHEDULE_DATA: ScheduleData = {
       dayKey: "tue",
       dayNameVi: "Thứ Ba",
       dayNameEn: "Tuesday",
-      date: "25/8/2026",
+      date: "01/9/2026",
       morning: [
         {
           period: 1,
           time: "08:00 - 08:45",
           startTime: "08:00",
           endTime: "08:45",
-          subjectVi: "Vật Lý",
-          subjectEn: "Physics",
-          teacher: "Cô Thuận",
-          type: "physics",
-          room: "504",
-          note: "LÝ-THUẬN"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: 2,
           time: "08:50 - 09:35",
           startTime: "08:50",
           endTime: "09:35",
-          subjectVi: "Vật Lý",
-          subjectEn: "Physics",
-          teacher: "Cô Thuận",
-          type: "physics",
-          room: "504",
-          note: "LÝ-THUẬN"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: "recess",
@@ -184,24 +184,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "09:55 - 10:40",
           startTime: "09:55",
           endTime: "10:40",
-          subjectVi: "English (Level 10)",
-          subjectEn: "English (Level 10)",
-          teacher: "Ms. Phương Anh",
-          type: "english",
-          room: "504",
-          note: "Level 10 - Eng 3"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: 4,
           time: "10:45 - 11:30",
           startTime: "10:45",
           endTime: "11:30",
-          subjectVi: "English (Level 10)",
-          subjectEn: "English (Level 10)",
-          teacher: "Ms. Phương Anh",
-          type: "english",
-          room: "504",
-          note: "Level 10 - Eng 4"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         }
       ],
       lunch: {
@@ -217,24 +217,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "13:30 - 14:15",
           startTime: "13:30",
           endTime: "14:15",
-          subjectVi: "Ngữ Văn",
-          subjectEn: "Literature",
-          teacher: "Cô Cam",
-          type: "literature",
-          room: "504",
-          note: "VĂN-CAM"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: 2,
           time: "14:20 - 15:05",
           startTime: "14:20",
           endTime: "15:05",
-          subjectVi: "Ngữ Văn",
-          subjectEn: "Literature",
-          teacher: "Cô Cam",
-          type: "literature",
-          room: "504",
-          note: "VĂN-CAM"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: "recess",
@@ -253,12 +253,12 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "15:20 - 16:05",
           startTime: "15:20",
           endTime: "16:05",
-          subjectVi: "Hóa Học",
-          subjectEn: "Chemistry",
-          teacher: "Thầy Tân",
-          type: "chemistry",
-          room: "504",
-          note: "HÓA-TÂN"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         }
       ]
     },
@@ -266,31 +266,31 @@ export const SCHEDULE_DATA: ScheduleData = {
       dayKey: "wed",
       dayNameVi: "Thứ Tư",
       dayNameEn: "Wednesday",
-      date: "26/8/2026",
+      date: "02/9/2026",
       morning: [
         {
           period: 1,
           time: "08:00 - 08:45",
           startTime: "08:00",
           endTime: "08:45",
-          subjectVi: "Tin Học",
-          subjectEn: "Computer Science",
-          teacher: "Thầy Quân",
-          type: "cs",
-          room: "Lab Tin",
-          note: "TIN-QUÂN"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: 2,
           time: "08:50 - 09:35",
           startTime: "08:50",
           endTime: "09:35",
-          subjectVi: "Tin Học",
-          subjectEn: "Computer Science",
-          teacher: "Thầy Quân",
-          type: "cs",
-          room: "Lab Tin",
-          note: "TIN-QUÂN"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: "recess",
@@ -309,24 +309,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "09:55 - 10:40",
           startTime: "09:55",
           endTime: "10:40",
-          subjectVi: "English (Level 10)",
-          subjectEn: "English (Level 10)",
-          teacher: "Mr. Steven",
-          type: "english",
-          room: "504",
-          note: "Level 10 - Eng 5"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: 4,
           time: "10:45 - 11:30",
           startTime: "10:45",
           endTime: "11:30",
-          subjectVi: "English (Level 10)",
-          subjectEn: "English (Level 10)",
-          teacher: "Mr. Steven",
-          type: "english",
-          room: "504",
-          note: "Level 10 - Eng 6"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         }
       ],
       lunch: {
@@ -342,24 +342,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "13:30 - 14:15",
           startTime: "13:30",
           endTime: "14:15",
-          subjectVi: "Science",
-          subjectEn: "Integrated Science",
-          teacher: "Ms. Hạnh",
-          type: "science",
-          room: "504",
-          note: "SCIENCE - Ms. Hạnh"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: 2,
           time: "14:20 - 15:05",
           startTime: "14:20",
           endTime: "15:05",
-          subjectVi: "Science",
-          subjectEn: "Integrated Science",
-          teacher: "Ms. Hạnh",
-          type: "science",
-          room: "504",
-          note: "SCIENCE - Ms. Hạnh"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         },
         {
           period: "recess",
@@ -378,12 +378,12 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "15:20 - 16:05",
           startTime: "15:20",
           endTime: "16:05",
-          subjectVi: "Toán",
-          subjectEn: "Mathematics",
-          teacher: "Thầy Thành",
-          type: "math",
-          room: "504",
-          note: "TOÁN-THÀNH"
+          subjectVi: "Nghỉ Lễ 2/9",
+          subjectEn: "National Day Holiday",
+          teacher: "Nghỉ toàn trường",
+          type: "event",
+          room: "TIS",
+          note: "Nghỉ Lễ Quốc Khánh 2/9"
         }
       ]
     },
@@ -391,7 +391,7 @@ export const SCHEDULE_DATA: ScheduleData = {
       dayKey: "thu",
       dayNameVi: "Thứ Năm",
       dayNameEn: "Thursday",
-      date: "27/8/2026",
+      date: "03/9/2026",
       morning: [
         {
           period: 1,
@@ -436,7 +436,7 @@ export const SCHEDULE_DATA: ScheduleData = {
           endTime: "10:40",
           subjectVi: "English (Level 10)",
           subjectEn: "English (Level 10)",
-          teacher: "Ms. Phương Anh",
+          teacher: "Mr. Steven",
           type: "english",
           room: "504",
           note: "Level 10 - Eng 7"
@@ -448,7 +448,7 @@ export const SCHEDULE_DATA: ScheduleData = {
           endTime: "11:30",
           subjectVi: "English (Level 10)",
           subjectEn: "English (Level 10)",
-          teacher: "Ms. Phương Anh",
+          teacher: "Mr. Steven",
           type: "english",
           room: "504",
           note: "Level 10 - Eng 8"
@@ -467,24 +467,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "13:30 - 14:15",
           startTime: "13:30",
           endTime: "14:15",
-          subjectVi: "Hóa Học",
-          subjectEn: "Chemistry",
-          teacher: "Thầy Tân",
-          type: "chemistry",
+          subjectVi: "Ngữ Văn",
+          subjectEn: "Vietnamese Literature",
+          teacher: "Cô Cam",
+          type: "literature",
           room: "504",
-          note: "HÓA-TÂN"
+          note: "VĂN-CAM"
         },
         {
           period: 2,
           time: "14:20 - 15:05",
           startTime: "14:20",
           endTime: "15:05",
-          subjectVi: "Hóa Học",
-          subjectEn: "Chemistry",
-          teacher: "Thầy Tân",
-          type: "chemistry",
+          subjectVi: "Ngữ Văn",
+          subjectEn: "Vietnamese Literature",
+          teacher: "Cô Cam",
+          type: "literature",
           room: "504",
-          note: "HÓA-TÂN"
+          note: "VĂN-CAM"
         },
         {
           period: "recess",
@@ -503,12 +503,12 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "15:20 - 16:05",
           startTime: "15:20",
           endTime: "16:05",
-          subjectVi: "Sinh Hoạt Lớp (SHL)",
-          subjectEn: "Homeroom Activity",
-          teacher: "Cô Tiềng",
-          type: "homeroom",
+          subjectVi: "Hóa Học",
+          subjectEn: "Chemistry",
+          teacher: "Thầy Tân",
+          type: "chemistry",
           room: "504",
-          note: "SHL-TIỀNG"
+          note: "HÓA-TÂN"
         }
       ]
     },
@@ -516,7 +516,7 @@ export const SCHEDULE_DATA: ScheduleData = {
       dayKey: "fri",
       dayNameVi: "Thứ Sáu",
       dayNameEn: "Friday",
-      date: "28/8/2026",
+      date: "04/9/2026",
       morning: [
         {
           period: 1,
@@ -535,7 +535,7 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "08:50 - 09:35",
           startTime: "08:50",
           endTime: "09:35",
-          subjectVi: "Toán",
+          subjectVi: "Toán (Math)",
           subjectEn: "Mathematics",
           teacher: "Thầy Thành",
           type: "math",
@@ -592,24 +592,24 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "13:30 - 14:15",
           startTime: "13:30",
           endTime: "14:15",
-          subjectVi: "Ngữ Văn",
-          subjectEn: "Literature",
-          teacher: "Cô Cam",
-          type: "literature",
-          room: "504",
-          note: "VĂN-CAM"
+          subjectVi: "Tin Học",
+          subjectEn: "Computer Science",
+          teacher: "Thầy Quân",
+          type: "cs",
+          room: "Lab Tin",
+          note: "TIN-QUÂN"
         },
         {
           period: 2,
           time: "14:20 - 15:05",
           startTime: "14:20",
           endTime: "15:05",
-          subjectVi: "Ngữ Văn",
-          subjectEn: "Literature",
-          teacher: "Cô Cam",
-          type: "literature",
+          subjectVi: "Vật Lý",
+          subjectEn: "Physics",
+          teacher: "Cô Thuận",
+          type: "physics",
           room: "504",
-          note: "VĂN-CAM"
+          note: "LÝ-THUẬN"
         },
         {
           period: "recess",
@@ -628,159 +628,291 @@ export const SCHEDULE_DATA: ScheduleData = {
           time: "15:20 - 16:05",
           startTime: "15:20",
           endTime: "16:05",
-          subjectVi: "Bầu cử BCH Hội Đồng Học Sinh",
-          subjectEn: "Student Council Election",
-          teacher: "Toàn Trường (School Activity)",
+          subjectVi: "Rehearsal Lễ Khai Giảng",
+          subjectEn: "Opening Ceremony Rehearsal",
+          teacher: "Toàn Trường (School Rehearsal)",
           type: "event",
           room: "Hội trường",
-          note: "Hoạt động chung toàn trường"
+          note: "Rehearsal Lễ Khai Giảng Năm Học 2026-2027"
         }
       ]
+    },
+    {
+      dayKey: "sat",
+      dayNameVi: "Thứ Bảy",
+      dayNameEn: "Saturday",
+      date: "05/9/2026",
+      morning: [
+        {
+          period: 1,
+          time: "08:00 - 08:45",
+          startTime: "08:00",
+          endTime: "08:45",
+          subjectVi: "Lễ Khai Giảng Năm Học 2026 - 2027",
+          subjectEn: "School Year Opening Ceremony",
+          teacher: "Toàn Trường (All School)",
+          type: "event",
+          room: "Hội trường / Sân trường",
+          note: "LỄ KHAI GIẢNG NĂM HỌC 2026 - 2027"
+        },
+        {
+          period: 2,
+          time: "08:50 - 09:35",
+          startTime: "08:50",
+          endTime: "09:35",
+          subjectVi: "Lễ Khai Giảng Năm Học 2026 - 2027",
+          subjectEn: "School Year Opening Ceremony",
+          teacher: "Toàn Trường (All School)",
+          type: "event",
+          room: "Hội trường / Sân trường",
+          note: "LỄ KHAI GIẢNG NĂM HỌC 2026 - 2027"
+        },
+        {
+          period: "recess",
+          time: "09:35 - 09:55",
+          startTime: "09:35",
+          endTime: "09:55",
+          subjectVi: "Ra chơi sáng",
+          subjectEn: "Morning Recess",
+          teacher: "",
+          type: "break",
+          room: "",
+          note: "20 phút giải lao"
+        },
+        {
+          period: 3,
+          time: "09:55 - 10:40",
+          startTime: "09:55",
+          endTime: "10:40",
+          subjectVi: "Lễ Khai Giảng Năm Học 2026 - 2027",
+          subjectEn: "School Year Opening Ceremony",
+          teacher: "Toàn Trường (All School)",
+          type: "event",
+          room: "Hội trường / Sân trường",
+          note: "LỄ KHAI GIẢNG NĂM HỌC 2026 - 2027"
+        },
+        {
+          period: 4,
+          time: "10:45 - 11:30",
+          startTime: "10:45",
+          endTime: "11:30",
+          subjectVi: "Lễ Khai Giảng Năm Học 2026 - 2027",
+          subjectEn: "School Year Opening Ceremony",
+          teacher: "Toàn Trường (All School)",
+          type: "event",
+          room: "Hội trường / Sân trường",
+          note: "LỄ KHAI GIẢNG NĂM HỌC 2026 - 2027"
+        }
+      ],
+      lunch: {
+        time: "11:30 - 13:30",
+        startTime: "11:30",
+        endTime: "13:30",
+        titleVi: "Nghỉ trưa & Dùng bữa",
+        titleEn: "Lunch Break & Rest"
+      },
+      afternoon: []
     }
   ],
   teachers: [
-    { name: "Cô Tiềng", role: "GVQN (Homeroom)", subjectVi: "Sinh Hoạt Lớp", subjectEn: "Homeroom Activities", room: "Phòng 504", color: "purple", icon: "HeartHandshake", days: "Thứ 5 Chiều" },
-    { name: "Thầy Thành", role: "Bộ môn Toán", subjectVi: "Toán Học", subjectEn: "Mathematics", room: "Phòng 504", color: "blue", icon: "Calculator", days: "T2, T4, T6" },
-    { name: "Cô Cam", role: "Bộ môn Ngữ Văn", subjectVi: "Ngữ Văn", subjectEn: "Literature", room: "Phòng 504", color: "rose", icon: "BookOpen", days: "T3, T6 Chiều" },
-    { name: "Cô Thuận", role: "Bộ môn Vật Lý", subjectVi: "Vật Lý", subjectEn: "Physics", room: "Phòng 504", color: "indigo", icon: "Zap", days: "T3 Sáng" },
-    { name: "Thầy Tân", role: "Bộ môn Hóa Học", subjectVi: "Hóa Học", subjectEn: "Chemistry", room: "Phòng 504", color: "emerald", icon: "FlaskConical", days: "T3, T5" },
-    { name: "Thầy Công", role: "Bộ môn Sinh Học", subjectVi: "Sinh Học", subjectEn: "Biology", room: "Phòng 504", color: "green", icon: "Leaf", days: "T6 Sáng" },
-    { name: "Thầy Quân", role: "Bộ môn Tin Học", subjectVi: "Tin Học", subjectEn: "Computer Science", room: "Lab Tin", color: "amber", icon: "Laptop", days: "T2 Chiều, T4 Sáng" },
-    { name: "Thầy Hải", role: "Bộ môn GDTC", subjectVi: "Giáo Dục Thể Chất", subjectEn: "Physical Education", room: "Sân Thể Thao", color: "orange", icon: "Activity", days: "T5 Sáng" },
-    { name: "Mr. Steven", role: "English Faculty", subjectVi: "English (Level 10)", subjectEn: "English (Level 10)", room: "Phòng 504", color: "pink", icon: "Globe", days: "T2, T4 Sáng (Eng 1,2,5,6)" },
-    { name: "Ms. Phương Anh", role: "English Faculty", subjectVi: "English (Level 10)", subjectEn: "English (Level 10)", room: "Phòng 504", color: "pink", icon: "Globe", days: "T3, T5, T6 Sáng (Eng 3,4,7,8,9,10)" },
-    { name: "Ms. Hạnh", role: "Science Faculty", subjectVi: "Science", subjectEn: "Integrated Science", room: "Phòng 504", color: "teal", icon: "Microscope", days: "T4 Chiều" }
+    {
+      name: "Cô Tiềng",
+      role: "Giáo Viên Chủ Nhiệm (GVQN)",
+      subjectVi: "Sinh Hoạt Lớp (SHL)",
+      subjectEn: "Homeroom & Class Activity",
+      room: "504",
+      color: "from-pink-500 to-rose-500"
+    },
+    {
+      name: "Thầy Thành",
+      role: "Giáo Viên Bộ Môn",
+      subjectVi: "Toán (Math)",
+      subjectEn: "Mathematics",
+      room: "504",
+      color: "from-blue-500 to-indigo-600"
+    },
+    {
+      name: "Mr. Steven",
+      role: "Foreign Teacher",
+      subjectVi: "English (Level 10 - Eng 7, 8)",
+      subjectEn: "English (Level 10 - Eng 7, 8)",
+      room: "504",
+      color: "from-purple-500 to-indigo-500"
+    },
+    {
+      name: "Ms. Phương Anh",
+      role: "Foreign & ESL Teacher",
+      subjectVi: "English (Level 10 - Eng 9, 10)",
+      subjectEn: "English (Level 10 - Eng 9, 10)",
+      room: "504",
+      color: "from-pink-500 to-rose-400"
+    },
+    {
+      name: "Cô Cam",
+      role: "Giáo Viên Bộ Môn",
+      subjectVi: "Ngữ Văn",
+      subjectEn: "Vietnamese Literature",
+      room: "504",
+      color: "from-rose-500 to-red-600"
+    },
+    {
+      name: "Thầy Tân",
+      role: "Giáo Viên Bộ Môn",
+      subjectVi: "Hóa Học",
+      subjectEn: "Chemistry",
+      room: "504",
+      color: "from-emerald-500 to-teal-600"
+    },
+    {
+      name: "Thầy Công",
+      role: "Giáo Viên Bộ Môn",
+      subjectVi: "Sinh Học",
+      subjectEn: "Biology",
+      room: "504",
+      color: "from-green-500 to-emerald-600"
+    },
+    {
+      name: "Thầy Quân",
+      role: "Giáo Viên Bộ Môn",
+      subjectVi: "Tin Học",
+      subjectEn: "Computer Science",
+      room: "Lab Tin",
+      color: "from-amber-500 to-orange-500"
+    },
+    {
+      name: "Cô Thuận",
+      role: "Giáo Viên Bộ Môn",
+      subjectVi: "Vật Lý",
+      subjectEn: "Physics",
+      room: "504",
+      color: "from-indigo-500 to-purple-600"
+    },
+    {
+      name: "Thầy Hải",
+      role: "Giáo Viên Bộ Môn",
+      subjectVi: "Giáo Dục Thể Chất",
+      subjectEn: "Physical Education (PE)",
+      room: "Sân thể thao",
+      color: "from-orange-500 to-amber-600"
+    }
   ]
 };
 
 export const SUBJECT_METADATA: Record<SubjectType, {
+  nameVi: string;
+  nameEn: string;
+  badgeBg: string;
   bg: string;
   border: string;
   text: string;
-  badgeBg: string;
-  badgeText: string;
-  iconName: string;
-  labelVi: string;
-  labelEn: string;
+  accent: string;
 }> = {
   math: {
-    bg: "bg-white/90 dark:bg-slate-900/90",
-    border: "border-blue-200/70 dark:border-blue-900/50",
-    text: "text-blue-600 dark:text-blue-400",
-    badgeBg: "bg-blue-500 text-white dark:bg-blue-600 dark:text-white",
-    badgeText: "text-blue-700 dark:text-blue-300",
-    iconName: "Calculator",
-    labelVi: "Toán",
-    labelEn: "Math"
+    nameVi: "Toán",
+    nameEn: "Math",
+    badgeBg: "bg-blue-500/10 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 border-blue-200 dark:border-blue-800",
+    bg: "bg-blue-500/5 dark:bg-blue-500/10",
+    border: "border-blue-200 dark:border-blue-900/50",
+    text: "text-blue-900 dark:text-blue-200",
+    accent: "#3b82f6"
   },
   english: {
-    bg: "bg-white/90 dark:bg-slate-900/90",
-    border: "border-pink-200/70 dark:border-pink-900/50",
-    text: "text-pink-600 dark:text-pink-400",
-    badgeBg: "bg-pink-500 text-white dark:bg-pink-600 dark:text-white",
-    badgeText: "text-pink-700 dark:text-pink-300",
-    iconName: "Globe",
-    labelVi: "English (Level 10)",
-    labelEn: "English (Level 10)"
+    nameVi: "English (Level 10)",
+    nameEn: "English (Level 10)",
+    badgeBg: "bg-pink-500/10 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300 border-pink-200 dark:border-pink-800",
+    bg: "bg-pink-500/5 dark:bg-pink-500/10",
+    border: "border-pink-200 dark:border-pink-900/50",
+    text: "text-pink-900 dark:text-pink-200",
+    accent: "#ec4899"
   },
   literature: {
-    bg: "bg-white/90 dark:bg-slate-900/90",
-    border: "border-rose-200/70 dark:border-rose-900/50",
-    text: "text-rose-600 dark:text-rose-400",
-    badgeBg: "bg-rose-500 text-white dark:bg-rose-600 dark:text-white",
-    badgeText: "text-rose-700 dark:text-rose-300",
-    iconName: "BookOpen",
-    labelVi: "Ngữ Văn",
-    labelEn: "Literature"
+    nameVi: "Ngữ Văn",
+    nameEn: "Literature",
+    badgeBg: "bg-rose-500/10 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300 border-rose-200 dark:border-rose-800",
+    bg: "bg-rose-500/5 dark:bg-rose-500/10",
+    border: "border-rose-200 dark:border-rose-900/50",
+    text: "text-rose-900 dark:text-rose-200",
+    accent: "#f43f5e"
   },
   physics: {
-    bg: "bg-white/90 dark:bg-slate-900/90",
-    border: "border-indigo-200/70 dark:border-indigo-900/50",
-    text: "text-indigo-600 dark:text-indigo-400",
-    badgeBg: "bg-indigo-500 text-white dark:bg-indigo-600 dark:text-white",
-    badgeText: "text-indigo-700 dark:text-indigo-300",
-    iconName: "Zap",
-    labelVi: "Vật Lý",
-    labelEn: "Physics"
+    nameVi: "Vật Lý",
+    nameEn: "Physics",
+    badgeBg: "bg-indigo-500/10 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800",
+    bg: "bg-indigo-500/5 dark:bg-indigo-500/10",
+    border: "border-indigo-200 dark:border-indigo-900/50",
+    text: "text-indigo-900 dark:text-indigo-200",
+    accent: "#6366f1"
   },
   chemistry: {
-    bg: "bg-white/90 dark:bg-slate-900/90",
-    border: "border-emerald-200/70 dark:border-emerald-900/50",
-    text: "text-emerald-600 dark:text-emerald-400",
-    badgeBg: "bg-emerald-500 text-white dark:bg-emerald-600 dark:text-white",
-    badgeText: "text-emerald-700 dark:text-emerald-300",
-    iconName: "FlaskConical",
-    labelVi: "Hóa Học",
-    labelEn: "Chemistry"
+    nameVi: "Hóa Học",
+    nameEn: "Chemistry",
+    badgeBg: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
+    bg: "bg-emerald-500/5 dark:bg-emerald-500/10",
+    border: "border-emerald-200 dark:border-emerald-900/50",
+    text: "text-emerald-900 dark:text-emerald-200",
+    accent: "#10b981"
   },
   biology: {
-    bg: "bg-white/90 dark:bg-slate-900/90",
-    border: "border-green-200/70 dark:border-green-900/50",
-    text: "text-green-600 dark:text-green-400",
-    badgeBg: "bg-green-500 text-white dark:bg-green-600 dark:text-white",
-    badgeText: "text-green-700 dark:text-green-300",
-    iconName: "Leaf",
-    labelVi: "Sinh Học",
-    labelEn: "Biology"
+    nameVi: "Sinh Học",
+    nameEn: "Biology",
+    badgeBg: "bg-teal-500/10 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300 border-teal-200 dark:border-teal-800",
+    bg: "bg-teal-500/5 dark:bg-teal-500/10",
+    border: "border-teal-200 dark:border-teal-900/50",
+    text: "text-teal-900 dark:text-teal-200",
+    accent: "#14b8a6"
   },
   cs: {
-    bg: "bg-white/90 dark:bg-slate-900/90",
-    border: "border-amber-200/70 dark:border-amber-900/50",
-    text: "text-amber-600 dark:text-amber-400",
-    badgeBg: "bg-amber-500 text-white dark:bg-amber-600 dark:text-white",
-    badgeText: "text-amber-700 dark:text-amber-300",
-    iconName: "Laptop",
-    labelVi: "Tin Học",
-    labelEn: "Computer Science"
+    nameVi: "Tin Học",
+    nameEn: "Computer Science",
+    badgeBg: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+    bg: "bg-amber-500/5 dark:bg-amber-500/10",
+    border: "border-amber-200 dark:border-amber-900/50",
+    text: "text-amber-900 dark:text-amber-200",
+    accent: "#f59e0b"
   },
   science: {
-    bg: "bg-white/90 dark:bg-slate-900/90",
-    border: "border-teal-200/70 dark:border-teal-900/50",
-    text: "text-teal-600 dark:text-teal-400",
-    badgeBg: "bg-teal-500 text-white dark:bg-teal-600 dark:text-white",
-    badgeText: "text-teal-700 dark:text-teal-300",
-    iconName: "Microscope",
-    labelVi: "Science",
-    labelEn: "Science"
+    nameVi: "Science",
+    nameEn: "Science",
+    badgeBg: "bg-cyan-500/10 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800",
+    bg: "bg-cyan-500/5 dark:bg-cyan-500/10",
+    border: "border-cyan-200 dark:border-cyan-900/50",
+    text: "text-cyan-900 dark:text-cyan-200",
+    accent: "#06b6d4"
   },
   pe: {
-    bg: "bg-white/90 dark:bg-slate-900/90",
-    border: "border-orange-200/70 dark:border-orange-900/50",
-    text: "text-orange-600 dark:text-orange-400",
-    badgeBg: "bg-orange-500 text-white dark:bg-orange-600 dark:text-white",
-    badgeText: "text-orange-700 dark:text-orange-300",
-    iconName: "Activity",
-    labelVi: "GDTC",
-    labelEn: "P.E"
+    nameVi: "Giáo Dục Thể Chất",
+    nameEn: "Physical Education",
+    badgeBg: "bg-orange-500/10 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300 border-orange-200 dark:border-orange-800",
+    bg: "bg-orange-500/5 dark:bg-orange-500/10",
+    border: "border-orange-200 dark:border-orange-900/50",
+    text: "text-orange-900 dark:text-orange-200",
+    accent: "#f97316"
   },
   homeroom: {
-    bg: "bg-white/90 dark:bg-slate-900/90",
-    border: "border-purple-200/70 dark:border-purple-900/50",
-    text: "text-purple-600 dark:text-purple-400",
-    badgeBg: "bg-purple-500 text-white dark:bg-purple-600 dark:text-white",
-    badgeText: "text-purple-700 dark:text-purple-300",
-    iconName: "HeartHandshake",
-    labelVi: "Sinh Hoạt Lớp",
-    labelEn: "Homeroom"
+    nameVi: "Sinh Hoạt Lớp",
+    nameEn: "Homeroom Activity",
+    badgeBg: "bg-purple-500/10 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300 border-purple-200 dark:border-purple-800",
+    bg: "bg-purple-500/5 dark:bg-purple-500/10",
+    border: "border-purple-200 dark:border-purple-900/50",
+    text: "text-purple-900 dark:text-purple-200",
+    accent: "#a855f7"
   },
   event: {
-    bg: "bg-white/90 dark:bg-slate-900/90",
-    border: "border-fuchsia-200/70 dark:border-fuchsia-900/50",
-    text: "text-fuchsia-600 dark:text-fuchsia-400",
-    badgeBg: "bg-fuchsia-500 text-white dark:bg-fuchsia-600 dark:text-white",
-    badgeText: "text-fuchsia-700 dark:text-fuchsia-300",
-    iconName: "Sparkles",
-    labelVi: "Sự Kiện",
-    labelEn: "Event"
+    nameVi: "Sự Kiện Toàn Trường",
+    nameEn: "School Event / Activity",
+    badgeBg: "bg-rose-500/10 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300 border-rose-200 dark:border-rose-800",
+    bg: "bg-rose-500/5 dark:bg-rose-500/10",
+    border: "border-rose-200 dark:border-rose-900/50",
+    text: "text-rose-900 dark:text-rose-200",
+    accent: "#f43f5e"
   },
   break: {
-    bg: "bg-slate-50/80 dark:bg-slate-900/40",
-    border: "border-dashed border-slate-200 dark:border-slate-800",
-    text: "text-slate-500 dark:text-slate-400",
-    badgeBg: "bg-slate-200 dark:bg-slate-800",
-    badgeText: "text-slate-600 dark:text-slate-400",
-    iconName: "Coffee",
-    labelVi: "Ra Chơi",
-    labelEn: "Recess"
+    nameVi: "Giờ Ra Chơi",
+    nameEn: "Recess Break",
+    badgeBg: "bg-slate-500/10 text-slate-700 dark:bg-slate-500/20 dark:text-slate-300 border-slate-200 dark:border-slate-800",
+    bg: "bg-slate-500/5 dark:bg-slate-500/10",
+    border: "border-slate-200 dark:border-slate-800",
+    text: "text-slate-700 dark:text-slate-300",
+    accent: "#64748b"
   }
 };

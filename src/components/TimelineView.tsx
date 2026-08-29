@@ -25,12 +25,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const dayData = SCHEDULE_DATA.weekSchedule.find(d => d.dayKey === selectedDay) || SCHEDULE_DATA.weekSchedule[0];
 
   // Determine relative day state
-  const dayKeyToNum: Record<DayKey, number> = { mon: 1, tue: 2, wed: 3, thu: 4, fri: 5 };
+  const dayKeyToNum: Record<DayKey, number> = { mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
   const currentDayNum = vnTime.dayOfWeek;
   const selectedDayNum = dayKeyToNum[selectedDay];
 
   const isToday = selectedDayNum === currentDayNum;
-  const isPastDay = currentDayNum >= 1 && currentDayNum <= 5 ? selectedDayNum < currentDayNum : false;
+  const isPastDay = currentDayNum >= 1 && currentDayNum <= 6 ? selectedDayNum < currentDayNum : false;
 
   const matchesFilterAndSearch = (item: ScheduleItem) => {
     if (item.type === 'break') return true;

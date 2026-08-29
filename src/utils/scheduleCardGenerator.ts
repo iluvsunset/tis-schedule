@@ -16,6 +16,7 @@ export async function generateScheduleCardDataUrl(language: Language = 'vi'): Pr
   else if (currentDayOfWeek === 2) nextDayKey = 'wed';
   else if (currentDayOfWeek === 3) nextDayKey = 'thu';
   else if (currentDayOfWeek === 4) nextDayKey = 'fri';
+  else if (currentDayOfWeek === 5) nextDayKey = 'sat';
   else nextDayKey = 'mon';
 
   const dayData = SCHEDULE_DATA.weekSchedule.find(d => d.dayKey === nextDayKey) || SCHEDULE_DATA.weekSchedule[0];

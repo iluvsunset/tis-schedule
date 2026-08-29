@@ -33,7 +33,7 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
   ];
 
   const days = SCHEDULE_DATA.weekSchedule;
-  const dayKeyToNum: Record<DayKey, number> = { mon: 1, tue: 2, wed: 3, thu: 4, fri: 5 };
+  const dayKeyToNum: Record<DayKey, number> = { mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
   const currentDayNum = vnTime.dayOfWeek;
 
   return (

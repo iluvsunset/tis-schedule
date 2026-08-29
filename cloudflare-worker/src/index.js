@@ -3,11 +3,12 @@
  * 
  * Features:
  * 1. Serves the full Vite React Frontend Web App (UI, Icons, PWA).
- * 2. Runs background Cron check every 15 minutes.
- * 3. Broadcasts "Có thời khóa biểu mới" when changes are detected.
+ * 2. Auto-discovers the newest week tab (e.g. Tuần 5/8, Tuần 6/8, etc.) dynamically.
+ * 3. Runs background Cron check every 15 minutes.
+ * 4. Broadcasts "Có thời khóa biểu mới" when changes or new weeks are detected.
  */
 
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/1H5U71l1QHVPwCBg9c3KPaADG_jjaaRmxfsCNIXpBQJ4/gviz/tq?tqx=out:csv&gid=209193378";
+const SPREADSHEET_ID = "1H5U71l1QHVPwCBg9c3KPaADG_jjaaRmxfsCNIXpBQJ4";
 
 export default {
   /**
@@ -46,7 +47,8 @@ export default {
     if (url.pathname === "/api/status" || url.pathname === "/status") {
       const lastHash = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_sheet_hash") : "KV_NOT_BOUND";
       const lastSync = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_sync_time") : "N/A";
-      return new Response(JSON.stringify({ status: "running", lastSync, lastHash }), {
+      const lastTab = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_active_tab") : "Tuần 5/8";
+      return new Response(JSON.stringify({ status: "running", lastSync, lastHash, lastTab }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
@@ -61,11 +63,40 @@ export default {
 };
 
 /**
- * Fetches Google Sheet, calculates SHA-256 hash, and triggers notification if changed
+ * Automatically discovers the newest sheet tab from Google Spreadsheet HTML view
+ */
+async function getLatestSheetGid() {
+  try {
+    const res = await fetch(`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/htmlview`, {
+      headers: { "User-Agent": "TIS-Schedule-Sync-Bot/1.0" }
+    });
+    if (!res.ok) return { gid: "676068602", name: "Tuần 5/8" };
+    
+    const html = await res.text();
+    const regex = /items\.push\(\{[^}]*name:\s*"([^"]+)"[^}]*gid:\s*"([0-9]+)"/g;
+    let match;
+    const sheets = [];
+    while ((match = regex.exec(html)) !== null) {
+      sheets.push({ name: match[1].replace(/\\\//g, '/'), gid: match[2] });
+    }
+    if (sheets.length > 0) {
+      return sheets[sheets.length - 1];
+    }
+  } catch (e) {
+    console.warn("Could not auto-detect sheet tab:", e);
+  }
+  return { gid: "676068602", name: "Tuần 5/8" };
+}
+
+/**
+ * Fetches the latest week Google Sheet, calculates SHA-256 hash, and triggers notification if changed
  */
 async function checkGoogleSheetForUpdates(env) {
   try {
-    const response = await fetch(SHEET_URL, {
+    const latestTab = await getLatestSheetGid();
+    const sheetCsvUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=${latestTab.gid}`;
+
+    const response = await fetch(sheetCsvUrl, {
       headers: { "User-Agent": "TIS-Schedule-Sync-Bot/1.0" }
     });
 
@@ -75,8 +106,8 @@ async function checkGoogleSheetForUpdates(env) {
 
     const csvText = await response.text();
 
-    // Generate SHA-256 Hash of the sheet content
-    const msgUint8 = new TextEncoder().encode(csvText);
+    // Generate SHA-256 Hash of the sheet content + active tab name
+    const msgUint8 = new TextEncoder().encode(latestTab.name + ":" + csvText);
     const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const newHash = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
@@ -84,35 +115,37 @@ async function checkGoogleSheetForUpdates(env) {
     const nowIso = new Date().toISOString();
 
     if (!env.SCHEDULE_KV) {
-      console.log("SCHEDULE_KV not bound, current hash:", newHash);
-      return { success: true, changed: false, hash: newHash, note: "KV not bound" };
+      console.log("SCHEDULE_KV not bound, current hash:", newHash, "tab:", latestTab.name);
+      return { success: true, changed: false, hash: newHash, tab: latestTab.name, note: "KV not bound" };
     }
 
     const previousHash = await env.SCHEDULE_KV.get("last_sheet_hash");
 
-    // Check if sheet has changed
+    // Check if sheet or tab has changed
     if (previousHash && previousHash !== newHash) {
-      console.log("🔔 New schedule detected! Sending notifications...");
+      console.log(`🔔 New schedule detected on tab [${latestTab.name}]! Sending notifications...`);
 
       // 1. Send Simplified Notification
       await broadcastNotification(env, {
         title: "Có thời khóa biểu mới",
-        body: "Lịch học Lớp 11-TN đã được cập nhật."
+        body: `Lịch học ${latestTab.name} (Lớp 11-TN) đã được cập nhật.`
       });
 
       // 2. Update KV state
       await env.SCHEDULE_KV.put("last_sheet_hash", newHash);
+      await env.SCHEDULE_KV.put("last_active_tab", latestTab.name);
       await env.SCHEDULE_KV.put("last_sync_time", nowIso);
       await env.SCHEDULE_KV.put("last_change_detected", nowIso);
 
-      return { success: true, changed: true, newHash, previousHash };
+      return { success: true, changed: true, newHash, previousHash, tab: latestTab.name };
     }
 
     // No change detected
     await env.SCHEDULE_KV.put("last_sheet_hash", newHash);
+    await env.SCHEDULE_KV.put("last_active_tab", latestTab.name);
     await env.SCHEDULE_KV.put("last_sync_time", nowIso);
 
-    return { success: true, changed: false, hash: newHash };
+    return { success: true, changed: false, hash: newHash, tab: latestTab.name };
   } catch (error) {
     console.error("Sync error:", error);
     return { success: false, error: error.message };
@@ -150,7 +183,7 @@ async function broadcastNotification(env, payload) {
         })
       });
     } catch (err) {
-      console.error("Telegram dispatch failed:", err);
+      console.error("Telegram webhook dispatch failed:", err);
     }
   }
 }

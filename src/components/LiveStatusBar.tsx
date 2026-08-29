@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Clock, MapPin, User, SlidersHorizontal } from 'lucide-react';
 import { Language, DayKey, ScheduleItem } from '../types/schedule';
-import { SCHEDULE_DATA, SUBJECT_METADATA } from '../data/scheduleData';
+import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo } from '../utils/vietnamTime';
-import { DynamicIcon } from '../utils/iconHelper';
+import { CustomSubjectIcon } from './CustomSubjectIcons';
 
 interface LiveStatusBarProps {
   vnTime: VietnamTimeInfo;
@@ -17,7 +17,7 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
   onSelectDay
 }) => {
   const [isSimulating, setIsSimulating] = useState(false);
-  const [simDay, setSimDay] = useState<number>(vnTime.dayOfWeek >= 1 && vnTime.dayOfWeek <= 5 ? vnTime.dayOfWeek : 1);
+  const [simDay, setSimDay] = useState<number>(vnTime.dayOfWeek >= 1 && vnTime.dayOfWeek <= 6 ? vnTime.dayOfWeek : 1);
   const [simTimeStr, setSimTimeStr] = useState<string>("08:30");
 
   // Determine active day & time in minutes
@@ -25,13 +25,13 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
   let totalMinutes = vnTime.totalMinutes;
 
   if (isSimulating) {
-    const dayMap: Record<number, DayKey> = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
+    const dayMap: Record<number, DayKey> = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat' };
     activeDayKey = dayMap[simDay] || 'mon';
     const [h, m] = simTimeStr.split(':').map(Number);
     totalMinutes = (h || 8) * 60 + (m || 0);
   } else {
-    if (vnTime.dayOfWeek >= 1 && vnTime.dayOfWeek <= 5) {
-      const map: Record<number, DayKey> = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
+    if (vnTime.dayOfWeek >= 1 && vnTime.dayOfWeek <= 6) {
+      const map: Record<number, DayKey> = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat' };
       activeDayKey = map[vnTime.dayOfWeek];
     } else {
       activeDayKey = 'mon';
@@ -63,9 +63,8 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
     endTime: dayData.lunch.endTime,
     subjectVi: dayData.lunch.titleVi,
     subjectEn: dayData.lunch.titleEn,
-    teacher: 'Canteen',
+    teacher: '',
     type: 'break',
-    room: 'Canteen',
     startMin: lsh * 60 + lsm,
     endMin: leh * 60 + lem,
     isLunch: true
@@ -77,36 +76,21 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
     events.push({ ...item, startMin: sh * 60 + sm, endMin: eh * 60 + em });
   });
 
-  events.sort((a, b) => a.startMin - b.startMin);
+  // Find currently active event
+  const currentEvent = events.find(e => totalMinutes >= e.startMin && totalMinutes < e.endMin);
 
-  let currentEvent: FlattenedEvent | null = null;
-  let nextEvent: FlattenedEvent | null = null;
-
-  for (let i = 0; i < events.length; i++) {
-    const ev = events[i];
-    if (totalMinutes >= ev.startMin && totalMinutes < ev.endMin) {
-      currentEvent = ev;
-      nextEvent = events[i + 1] || null;
-      break;
-    } else if (totalMinutes < ev.startMin) {
-      nextEvent = ev;
-      break;
-    }
-  }
+  // Find next upcoming event
+  const nextEvent = events.find(e => e.startMin > totalMinutes);
 
   const currentSubject = currentEvent 
-    ? (language === 'vi' ? currentEvent.subjectVi : currentEvent.subjectEn)
-    : (totalMinutes < events[0].startMin 
+    ? (language === 'vi' ? currentEvent.subjectVi : currentEvent.subjectEn) 
+    : (totalMinutes < 8 * 60 
         ? (language === 'vi' ? 'Chưa vào tiết sáng' : 'Before school') 
         : (language === 'vi' ? 'Đã tan trường' : 'Dismissed'));
 
   const remainingMinutes = currentEvent 
     ? currentEvent.endMin - totalMinutes 
     : 0;
-
-  const currentStyle = currentEvent && currentEvent.type 
-    ? (SUBJECT_METADATA[currentEvent.type] || SUBJECT_METADATA.event)
-    : SUBJECT_METADATA.event;
 
   return (
     <div className="glass-card border border-white/80 rounded-2xl p-3 sm:p-3.5 shadow-soft mb-4 no-print flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 text-xs">
@@ -116,8 +100,8 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
 
         {/* Current Class Pill */}
         <div className="flex items-center gap-2 min-w-0 truncate">
-          <div className="w-7 h-7 rounded-xl bg-rose-500 text-white flex items-center justify-center shadow-sm shrink-0">
-            <DynamicIcon name={currentStyle.iconName} className="w-3.5 h-3.5" />
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0">
+            <CustomSubjectIcon type={currentEvent?.type || 'event'} className="w-8 h-8" />
           </div>
           <div className="min-w-0 truncate">
             <div className="flex items-center gap-1.5 font-bold text-slate-900 truncate text-xs sm:text-sm">

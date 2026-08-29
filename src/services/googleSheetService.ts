@@ -1,4 +1,4 @@
-import { ScheduleData, DaySchedule, ScheduleItem, SubjectType } from '../types/schedule';
+import { ScheduleData, DaySchedule, ScheduleItem, SubjectType, DayKey } from '../types/schedule';
 import { SCHEDULE_DATA as FALLBACK_DATA } from '../data/scheduleData';
 
 export interface SheetConfig {
@@ -9,14 +9,37 @@ export interface SheetConfig {
 
 const DEFAULT_CONFIG: SheetConfig = {
   sheetId: '1H5U71l1QHVPwCBg9c3KPaADG_jjaaRmxfsCNIXpBQJ4',
-  gid: '209193378'
+  gid: '676068602' // Tuần 5/8 default
 };
+
+/**
+ * Automatically discovers the latest tab (gid) from Google Spreadsheet HTML view
+ */
+export async function getLatestSheetTab(sheetId: string = DEFAULT_CONFIG.sheetId): Promise<{ name: string; gid: string } | null> {
+  try {
+    const res = await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/htmlview`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const html = await res.text();
+    const regex = /items\.push\(\{[^}]*name:\s*"([^"]+)"[^}]*gid:\s*"([0-9]+)"/g;
+    let match;
+    const sheets: { name: string; gid: string }[] = [];
+    while ((match = regex.exec(html)) !== null) {
+      sheets.push({ name: match[1].replace(/\\\//g, '/'), gid: match[2] });
+    }
+    if (sheets.length > 0) {
+      return sheets[sheets.length - 1];
+    }
+  } catch (e) {
+    console.warn('Could not auto-detect latest sheet tab:', e);
+  }
+  return null;
+}
 
 /**
  * Parses raw CSV content from Google Sheets dynamically for Grade 11-TN
  */
 export function parseSheetCSV(csvText: string): ScheduleData {
-  // Simple robust CSV parser handling quotes and newlines
+  // Robust CSV parser handling quotes and newlines
   const rows: string[][] = [];
   let currentRow: string[] = [];
   let currentCell = '';
@@ -29,7 +52,7 @@ export function parseSheetCSV(csvText: string): ScheduleData {
     if (char === '"') {
       if (insideQuotes && nextChar === '"') {
         currentCell += '"';
-        i++; // skip escaped quote
+        i++;
       } else {
         insideQuotes = !insideQuotes;
       }
@@ -54,8 +77,8 @@ export function parseSheetCSV(csvText: string): ScheduleData {
   }
 
   // 1. Locate 11-TN Column
-  let gradeCol = 10; // Default fallback
-  let headerRowIdx = 2;
+  let gradeCol = 10;
+  let headerRowIdx = 0;
 
   for (let r = 0; r < Math.min(10, rows.length); r++) {
     const row = rows[r];
@@ -86,16 +109,37 @@ export function parseSheetCSV(csvText: string): ScheduleData {
     if (t.includes('science')) return 'science';
     if (t.includes('gdtc') || t.includes('thể dục') || t.includes('pe')) return 'pe';
     if (t.includes('shl') || t.includes('sinh hoạt')) return 'homeroom';
-    if (t.includes('good morning') || t.includes('bầu cử') || t.includes('chào cờ') || t.includes('event')) return 'event';
+    if (t.includes('good morning') || t.includes('bầu cử') || t.includes('khai giảng') || t.includes('rehearsal') || t.includes('nghỉ lễ') || t.includes('lễ')) return 'event';
     return 'event';
   };
 
-  // 4. Helper to extract teacher and subject names from raw cell (e.g. "LÝ-THUẬN", "Level 10 - R504\nEng 1\nMr. Steven")
+  // 4. Helper to extract teacher and subject names
   const parseCellContent = (raw: string, defaultRoom: string) => {
     if (!raw) return { subjectVi: 'Tự học / Nghỉ', subjectEn: 'Self-study', teacher: '', room: defaultRoom, note: '' };
 
     const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
     
+    // Holiday / Event across whole school
+    if (raw.toLowerCase().includes('nghỉ lễ') || raw.toLowerCase().includes('national day')) {
+      return {
+        subjectVi: 'Nghỉ Lễ 2/9',
+        subjectEn: 'National Day Holiday',
+        teacher: 'Nghỉ toàn trường',
+        room: 'TIS',
+        note: lines.join(' - ')
+      };
+    }
+
+    if (raw.toLowerCase().includes('khai giảng') || raw.toLowerCase().includes('rehearsal')) {
+      return {
+        subjectVi: lines[0] || 'Lễ Khai Giảng',
+        subjectEn: lines[1] || 'Opening Ceremony',
+        teacher: 'Toàn Trường (School Event)',
+        room: 'Hội trường',
+        note: lines.join(' - ')
+      };
+    }
+
     // English block (Level 10)
     if (raw.toLowerCase().includes('level 10') || raw.toLowerCase().includes('eng')) {
       const teacherLine = lines.find(l => l.startsWith('Mr.') || l.startsWith('Ms.') || l.startsWith('C.') || l.startsWith('T.'));
@@ -120,52 +164,67 @@ export function parseSheetCSV(csvText: string): ScheduleData {
         : `Thầy/Cô ${teacherPart}`;
 
       const isTinHoc = subjectPart.toLowerCase().includes('tin');
+      const isGDTC = subjectPart.toLowerCase().includes('gdtc');
       return {
-        subjectVi: subjectPart,
-        subjectEn: subjectPart,
+        subjectVi: isGDTC ? 'Giáo Dục Thể Chất' : subjectPart,
+        subjectEn: isGDTC ? 'Physical Education' : subjectPart,
         teacher: teacherFormatted,
-        room: isTinHoc ? 'Lab Tin' : defaultRoom,
+        room: isTinHoc ? 'Lab Tin' : isGDTC ? 'Sân thể thao' : defaultRoom,
         note: raw
       };
     }
 
     const isTinHoc = raw.toLowerCase().includes('tin');
+    const isGDTC = raw.toLowerCase().includes('gdtc');
     return {
       subjectVi: raw,
       subjectEn: raw,
       teacher: '',
-      room: isTinHoc ? 'Lab Tin' : defaultRoom,
+      room: isTinHoc ? 'Lab Tin' : isGDTC ? 'Sân thể thao' : defaultRoom,
       note: raw
     };
   };
 
   // 5. Parse Days dynamically
   const days: DaySchedule[] = [];
-  const dayKeys: ('mon' | 'tue' | 'wed' | 'thu' | 'fri')[] = ['mon', 'tue', 'wed', 'thu', 'fri'];
-  const dayNamesVi = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu'];
-  const dayNamesEn = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const dayKeyMap: Record<string, { key: DayKey; vi: string; en: string }> = {
+    'THỨ HAI': { key: 'mon', vi: 'Thứ Hai', en: 'Monday' },
+    'MONDAY': { key: 'mon', vi: 'Thứ Hai', en: 'Monday' },
+    'THỨ BA': { key: 'tue', vi: 'Thứ Ba', en: 'Tuesday' },
+    'TUESDAY': { key: 'tue', vi: 'Thứ Ba', en: 'Tuesday' },
+    'THỨ TƯ': { key: 'wed', vi: 'Thứ Tư', en: 'Wednesday' },
+    'WEDNESDAY': { key: 'wed', vi: 'Thứ Tư', en: 'Wednesday' },
+    'THỨ NĂM': { key: 'thu', vi: 'Thứ Năm', en: 'Thursday' },
+    'THURSDAY': { key: 'thu', vi: 'Thứ Năm', en: 'Thursday' },
+    'THỨ SÁU': { key: 'fri', vi: 'Thứ Sáu', en: 'Friday' },
+    'FRIDAY': { key: 'fri', vi: 'Thứ Sáu', en: 'Friday' },
+    'THỨ BẢY': { key: 'sat', vi: 'Thứ Bảy', en: 'Saturday' },
+    'SATURDAY': { key: 'sat', vi: 'Thứ Bảy', en: 'Saturday' }
+  };
 
   let currentDayIndex = -1;
   let isMorning = true;
+  let sessionHoliday: string | null = null;
 
   for (let r = headerRowIdx + 3; r < rows.length; r++) {
     const row = rows[r];
     const col1 = row[1] || '';
     const col2 = row[2] || '';
     const col3 = row[3] || '';
-    const val = row[gradeCol] || '';
+    let val = row[gradeCol] || '';
 
-    // Day Header Row (e.g. "THỨ HAI / MONDAY" with date in col3)
-    if (col1.toUpperCase().includes('THỨ') || col1.toUpperCase().includes('MONDAY') || col1.toUpperCase().includes('TUESDAY') || col1.toUpperCase().includes('WEDNESDAY') || col1.toUpperCase().includes('THURSDAY') || col1.toUpperCase().includes('FRIDAY')) {
+    // Day Header Row
+    const upperCol1 = col1.toUpperCase();
+    const matchedDay = Object.keys(dayKeyMap).find(k => upperCol1.includes(k));
+    if (matchedDay) {
       currentDayIndex++;
-      if (currentDayIndex >= 5) break;
-
-      const dateStr = col3 || (row[4] || '24/8/2026');
+      const dayInfo = dayKeyMap[matchedDay];
+      const dateStr = col3 || (row[4] || '');
 
       days.push({
-        dayKey: dayKeys[currentDayIndex],
-        dayNameVi: dayNamesVi[currentDayIndex],
-        dayNameEn: dayNamesEn[currentDayIndex],
+        dayKey: dayInfo.key,
+        dayNameVi: dayInfo.vi,
+        dayNameEn: dayInfo.en,
         date: dateStr,
         morning: [],
         lunch: {
@@ -178,14 +237,34 @@ export function parseSheetCSV(csvText: string): ScheduleData {
         afternoon: []
       });
       isMorning = true;
+      sessionHoliday = null;
       continue;
     }
 
     // Check session switch (Sáng vs Chiều)
     if (col1.toUpperCase().includes('SÁNG') || col1.toUpperCase().includes('MORNING')) {
       isMorning = true;
+      sessionHoliday = null;
     } else if (col1.toUpperCase().includes('CHIỀU') || col1.toUpperCase().includes('AFTERNOON')) {
       isMorning = false;
+      sessionHoliday = null;
+    }
+
+    // Check merged row across all grades (e.g. Holiday or Whole-School Event)
+    const mergedAcross = row.slice(4).find(c => c && (
+      c.toLowerCase().includes('nghỉ lễ') || 
+      c.toLowerCase().includes('holiday') || 
+      c.toLowerCase().includes('khai giảng') ||
+      c.toLowerCase().includes('rehearsal')
+    ));
+
+    if (mergedAcross) {
+      val = mergedAcross;
+      if (mergedAcross.toLowerCase().includes('nghỉ')) {
+        sessionHoliday = mergedAcross;
+      }
+    } else if (!val && sessionHoliday) {
+      val = sessionHoliday;
     }
 
     // Recess row
@@ -247,7 +326,7 @@ export function parseSheetCSV(csvText: string): ScheduleData {
   }
 
   // If parsed properly, return dynamic data; otherwise fallback safely
-  if (days.length === 5) {
+  if (days.length >= 5) {
     return {
       grade: '11-TN',
       gradeTitleVi: 'Lớp 11 - Tự Nhiên',
@@ -260,7 +339,7 @@ export function parseSheetCSV(csvText: string): ScheduleData {
         subject: 'Sinh Hoạt Lớp'
       },
       weekSchedule: days,
-      teachers: FALLBACK_DATA.teachers // retain rich teacher roster
+      teachers: FALLBACK_DATA.teachers
     };
   }
 
@@ -268,13 +347,20 @@ export function parseSheetCSV(csvText: string): ScheduleData {
 }
 
 /**
- * Fetches live CSV data from Google Sheet and parses it dynamically
+ * Fetches live CSV data from Google Sheet with automatic latest week discovery
  */
 export async function fetchLiveSchedule(config: SheetConfig = DEFAULT_CONFIG): Promise<ScheduleData> {
-  const params = config.gid ? `gid=${config.gid}` : config.sheetName ? `sheet=${encodeURIComponent(config.sheetName)}` : 'gid=0';
-  const url = `https://docs.google.com/spreadsheets/d/${config.sheetId}/gviz/tq?tqx=out:csv&${params}`;
-
   try {
+    // 1. Try to auto-discover latest week tab
+    let activeGid = config.gid || '676068602';
+    const latestTab = await getLatestSheetTab(config.sheetId);
+    if (latestTab && latestTab.gid) {
+      activeGid = latestTab.gid;
+    }
+
+    const params = `gid=${activeGid}`;
+    const url = `https://docs.google.com/spreadsheets/d/${config.sheetId}/gviz/tq?tqx=out:csv&${params}`;
+
     const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`Google Sheets responded with status ${response.status}`);

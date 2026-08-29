@@ -11,7 +11,7 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
 
   const handleFinish = () => {
     setIsVisible(false);
-    setTimeout(onComplete, 400);
+    setTimeout(onComplete, 350);
   };
 
   useEffect(() => {
@@ -22,18 +22,17 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
       video.playsInline = true;
       const playPromise = video.play();
       if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-          console.warn("Autoplay prevented:", err);
-          // If autoplay is completely blocked by browser policy, finish after 1.5s
-          setTimeout(handleFinish, 1500);
+        playPromise.catch(() => {
+          // Autoplay fallback: immediately proceed if policy blocked
+          setTimeout(handleFinish, 1200);
         });
       }
     }
 
-    // Failsafe timer (6s) so screen never hangs indefinitely
+    // Fast mobile failsafe (4.5s max duration)
     const failsafe = setTimeout(() => {
       handleFinish();
-    }, 6000);
+    }, 4500);
 
     return () => clearTimeout(failsafe);
   }, []);
@@ -44,13 +43,13 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="fixed inset-0 z-[9999] bg-white flex items-center justify-center overflow-hidden cursor-pointer"
+          transition={{ duration: 0.35, ease: "easeInOut" }}
+          className="fixed inset-0 z-[9999] bg-white flex items-center justify-center overflow-hidden cursor-pointer select-none"
           onClick={handleFinish}
         >
           <video
             ref={videoRef}
-            src="/The_International_School_Logo.mp4"
+            poster="/tis-intro-poster.webp"
             autoPlay
             muted
             playsInline
@@ -58,7 +57,10 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
             onEnded={handleFinish}
             onError={handleFinish}
             className="w-full h-full object-contain sm:object-cover"
-          />
+          >
+            <source src="/The_International_School_Logo_mobile.mp4" type="video/mp4" />
+            <source src="/The_International_School_Logo.mp4" type="video/mp4" />
+          </video>
         </motion.div>
       )}
     </AnimatePresence>

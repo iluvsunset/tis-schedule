@@ -1,7 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, MoreVertical, CalendarPlus, Printer, Users, Globe, Bell, BellRing, Clock, Sun, Moon, Laptop } from 'lucide-react';
-import { Language, ThemeKey, ViewMode, DayKey, ScheduleData } from '../types/schedule';
+import { 
+  Search, 
+  X, 
+  MoreVertical, 
+  CalendarPlus, 
+  Printer, 
+  Users, 
+  Globe, 
+  Bell, 
+  BellRing, 
+  Sun, 
+  Moon, 
+  Laptop,
+  ChevronDown,
+  Calendar,
+  School
+} from 'lucide-react';
+import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, WeekTabInfo } from '../types/schedule';
 import { exportScheduleToICS } from '../utils/icsExport';
 import { VietnamTimeInfo } from '../utils/vietnamTime';
 import { SCHEDULE_DATA } from '../data/scheduleData';
@@ -26,7 +42,11 @@ interface NavbarProps {
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
   onOpenTeacherModal: () => void;
+  onOpenClassModal?: () => void;
   scheduleData?: ScheduleData;
+  availableWeeks?: WeekTabInfo[];
+  selectedWeekGid?: string;
+  onSelectWeek?: (gid: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -42,17 +62,30 @@ export const Navbar: React.FC<NavbarProps> = ({
   viewMode,
   onViewModeChange,
   onOpenTeacherModal,
-  scheduleData
+  onOpenClassModal,
+  scheduleData,
+  availableWeeks = [],
+  selectedWeekGid,
+  onSelectWeek
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isWeekDropdownOpen, setIsWeekDropdownOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
   const [notifActive, setNotifActive] = useState(isNotificationEnabled());
-  const [testSent, setTestSent] = useState(false);
   const [testCountdown, setTestCountdown] = useState<number | null>(null);
   const countdownIntervalRef = useRef<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const weekRef = useRef<HTMLDivElement>(null);
 
   const days = (scheduleData || SCHEDULE_DATA).weekSchedule;
+  const currentClassName = language === 'vi' 
+    ? (scheduleData?.gradeTitleVi || 'Lớp 11-TN') 
+    : (scheduleData?.gradeTitleEn || 'Grade 11-TN');
+  const currentRoom = scheduleData?.room || '504';
+  const currentTeacher = scheduleData?.homeroomTeacher?.name || 'Cô Tiềng';
+
+  const activeWeekObj = availableWeeks.find(w => w.gid === selectedWeekGid) || availableWeeks[availableWeeks.length - 1];
+  const activeWeekName = activeWeekObj?.name || 'Tuần 5/8';
 
   const dayLabelsVi: Record<DayKey, string> = { mon: 'T2', tue: 'T3', wed: 'T4', thu: 'T5', fri: 'T6', sat: 'T7' };
   const dayLabelsEn: Record<DayKey, string> = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat' };
@@ -97,8 +130,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       if (count <= 0) {
         clearCountdown();
         sendTestNotification(language);
-        setTestSent(true);
-        setTimeout(() => setTestSent(false), 3500);
       } else {
         setTestCountdown(count);
       }
@@ -116,20 +147,24 @@ export const Navbar: React.FC<NavbarProps> = ({
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false);
       }
+      if (weekRef.current && !weekRef.current.contains(event.target as Node)) {
+        setIsWeekDropdownOpen(false);
+      }
     };
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsMenuOpen(false);
+      if (e.key === 'Escape') {
+        setIsMenuOpen(false);
+        setIsWeekDropdownOpen(false);
+      }
     };
 
-    if (isMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleKeyDown);
-    }
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isMenuOpen]);
+  }, []);
 
   const handleCycleTheme = () => {
     if (theme === 'system') onThemeChange('light');
@@ -141,14 +176,15 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="relative z-50 no-print mb-3">
       <div className="glass-card border rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 shadow-sm flex flex-wrap items-center justify-between gap-2.5">
         
-        {/* Left: TIS Logo, Class Info & Live Vietnam Clock */}
+        {/* Left: TIS Logo, Interactive Class Switcher & Live Clock */}
         <div className="flex items-center gap-2.5 shrink-0">
           
           {/* TIS Logo */}
-          <motion.div 
+          <motion.button 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            onClick={onOpenClassModal}
+            title={language === 'vi' ? "Đổi lớp học" : "Change class"}
             className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white dark:bg-slate-800 p-0.5 shadow-xs border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
           >
             {!logoError ? (
@@ -161,20 +197,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             ) : (
               <span className="font-display font-black text-slate-800 dark:text-slate-100 text-xs">TIS</span>
             )}
-          </motion.div>
+          </motion.button>
 
-          {/* Class, Room & Live Clock */}
+          {/* Interactive Class & Room Switcher */}
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none">
-                Lớp 11-TN
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={onOpenClassModal}
+              className="flex items-center gap-1.5 cursor-pointer group text-left"
+              title={language === 'vi' ? "Nhấn để chọn lớp khác" : "Click to switch class"}
+            >
+              <h1 className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                {currentClassName}
               </h1>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/80">
-                Phòng 504
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/80 group-hover:border-amber-400/50 transition-colors">
+                Phòng {currentRoom}
               </span>
-            </div>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-500 transition-colors" />
+            </motion.button>
+
             <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-              <span>GVQN: Cô Tiềng</span>
+              <span>GVQN: {currentTeacher}</span>
               <span className="text-slate-300 dark:text-slate-700">•</span>
               <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-slate-300 tabular-nums">
                 {vnTime.timeWithSeconds}
@@ -183,65 +227,126 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Center: Unified Day & Week Tabs */}
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 overflow-x-auto max-w-full relative">
-          {days.map((d) => {
-            const isSelected = viewMode === 'timeline' && selectedDay === d.dayKey;
-            const label = language === 'vi' ? dayLabelsVi[d.dayKey] : dayLabelsEn[d.dayKey];
-            const dateStr = d.date.split('/')[0] + '/' + d.date.split('/')[1];
-
-            return (
-              <button
-                key={d.dayKey}
-                onClick={() => {
-                  onSelectDay(d.dayKey);
-                  onViewModeChange('timeline');
-                }}
-                className={`relative px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 whitespace-nowrap z-10 ${
-                  isSelected 
-                    ? 'text-white dark:text-slate-900' 
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
-                }`}
+        {/* Center: Week Selector & Day / Week Tabs */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          
+          {/* Week Dropdown Selector */}
+          {availableWeeks.length > 0 && onSelectWeek && (
+            <div className="relative shrink-0" ref={weekRef}>
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => setIsWeekDropdownOpen(!isWeekDropdownOpen)}
+                className="px-2.5 py-1 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                title="Chọn tuần học"
               >
-                {isSelected && (
-                  <motion.div
-                    layoutId="active-nav-tab"
-                    className="absolute inset-0 bg-slate-900 dark:bg-white rounded-lg shadow-sm z-[-1]"
-                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                  />
-                )}
-                <span>{label}</span>
-                <span className={`text-[10px] font-normal ${isSelected ? 'opacity-85' : 'text-slate-400 dark:text-slate-500'}`}>
-                  {dateStr}
-                </span>
-              </button>
-            );
-          })}
+                <Calendar className="w-3.5 h-3.5 text-amber-500" />
+                <span>{activeWeekName}</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${isWeekDropdownOpen ? 'rotate-180' : ''}`} />
+              </motion.button>
 
-          {/* Full Week Tab */}
-          <button
-            onClick={() => onViewModeChange('grid')}
-            className={`relative px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer whitespace-nowrap border-l border-slate-200 dark:border-slate-700 ml-0.5 pl-2 z-10 ${
-              viewMode === 'grid' 
-                ? 'text-white dark:text-slate-900' 
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
-            }`}
-          >
-            {viewMode === 'grid' && (
-              <motion.div
-                layoutId="active-nav-tab"
-                className="absolute inset-0 bg-slate-900 dark:bg-white rounded-lg shadow-sm z-[-1]"
-                transition={{ type: "spring", stiffness: 500, damping: 35 }}
-              />
-            )}
-            {language === 'vi' ? 'Cả Tuần' : 'Full Week'}
-          </button>
+              <AnimatePresence>
+                {isWeekDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9, y: -6 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: -6 }}
+                    className="absolute left-0 top-full mt-1.5 w-44 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-1.5 z-[100] space-y-1"
+                  >
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 py-1">
+                      {language === 'vi' ? 'Danh Sách Tuần' : 'School Weeks'}
+                    </div>
+                    {availableWeeks.slice().reverse().map((w) => {
+                      const isSelected = w.gid === selectedWeekGid || (!selectedWeekGid && w.isLatest);
+                      return (
+                        <button
+                          key={w.gid}
+                          onClick={() => {
+                            onSelectWeek(w.gid);
+                            setIsWeekDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center justify-between cursor-pointer ${
+                            isSelected
+                              ? 'bg-amber-500 text-slate-950 font-black shadow-xs'
+                              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                          }`}
+                        >
+                          <span>{w.name}</span>
+                          {w.isLatest && (
+                            <span className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold ${isSelected ? 'bg-slate-950 text-amber-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'}`}>
+                              Mới
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+
+          {/* Unified Day & Week Tabs */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 overflow-x-auto max-w-full relative">
+            {days.map((d) => {
+              const isSelected = viewMode === 'timeline' && selectedDay === d.dayKey;
+              const label = language === 'vi' ? dayLabelsVi[d.dayKey] : dayLabelsEn[d.dayKey];
+              const dateStr = d.date.split('/')[0] + '/' + d.date.split('/')[1];
+
+              return (
+                <button
+                  key={d.dayKey}
+                  onClick={() => {
+                    onSelectDay(d.dayKey);
+                    onViewModeChange('timeline');
+                  }}
+                  className={`relative px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 whitespace-nowrap z-10 ${
+                    isSelected 
+                      ? 'text-white dark:text-slate-900' 
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                  }`}
+                >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="active-nav-tab"
+                      className="absolute inset-0 bg-slate-900 dark:bg-white rounded-lg shadow-sm z-[-1]"
+                      transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                    />
+                  )}
+                  <span>{label}</span>
+                  <span className={`text-[10px] font-normal ${isSelected ? 'opacity-85' : 'text-slate-400 dark:text-slate-500'}`}>
+                    {dateStr}
+                  </span>
+                </button>
+              );
+            })}
+
+            {/* Full Week Tab */}
+            <button
+              onClick={() => onViewModeChange('grid')}
+              className={`relative px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer whitespace-nowrap border-l border-slate-200 dark:border-slate-700 ml-0.5 pl-2 z-10 ${
+                viewMode === 'grid' 
+                  ? 'text-white dark:text-slate-900' 
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+              }`}
+            >
+              {viewMode === 'grid' && (
+                <motion.div
+                  layoutId="active-nav-tab"
+                  className="absolute inset-0 bg-slate-900 dark:bg-white rounded-lg shadow-sm z-[-1]"
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                />
+              )}
+              {language === 'vi' ? 'Cả Tuần' : 'Full Week'}
+            </button>
+          </div>
+
         </div>
 
-        {/* Right: Quick Search, System/Light/Dark Toggle, Notif Bell & Floating Action Menu */}
+        {/* Right: Quick Search, Theme Toggle, Notif Bell & Floating Action Menu */}
         <div className="flex items-center gap-1.5 shrink-0 ml-auto md:ml-0">
           
-          {/* Quick System / Light / Dark Cycle Button */}
+          {/* Quick Theme Cycle Button */}
           <motion.button
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.94 }}
@@ -249,10 +354,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer flex items-center justify-center shadow-2xs"
             title={
               theme === 'system'
-                ? (language === 'vi' ? 'Giao diện: Tự động (Theo thiết bị)' : 'Theme: Device Auto')
+                ? (language === 'vi' ? 'Giao diện: Tự động' : 'Theme: Auto')
                 : theme === 'light'
-                  ? (language === 'vi' ? 'Giao diện: Sáng (Light)' : 'Theme: Light')
-                  : (language === 'vi' ? 'Giao diện: Tối (Dark)' : 'Theme: Dark')
+                  ? (language === 'vi' ? 'Giao diện: Sáng' : 'Theme: Light')
+                  : (language === 'vi' ? 'Giao diện: Tối' : 'Theme: Dark')
             }
           >
             {theme === 'system' ? (
@@ -276,8 +381,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
               }`}
               title={notifActive 
-                ? (language === 'vi' ? 'Đã bật nhắc nhở mỗi tối (21:00)' : 'Evening reminders active (9:00 PM)') 
-                : (language === 'vi' ? 'Bật nhắc nhở lịch học mỗi tối' : 'Enable evening reminders')}
+                ? (language === 'vi' ? 'Đã bật nhắc nhở mỗi tối (21:00)' : 'Evening reminders active') 
+                : (language === 'vi' ? 'Bật nhắc nhở lịch học mỗi tối' : 'Enable reminders')}
             >
               {notifActive ? <BellRing className="w-3.5 h-3.5 text-amber-500 animate-pulse" /> : <Bell className="w-3.5 h-3.5" />}
             </motion.button>
@@ -322,239 +427,85 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Elevated Floating Menu Panel */}
             <AnimatePresence>
               {isMenuOpen && (
-                <>
-                  {/* Transparent Click-Away Overlay */}
-                  <div 
-                    className="fixed inset-0 z-[90]" 
-                    onClick={() => setIsMenuOpen(false)}
-                  />
-
-                  {/* Floating Card Panel with Spring Pop-up Physics */}
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.82, y: -12, rotateX: 10, transformOrigin: 'top right' }}
-                    animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
-                    exit={{ opacity: 0, scale: 0.85, y: -8 }}
-                    transition={{ type: "spring", stiffness: 480, damping: 25 }}
-                    className="absolute right-0 top-full mt-2 w-68 z-[100] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800 rounded-3xl shadow-2xl p-2.5 divide-y divide-slate-100 dark:divide-slate-800 text-xs ring-1 ring-black/5"
-                  >
-                    
-                    {/* Faculty Directory */}
-                    <div className="pb-2">
-                      <motion.button
-                        whileHover={{ x: 3 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => {
-                          onOpenTeacherModal();
-                          setIsMenuOpen(false);
-                        }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-2xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                      >
-                        <Users className="w-4 h-4 text-slate-700 dark:text-slate-300" />
-                        <span>{language === 'vi' ? 'Danh sách Giáo Viên' : 'Faculty Directory'}</span>
-                      </motion.button>
-                    </div>
-
-                    {/* Evening Browser Notifications with 5s Delay Test */}
-                    <div className="py-2">
-                      <div className="flex items-center justify-between px-3 py-1">
-                        <span className="font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
-                          <Bell className="w-3.5 h-3.5 text-amber-500" />
-                          <span>{language === 'vi' ? 'Nhắc lịch tối (21h-22h)' : 'Evening Reminder (9-10 PM)'}</span>
-                        </span>
-                        <button
-                          onClick={handleToggleNotification}
-                          className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer p-0.5 ${
-                            notifActive ? 'bg-amber-500' : 'bg-slate-300 dark:bg-slate-700'
-                          }`}
-                        >
-                          <motion.div
-                            animate={{ x: notifActive ? 16 : 0 }}
-                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                            className="w-4 h-4 rounded-full bg-white shadow-sm"
-                          />
-                        </button>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.85, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.85, y: -8 }}
+                  className="absolute right-0 top-full mt-2 w-68 z-[100] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800 rounded-3xl shadow-2xl p-2.5 divide-y divide-slate-100 dark:divide-slate-800 text-xs ring-1 ring-black/5 space-y-2"
+                >
+                  
+                  {/* Switch Class */}
+                  <div className="pb-1">
+                    <button
+                      onClick={() => {
+                        onOpenClassModal?.();
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-2xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                    >
+                      <School className="w-4 h-4 text-amber-500" />
+                      <div className="text-left">
+                        <div>{language === 'vi' ? 'Đổi Lớp Học' : 'Switch Class'}</div>
+                        <div className="text-[10px] text-slate-400 font-normal">{currentClassName}</div>
                       </div>
+                    </button>
+                  </div>
 
-                      {notifActive && (
-                        <div className="mt-1 px-2.5">
-                          <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={trigger5sTestNotification}
-                            className={`w-full py-1.5 px-2 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 border text-[11px] font-bold ${
-                              testCountdown !== null 
-                                ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-300 animate-pulse'
-                                : testSent 
-                                  ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300' 
-                                  : 'bg-amber-50 dark:bg-amber-950/40 border-amber-200/80 dark:border-amber-800 text-amber-800 dark:text-amber-300 hover:bg-amber-100'
-                            }`}
-                          >
-                            {testCountdown !== null ? (
-                              <>
-                                <Clock className="w-3.5 h-3.5 text-rose-500 animate-spin" />
-                                <span>{language === 'vi' ? `Gửi sau ${testCountdown}s...` : `Sending in ${testCountdown}s...`}</span>
-                              </>
-                            ) : testSent ? (
-                              <span>{language === 'vi' ? '✓ Đã gửi thông báo!' : '✓ Notification Sent!'}</span>
-                            ) : (
-                              <>
-                                <Bell className="w-3.5 h-3.5 text-amber-600" />
-                                <span>{language === 'vi' ? 'Gửi thử (Hẹn 5 giây)' : 'Test (5s Delay)'}</span>
-                              </>
-                            )}
-                          </motion.button>
-                        </div>
-                      )}
+                  {/* Faculty Directory */}
+                  <div className="pt-2 pb-1">
+                    <button
+                      onClick={() => {
+                        onOpenTeacherModal();
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-2xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                    >
+                      <Users className="w-4 h-4 text-slate-700 dark:text-slate-300" />
+                      <span>{language === 'vi' ? 'Danh sách Giáo Viên' : 'Teacher Directory'}</span>
+                    </button>
+                  </div>
+
+                  {/* Language Toggle */}
+                  <div className="pt-2 flex items-center justify-between px-2 py-1">
+                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                      <Globe className="w-3.5 h-3.5" />
+                      <span>{language === 'vi' ? 'Ngôn ngữ' : 'Language'}</span>
                     </div>
-
-                    {/* System / Light / Dark Appearance Selector */}
-                    <div className="py-2 flex items-center justify-between px-3">
-                      <span className="text-slate-700 dark:text-slate-200 font-semibold flex items-center gap-1.5 text-xs">
-                        {theme === 'system' ? (
-                          <Laptop className="w-3.5 h-3.5 text-blue-500" />
-                        ) : theme === 'dark' ? (
-                          <Moon className="w-3.5 h-3.5 text-indigo-400" />
-                        ) : (
-                          <Sun className="w-3.5 h-3.5 text-amber-500" />
-                        )}
-                        <span>{language === 'vi' ? 'Giao diện' : 'Theme'}</span>
-                      </span>
-                      <div className="flex items-center p-0.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 relative">
-                        {/* Auto / Device */}
-                        <button
-                          onClick={() => {
-                            onThemeChange('system');
-                            setIsMenuOpen(false);
-                          }}
-                          className={`relative z-10 px-2 py-0.8 rounded-lg text-[10px] font-bold transition flex items-center gap-1 cursor-pointer ${
-                            theme === 'system' ? 'text-slate-900 dark:text-white' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
-                          }`}
-                        >
-                          {theme === 'system' && (
-                            <motion.div
-                              layoutId="theme-active-pill"
-                              className="absolute inset-0 bg-white dark:bg-slate-700 shadow-2xs rounded-lg z-[-1]"
-                              transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                            />
-                          )}
-                          <Laptop className="w-3 h-3" />
-                          <span>{language === 'vi' ? 'Tự động' : 'Auto'}</span>
-                        </button>
-
-                        {/* Light */}
-                        <button
-                          onClick={() => {
-                            onThemeChange('light');
-                            setIsMenuOpen(false);
-                          }}
-                          className={`relative z-10 px-2 py-0.8 rounded-lg text-[10px] font-bold transition flex items-center gap-1 cursor-pointer ${
-                            theme === 'light' ? 'text-slate-900 dark:text-white' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
-                          }`}
-                        >
-                          {theme === 'light' && (
-                            <motion.div
-                              layoutId="theme-active-pill"
-                              className="absolute inset-0 bg-white dark:bg-slate-700 shadow-2xs rounded-lg z-[-1]"
-                              transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                            />
-                          )}
-                          <Sun className="w-3 h-3" />
-                          <span>{language === 'vi' ? 'Sáng' : 'Light'}</span>
-                        </button>
-
-                        {/* Dark */}
-                        <button
-                          onClick={() => {
-                            onThemeChange('dark');
-                            setIsMenuOpen(false);
-                          }}
-                          className={`relative z-10 px-2 py-0.8 rounded-lg text-[10px] font-bold transition flex items-center gap-1 cursor-pointer ${
-                            theme === 'dark' ? 'text-slate-900 dark:text-white' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
-                          }`}
-                        >
-                          {theme === 'dark' && (
-                            <motion.div
-                              layoutId="theme-active-pill"
-                              className="absolute inset-0 bg-white dark:bg-slate-700 shadow-2xs rounded-lg z-[-1]"
-                              transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                            />
-                          )}
-                          <Moon className="w-3 h-3" />
-                          <span>{language === 'vi' ? 'Tối' : 'Dark'}</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Language Toggle */}
-                    <div className="py-2 flex items-center justify-between px-3">
-                      <span className="text-slate-700 dark:text-slate-200 font-semibold flex items-center gap-1.5 text-xs">
-                        <Globe className="w-3.5 h-3.5 text-slate-500" />
-                        <span>{language === 'vi' ? 'Ngôn ngữ' : 'Language'}</span>
-                      </span>
-                      <div className="flex items-center p-0.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 relative">
-                        <button
-                          onClick={() => onLanguageChange('vi')}
-                          className={`relative z-10 px-2.5 py-0.8 rounded-lg text-[10px] font-bold transition cursor-pointer ${
-                            language === 'vi' ? 'text-slate-900 dark:text-white' : 'text-slate-400'
-                          }`}
-                        >
-                          {language === 'vi' && (
-                            <motion.div
-                              layoutId="active-lang-pill"
-                              className="absolute inset-0 bg-white dark:bg-slate-700 rounded-lg shadow-2xs z-[-1]"
-                              transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                            />
-                          )}
-                          VIE
-                        </button>
-                        <button
-                          onClick={() => onLanguageChange('en')}
-                          className={`relative z-10 px-2.5 py-0.8 rounded-lg text-[10px] font-bold transition cursor-pointer ${
-                            language === 'en' ? 'text-slate-900 dark:text-white' : 'text-slate-400'
-                          }`}
-                        >
-                          {language === 'en' && (
-                            <motion.div
-                              layoutId="active-lang-pill"
-                              className="absolute inset-0 bg-white dark:bg-slate-700 rounded-lg shadow-2xs z-[-1]"
-                              transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                            />
-                          )}
-                          ENG
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Export Calendar & Print */}
-                    <div className="pt-2 flex items-center gap-1.5">
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => {
-                          exportScheduleToICS();
-                          setIsMenuOpen(false);
-                        }}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer shadow-2xs"
+                    <div className="flex rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200 dark:border-slate-700">
+                      <button
+                        onClick={() => onLanguageChange('vi')}
+                        className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold cursor-pointer transition ${language === 'vi' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs' : 'text-slate-400'}`}
                       >
-                        <CalendarPlus className="w-3.5 h-3.5" />
-                        <span>{language === 'vi' ? 'Thêm Lịch' : 'Export .ics'}</span>
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => {
-                          window.print();
-                          setIsMenuOpen(false);
-                        }}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
+                        VIE
+                      </button>
+                      <button
+                        onClick={() => onLanguageChange('en')}
+                        className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold cursor-pointer transition ${language === 'en' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs' : 'text-slate-400'}`}
                       >
-                        <Printer className="w-3.5 h-3.5" />
-                        <span>{language === 'vi' ? 'In Lịch' : 'Print'}</span>
-                      </motion.button>
+                        ENG
+                      </button>
                     </div>
+                  </div>
 
-                  </motion.div>
-                </>
+                  {/* Calendar Export & Print */}
+                  <div className="pt-2 grid grid-cols-2 gap-1.5">
+                    <button
+                      onClick={() => exportScheduleToICS(days, currentClassName)}
+                      className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-[11px] hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
+                    >
+                      <CalendarPlus className="w-3.5 h-3.5 text-blue-500" />
+                      <span>{language === 'vi' ? 'Thêm Lịch' : 'Sync Cal'}</span>
+                    </button>
+                    <button
+                      onClick={() => window.print()}
+                      className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-[11px] hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
+                    >
+                      <Printer className="w-3.5 h-3.5 text-emerald-500" />
+                      <span>{language === 'vi' ? 'In Lịch' : 'Print'}</span>
+                    </button>
+                  </div>
+
+                </motion.div>
               )}
             </AnimatePresence>
           </div>

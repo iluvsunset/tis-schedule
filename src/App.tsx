@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Language, ThemeKey, ViewMode, DayKey, ScheduleData } from './types/schedule';
+import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, WeekTabInfo, INITIAL_CLASSES } from './types/schedule';
 import { SCHEDULE_DATA as INITIAL_DATA } from './data/scheduleData';
-import { fetchLiveSchedule } from './services/googleSheetService';
+import { fetchLiveSchedule, getAllSheetTabs } from './services/googleSheetService';
 import { Navbar } from './components/Navbar';
 import { TimelineView } from './components/TimelineView';
 import { WeeklyMatrixView } from './components/WeeklyMatrixView';
 import { TeacherModal } from './components/TeacherModal';
+import { ClassSelectorModal } from './components/ClassSelectorModal';
 import { NotificationPermissionModal } from './components/NotificationPermissionModal';
 import { IPhoneInstallGuideModal } from './components/IPhoneInstallGuideModal';
 import { getVietnamTime, VietnamTimeInfo, getDateStatus } from './utils/vietnamTime';
@@ -23,11 +24,21 @@ export const App: React.FC = () => {
   const [selectedDay, setSelectedDay] = useState<DayKey>('mon');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [vnTime, setVnTime] = useState<VietnamTimeInfo>(getVietnamTime());
+  
+  // Universal Class & Multi-Week State
+  const [selectedClassId, setSelectedClassId] = useState<string>(() => {
+    return localStorage.getItem('tis_selected_class_id') || '11-tn';
+  });
+  const [isClassModalOpen, setIsClassModalOpen] = useState<boolean>(() => {
+    return !localStorage.getItem('tis_selected_class_id'); // Auto prompt on first visit
+  });
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
+  const [availableWeeks, setAvailableWeeks] = useState<WeekTabInfo[]>([]);
+  const [selectedWeekGid, setSelectedWeekGid] = useState<string>('');
 
   const mouse = useParallaxMouse();
 
-  // Initialize day once on mount & fetch live schedule
+  // 1. Initialize day, load weeks & fetch schedule on startup
   useEffect(() => {
     const currentVn = getVietnamTime();
     setVnTime(currentVn);
@@ -39,13 +50,41 @@ export const App: React.FC = () => {
       setSelectedDay('mon');
     }
 
-    // Fetch live schedule once in background
-    fetchLiveSchedule().then((freshData) => {
-      if (freshData) {
-        setScheduleData(freshData);
-      }
-    }).catch((e) => console.warn('Live sync fallback:', e));
-  }, []);
+    // Discover all available week tabs
+    getAllSheetTabs().then((tabs) => {
+      setAvailableWeeks(tabs);
+      const latestGid = tabs[tabs.length - 1]?.gid || '676068602';
+      setSelectedWeekGid(latestGid);
+      
+      // Fetch live schedule for user's selected class and latest week
+      fetchLiveSchedule(latestGid, selectedClassId).then((freshData) => {
+        if (freshData) setScheduleData(freshData);
+      }).catch((e) => console.warn('Initial live sync fallback:', e));
+    }).catch((e) => console.warn('Tabs fetch fallback:', e));
+  }, [selectedClassId]);
+
+  // Handle Class Switch
+  const handleSelectClass = async (classId: string) => {
+    setSelectedClassId(classId);
+    localStorage.setItem('tis_selected_class_id', classId);
+    try {
+      const freshData = await fetchLiveSchedule(selectedWeekGid, classId);
+      if (freshData) setScheduleData(freshData);
+    } catch (e) {
+      console.warn('Class switch fetch fallback:', e);
+    }
+  };
+
+  // Handle Week Switch
+  const handleSelectWeek = async (gid: string) => {
+    setSelectedWeekGid(gid);
+    try {
+      const freshData = await fetchLiveSchedule(gid, selectedClassId);
+      if (freshData) setScheduleData(freshData);
+    } catch (e) {
+      console.warn('Week switch fetch fallback:', e);
+    }
+  };
 
   // Update root data-theme attribute & auto-detect device dark mode
   useEffect(() => {
@@ -139,7 +178,11 @@ export const App: React.FC = () => {
           viewMode={viewMode}
           onViewModeChange={setViewMode}
           onOpenTeacherModal={() => setIsTeacherModalOpen(true)}
+          onOpenClassModal={() => setIsClassModalOpen(true)}
           scheduleData={scheduleData}
+          availableWeeks={availableWeeks}
+          selectedWeekGid={selectedWeekGid}
+          onSelectWeek={handleSelectWeek}
         />
 
         {/* Primary Schedule View */}
@@ -167,15 +210,28 @@ export const App: React.FC = () => {
         {/* Sleek Minimal Transparent Footer */}
         <footer className="mt-auto pt-6 pb-3 text-center text-[11px] text-slate-400 dark:text-slate-500 no-print">
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
-            <span className="font-semibold text-slate-600 dark:text-slate-400">Lớp 11-TN • TIS Schedule</span>
+            <span className="font-semibold text-slate-600 dark:text-slate-400">
+              {scheduleData.gradeTitleVi || 'Lớp 11-TN'} • TIS Schedule
+            </span>
             <span>•</span>
             <span>Phòng {scheduleData.room || '504'}</span>
             <span>•</span>
-            <span>GVQN: {scheduleData.homeroomTeacher.name}</span>
+            <span>GVQN: {scheduleData.homeroomTeacher?.name}</span>
             <span>•</span>
             <span>Giờ Việt Nam (UTC+7)</span>
           </div>
         </footer>
+
+        {/* Universal Class Selection Modal */}
+        <ClassSelectorModal
+          isOpen={isClassModalOpen}
+          onClose={() => setIsClassModalOpen(false)}
+          classes={INITIAL_CLASSES}
+          selectedClassId={selectedClassId}
+          onSelectClass={handleSelectClass}
+          language={language}
+          allowClose={Boolean(localStorage.getItem('tis_selected_class_id'))}
+        />
 
         {/* Teacher Roster Modal */}
         <TeacherModal

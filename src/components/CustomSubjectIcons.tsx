@@ -150,7 +150,7 @@ export const BiologyIcon: React.FC<CustomIconProps> = ({ className = "w-6 h-6", 
 );
 
 /**
- * 7. Computer Science (Tin Học) Icon: Minimalist luxury laptop & code brackets in 1-stroke line art
+ * 7. Computer Science (Tin Học) Icon: Minimalist luxury developer code window & syntax brackets in 1-stroke line art
  */
 export const CSIcon: React.FC<CustomIconProps> = ({ className = "w-6 h-6", size }) => (
   <svg 
@@ -166,9 +166,15 @@ export const CSIcon: React.FC<CustomIconProps> = ({ className = "w-6 h-6", size 
         <stop offset="1" stopColor="#d97706" />
       </linearGradient>
     </defs>
-    <rect x="5" y="6" width="22" height="15" rx="2.5" stroke="url(#csLineGrad)" strokeWidth="1.8" />
-    <path d="M10.5 11.5L8.5 13.5L10.5 15.5M17.5 11.5L19.5 13.5L17.5 15.5M15 10.5L13 16.5" stroke="url(#csLineGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M3 24.5H29" stroke="url(#csLineGrad)" strokeWidth="2" strokeLinecap="round" />
+    {/* Sleek developer code window frame */}
+    <rect x="4" y="5" width="24" height="22" rx="3.5" stroke="url(#csLineGrad)" strokeWidth="1.75" />
+    <path d="M4 11H28" stroke="url(#csLineGrad)" strokeWidth="1.3" strokeLinecap="round" />
+    <circle cx="8" cy="8" r="1.1" fill="url(#csLineGrad)" />
+    <circle cx="12" cy="8" r="1.1" fill="url(#csLineGrad)" />
+    {/* Crisp minimalist code brackets < / > */}
+    <path d="M11 16L8.5 19L11 22" stroke="url(#csLineGrad)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M21 16L23.5 19L21 22" stroke="url(#csLineGrad)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M17 15L15 23" stroke="url(#csLineGrad)" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 );
 

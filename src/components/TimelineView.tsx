@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Sparkles } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { DayKey, Language, ScheduleItem, ScheduleData } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
@@ -147,8 +147,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             <VietnamHolidayEmblem className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-sm transform hover:scale-105 transition-transform" />
           </div>
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-bold uppercase tracking-wider">
               <span>{language === 'vi' ? 'Kỳ Nghỉ Lễ Toàn Quốc' : 'National Public Holiday'}</span>
             </div>
             <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-black text-slate-900 dark:text-white tracking-tight">

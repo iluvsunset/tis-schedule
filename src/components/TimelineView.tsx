@@ -5,7 +5,7 @@ import { DayKey, Language, ScheduleItem, ScheduleData } from '../types/schedule'
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { TimelineCard } from './TimelineCard';
-import { RecessIcon, LunchIcon, VietnamHolidayEmblem } from './CustomSubjectIcons';
+import { RecessIcon, LunchIcon, VietnamHolidayEmblem, MorningSessionIcon, AfternoonSessionIcon } from './CustomSubjectIcons';
 
 interface TimelineViewProps {
   selectedDay: DayKey;
@@ -168,7 +168,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
           <div className="space-y-2.5 sm:space-y-3">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
-                <span className="text-amber-500 text-sm">☀️</span>
+                <MorningSessionIcon className="w-4 h-4" />
                 <span className="font-display font-extrabold text-xs sm:text-sm text-slate-900 dark:text-slate-100">
                   {language === 'vi' ? 'Buổi Sáng (08:00 – 11:30)' : 'Morning Session (08:00 – 11:30)'}
                 </span>
@@ -245,7 +245,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
             <div className="flex items-center justify-between px-1 pt-1">
               <div className="flex items-center gap-2">
-                <span className="text-indigo-400 text-sm">☕</span>
+                <AfternoonSessionIcon className="w-4 h-4" />
                 <span className="font-display font-extrabold text-xs sm:text-sm text-slate-900 dark:text-slate-100">
                   {language === 'vi' ? 'Buổi Chiều (13:30 – 16:05)' : 'Afternoon Session (13:30 – 16:05)'}
                 </span>

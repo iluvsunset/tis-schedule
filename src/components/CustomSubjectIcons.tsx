@@ -363,6 +363,51 @@ export const VietnamHolidayEmblem: React.FC<CustomIconProps> = ({ className = "w
 );
 
 /**
+ * 15. Morning Session Sun Icon (Custom Minimalist 1-Stroke SVG)
+ */
+export const MorningSessionIcon: React.FC<CustomIconProps> = ({ className = "w-4 h-4", size }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg" 
+    className={className}
+    style={size ? { width: size, height: size } : undefined}
+  >
+    <defs>
+      <linearGradient id="morningSunGrad" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#fbbf24" />
+        <stop offset="1" stopColor="#f59e0b" />
+      </linearGradient>
+    </defs>
+    <circle cx="12" cy="12" r="5" stroke="url(#morningSunGrad)" strokeWidth="1.8" />
+    <path d="M12 2V4.5M12 19.5V22M2 12H4.5M19.5 12H22M4.93 4.93L6.7 6.7M17.3 17.3L19.07 19.07M4.93 19.07L6.7 17.3M17.3 6.7L19.07 4.93" stroke="url(#morningSunGrad)" strokeWidth="1.6" strokeLinecap="round" />
+  </svg>
+);
+
+/**
+ * 16. Afternoon Session Sun/Horizon Icon (Custom Minimalist 1-Stroke SVG)
+ */
+export const AfternoonSessionIcon: React.FC<CustomIconProps> = ({ className = "w-4 h-4", size }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg" 
+    className={className}
+    style={size ? { width: size, height: size } : undefined}
+  >
+    <defs>
+      <linearGradient id="afternoonGrad" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#818cf8" />
+        <stop offset="1" stopColor="#6366f1" />
+      </linearGradient>
+    </defs>
+    <path d="M3 18H21" stroke="url(#afternoonGrad)" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M7 18C7 13 9.2 8 12 8C14.8 8 17 13 17 18" stroke="url(#afternoonGrad)" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M12 2V5M18.5 5.5L16.5 7.5M5.5 5.5L7.5 7.5" stroke="url(#afternoonGrad)" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+/**
  * Dynamic Custom Subject Icon Selector
  */
 export const CustomSubjectIcon: React.FC<{ type: SubjectType; className?: string; size?: number }> = ({ 

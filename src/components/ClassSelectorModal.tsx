@@ -14,41 +14,49 @@ interface ClassSelectorModalProps {
 }
 
 /**
- * Minimalist luxury 1-stroke animated SVG checkmark
+ * Minimalist luxury 1-stroke checkmark (clean single-ring vector animation)
  */
 const LuxuryAnimatedCheckmark: React.FC = () => (
   <motion.div
-    initial={{ scale: 0.5, opacity: 0 }}
-    animate={{ scale: [0.5, 1.08, 1], opacity: 1 }}
-    exit={{ scale: 0.5, opacity: 0 }}
-    transition={{ duration: 0.35, ease: "easeOut" }}
-    className="w-7 h-7 rounded-full bg-emerald-500/20 dark:bg-emerald-400/20 border border-emerald-400/60 dark:border-emerald-400/70 flex items-center justify-center shrink-0 shadow-xs"
+    initial={{ scale: 0.6, opacity: 0 }}
+    animate={{ scale: 1, opacity: 1 }}
+    exit={{ scale: 0.6, opacity: 0 }}
+    transition={{ type: "spring", stiffness: 500, damping: 25 }}
+    className="w-6 h-6 flex items-center justify-center shrink-0 text-emerald-400"
   >
     <svg 
       viewBox="0 0 24 24" 
       fill="none" 
       xmlns="http://www.w3.org/2000/svg" 
-      className="w-4 h-4 text-emerald-400 dark:text-emerald-300"
+      className="w-5 h-5"
     >
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        className="opacity-30"
+      />
       <motion.circle
         cx="12"
         cy="12"
-        r="9"
+        r="10"
         stroke="currentColor"
-        strokeWidth="1.6"
+        strokeWidth="1.5"
         strokeLinecap="round"
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 1 }}
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       />
       <motion.path
-        d="M7.5 12.3L10.5 15.3L16.5 8.8"
+        d="M7.5 12.2L10.5 15.2L16.5 8.8"
         stroke="currentColor"
-        strokeWidth="1.9"
+        strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 1 }}
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
         transition={{ duration: 0.25, delay: 0.1, ease: "easeOut" }}
       />
     </svg>

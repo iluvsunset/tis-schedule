@@ -202,7 +202,7 @@ export async function generateScheduleCardDataUrl(language: Language = 'vi'): Pr
   // 4. Footer Bar
   ctx.fillStyle = '#64748b';
   ctx.font = '500 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillText('Trường Quốc Tế TIS • GVQN: Cô Tiềng (Phòng 504) • tis11schedule.iluvsunset.workers.dev', 50, 630);
+  ctx.fillText('Trường Quốc Tế TIS • GVQN: Cô Tiềng (Phòng 504) • tis-schedule.iluvsunset.workers.dev', 50, 630);
 
   // Export to Data URL
   return canvas.toDataURL('image/png');

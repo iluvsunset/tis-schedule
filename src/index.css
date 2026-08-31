@@ -35,18 +35,27 @@
   scrollbar-width: none;  /* Firefox */
 }
 
-/* Fluid Responsive Typography Scale */
-html {
+/* Fluid Responsive Typography Scale & iOS Safari Native Glass Canvas */
+html, body, #root {
   font-size: 15px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #080c14;
+  color-scheme: dark;
   min-height: 100%;
   min-height: 100dvh;
+  margin: 0;
+  padding: 0;
 }
 
-html[data-theme="light"] {
+html.dark, html.dark body, html.dark #root {
+  background-color: #080c14;
+  color-scheme: dark;
+}
+
+html:not(.dark), html:not(.dark) body, html:not(.dark) #root, html[data-theme="light"] {
   background-color: #f8fafc;
+  color-scheme: light;
 }
 
 @media (min-width: 640px) {

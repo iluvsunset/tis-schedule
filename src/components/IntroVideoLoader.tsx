@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface IntroVideoLoaderProps {
@@ -8,45 +8,67 @@ interface IntroVideoLoaderProps {
 export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }) => {
   const [isVisible, setIsVisible] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const finishedRef = useRef(false);
 
-  const handleFinish = () => {
+  const handleFinish = useCallback(() => {
+    if (finishedRef.current) return;
+    finishedRef.current = true;
     setIsVisible(false);
     setTimeout(onComplete, 300);
-  };
+  }, [onComplete]);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
+    // Strict WebKit & Android autoplay requirements
     video.muted = true;
     video.defaultMuted = true;
+    video.volume = 0;
     video.playsInline = true;
-    video.setAttribute('playsinline', 'true');
-    video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('x5-playsinline', '');
 
-    const startPlayback = () => {
-      const p = video.play();
-      if (p !== undefined) {
-        p.catch((err) => {
-          console.warn("Video autoplay pending:", err);
-        });
+    const tryPlay = () => {
+      if (video.paused) {
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((err) => {
+            console.warn("Mobile autoplay restriction:", err);
+            // If browser strictly forbids autoplay (e.g. Low Power Mode), finish smoothly
+            setTimeout(handleFinish, 1200);
+          });
+        }
       }
     };
 
-    if (video.readyState >= 2) {
-      startPlayback();
-    } else {
-      video.addEventListener('loadedmetadata', startPlayback, { once: true });
-      video.addEventListener('canplay', startPlayback, { once: true });
-    }
+    // Attempt playback immediately and on metadata load
+    tryPlay();
+    video.addEventListener('loadeddata', tryPlay, { once: true });
+    video.addEventListener('canplay', tryPlay, { once: true });
 
-    // Safety timeout (5.5s) to guarantee app entry if video stalls
-    const timeout = setTimeout(() => {
+    // Touch fallback in case browser delays autoplay until first user gesture
+    const handleUserGesture = () => {
+      tryPlay();
+      window.removeEventListener('touchstart', handleUserGesture);
+      window.removeEventListener('pointerdown', handleUserGesture);
+    };
+    window.addEventListener('touchstart', handleUserGesture, { once: true, passive: true });
+    window.addEventListener('pointerdown', handleUserGesture, { once: true, passive: true });
+
+    // Failsafe timeout to prevent any infinite hang
+    const failsafe = setTimeout(() => {
       handleFinish();
-    }, 5500);
+    }, 5600);
 
-    return () => clearTimeout(timeout);
-  }, []);
+    return () => {
+      clearTimeout(failsafe);
+      window.removeEventListener('touchstart', handleUserGesture);
+      window.removeEventListener('pointerdown', handleUserGesture);
+    };
+  }, [handleFinish]);
 
   return (
     <AnimatePresence>
@@ -55,12 +77,13 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="fixed inset-0 w-screen h-screen h-[100dvh] z-[9999] bg-white flex items-center justify-center overflow-hidden select-none"
+          className="fixed inset-0 w-screen h-screen h-[100dvh] z-[9999] bg-white dark:bg-slate-950 flex items-center justify-center overflow-hidden select-none"
         >
-          <div className="w-full h-full w-screen h-screen min-w-full min-h-full flex items-center justify-center overflow-hidden">
+          <div className="w-full h-full w-screen h-screen min-w-full min-h-full flex items-center justify-center overflow-hidden bg-white dark:bg-slate-950">
             <video
               ref={videoRef}
               src="/The_International_School_Logo.mp4"
+              poster="/landscape-logo.png"
               autoPlay
               muted
               playsInline

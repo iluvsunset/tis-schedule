@@ -23,7 +23,7 @@ const LuxuryAnimatedCheckmark: React.FC = () => (
     animate={{ scale: 1, opacity: 1 }}
     exit={{ scale: 0.6, opacity: 0 }}
     transition={springTactile}
-    className="w-6 h-6 flex items-center justify-center shrink-0 text-emerald-400"
+    className="w-6 h-6 flex items-center justify-center shrink-0 text-amber-500 dark:text-amber-400"
   >
     <svg 
       viewBox="0 0 24 24" 
@@ -171,7 +171,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
               {highSchool.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-2.5">
-                    <GraduationCap className="w-4 h-4 text-indigo-500" />
+                    <GraduationCap className="w-4 h-4 text-amber-500" />
                     <h4 className="text-xs sm:text-sm font-bold font-display uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       {language === 'vi' ? 'Khối Trung Học Phổ Thông (THPT)' : 'High School (Grades 10 – 12)'}
                     </h4>
@@ -192,7 +192,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                           onClick={() => handleChoose(c.id)}
                           className={`p-3.5 rounded-2xl border text-left transition-all relative flex items-center justify-between gap-3 cursor-pointer ${
                             isSelected
-                              ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-slate-900 dark:border-emerald-500/70 shadow-md ring-1 ring-emerald-400/40'
+                              ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-amber-500/80 dark:border-amber-400/80 shadow-md ring-2 ring-amber-400/25'
                               : 'bg-slate-100/80 hover:bg-slate-200/70 dark:bg-slate-800/70 dark:hover:bg-slate-800 border-slate-200/90 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 shadow-2xs'
                           }`}
                         >
@@ -203,7 +203,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                               </span>
                               <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${
                                 isSelected
-                                   ? 'bg-white/15 text-white border-white/20 font-bold'
+                                   ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 font-bold'
                                   : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'
                               }`}>
                                 Phòng {c.room}
@@ -226,7 +226,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
               {middleSchool.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-2.5">
-                    <School className="w-4 h-4 text-emerald-500" />
+                    <School className="w-4 h-4 text-blue-500" />
                     <h4 className="text-xs sm:text-sm font-bold font-display uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       {language === 'vi' ? 'Khối Trung Học Cơ Sở (THCS)' : 'Middle School (Grades 6 – 9)'}
                     </h4>
@@ -247,7 +247,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                           onClick={() => handleChoose(c.id)}
                           className={`p-3.5 rounded-2xl border text-left transition-all relative flex items-center justify-between gap-3 cursor-pointer ${
                             isSelected
-                              ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-slate-900 dark:border-emerald-500/70 shadow-md ring-1 ring-emerald-400/40'
+                              ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-amber-500/80 dark:border-amber-400/80 shadow-md ring-2 ring-amber-400/25'
                               : 'bg-slate-100/80 hover:bg-slate-200/70 dark:bg-slate-800/70 dark:hover:bg-slate-800 border-slate-200/90 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 shadow-2xs'
                           }`}
                         >
@@ -258,7 +258,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                               </span>
                               <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${
                                 isSelected
-                                  ? 'bg-white/15 text-white border-white/20 font-bold'
+                                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 font-bold'
                                   : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'
                               }`}>
                                 Phòng {c.room}

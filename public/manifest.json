@@ -4,8 +4,8 @@
   "description": "Thời khóa biểu thông minh, tự động nhắc nhở lịch học mỗi tối dành riêng cho Lớp 11-TN Trường Quốc Tế TIS.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fff1f2",
-  "theme_color": "#fb7185",
+  "background_color": "#080c14",
+  "theme_color": "#080c14",
   "orientation": "portrait-primary",
   "icons": [
     {

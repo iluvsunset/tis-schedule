@@ -30,6 +30,13 @@ html {
   font-size: 15px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #080c14;
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
+html[data-theme="light"] {
+  background-color: #f8fafc;
 }
 
 @media (min-width: 640px) {
@@ -95,9 +102,11 @@ body {
   background: var(--bg-gradient);
   background-color: var(--bg-color);
   min-height: 100vh;
+  min-height: 100dvh;
   color: var(--text-primary);
   letter-spacing: -0.012em;
   transition: background-color 0.4s ease, color 0.4s ease;
+  overscroll-behavior-y: none;
 }
 
 /* Luxury Glassmorphic Surface Cards */

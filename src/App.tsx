@@ -116,6 +116,11 @@ export const App: React.FC = () => {
       } else {
         document.documentElement.classList.remove('dark');
       }
+
+      // Synchronize mobile Safari theme-color meta tag
+      const activeColor = isDark ? '#080c14' : '#f8fafc';
+      const metaThemeColors = document.querySelectorAll('meta[name="theme-color"]');
+      metaThemeColors.forEach(meta => meta.setAttribute('content', activeColor));
     };
 
     applyTheme();
@@ -138,7 +143,7 @@ export const App: React.FC = () => {
   }, [language]);
 
   return (
-    <div className="min-h-screen relative text-slate-900 dark:text-slate-100 selection:bg-slate-900 selection:text-white dark:selection:bg-white dark:selection:text-slate-900 transition-colors duration-300 font-sans flex flex-col justify-between overflow-x-hidden">
+    <div className="min-h-screen min-h-[100dvh] relative text-slate-900 dark:text-slate-100 selection:bg-slate-900 selection:text-white dark:selection:bg-white dark:selection:text-slate-900 transition-colors duration-300 font-sans flex flex-col justify-between overflow-x-hidden">
       
       {/* Cinematic First-Access Video Intro / Loading Screen */}
       {showIntroVideo && (
@@ -177,8 +182,8 @@ export const App: React.FC = () => {
         />
       </div>
 
-      {/* Main Fluid Responsive Container */}
-      <div className="relative z-10 w-full max-w-[98%] sm:max-w-[95%] lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1550px] 3xl:max-w-[1850px] 4k:max-w-[2400px] mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-3.5 2xl:py-5 flex-1 flex flex-col transition-all duration-300">
+      {/* Main Fluid Responsive Container with Safe Area Support */}
+      <div className="relative z-10 w-full max-w-[98%] sm:max-w-[95%] lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1550px] 3xl:max-w-[1850px] 4k:max-w-[2400px] mx-auto px-2 sm:px-4 lg:px-6 pt-[max(0.5rem,env(safe-area-inset-top,0px))] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] flex-1 flex flex-col transition-all duration-300">
         
         {/* Streamlined Unified Top Bar */}
         <Navbar

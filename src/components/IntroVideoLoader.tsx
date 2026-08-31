@@ -58,17 +58,19 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
           className="fixed inset-0 z-[9999] bg-white flex items-center justify-center overflow-hidden cursor-pointer select-none"
           onClick={handleFinish}
         >
-          <video
-            ref={videoRef}
-            src="/The_International_School_Logo_mobile.mp4"
-            autoPlay
-            muted
-            playsInline
-            preload="auto"
-            onEnded={handleFinish}
-            onError={handleFinish}
-            className="w-full h-full object-contain"
-          />
+          <div className="w-full h-full flex items-center justify-center overflow-hidden">
+            <video
+              ref={videoRef}
+              src="/The_International_School_Logo.mp4"
+              autoPlay
+              muted
+              playsInline
+              preload="auto"
+              onEnded={handleFinish}
+              onError={handleFinish}
+              className="w-full h-full object-contain scale-[2.2] sm:scale-[1.6] md:scale-[1.2] lg:scale-100 transition-transform duration-500 transform-gpu"
+            />
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

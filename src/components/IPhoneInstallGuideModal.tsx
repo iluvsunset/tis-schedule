@@ -48,7 +48,7 @@ export const IPhoneInstallGuideModal: React.FC<IPhoneInstallGuideModalProps> = (
   if (!isLocked) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-slate-950/85 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-2xl flex items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top,16px))] pb-[max(1.5rem,env(safe-area-inset-bottom,24px))] overflow-y-auto">
       {/* Subtle Studio Glow */}
       <div className="absolute top-1/4 -left-20 w-80 h-80 bg-blue-600/15 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-amber-500/15 rounded-full blur-[100px] pointer-events-none" />
@@ -57,7 +57,7 @@ export const IPhoneInstallGuideModal: React.FC<IPhoneInstallGuideModalProps> = (
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 350, damping: 28 }}
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] shadow-2xl max-w-md w-full p-6 text-slate-800 dark:text-slate-100 relative overflow-hidden ring-1 ring-black/5 dark:ring-white/5"
+        className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 rounded-[32px] shadow-2xl max-w-md w-full p-6 text-slate-800 dark:text-slate-100 relative overflow-hidden ring-1 ring-black/5 dark:ring-white/5"
       >
         {/* Top Header Bar with Language Switcher */}
         <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
@@ -167,15 +167,17 @@ export const IPhoneInstallGuideModal: React.FC<IPhoneInstallGuideModalProps> = (
               : 'Once added, open the app from your Home Screen to use.'}
           </p>
 
-          <button
+          {/* Dismiss / Continue to Web Button */}
+          <motion.button
+            whileTap={{ scale: 0.96 }}
             onClick={() => {
               setIsLocked(false);
               document.body.style.overflow = '';
             }}
-            className="mt-3 text-[11px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 underline underline-offset-2 transition cursor-pointer"
+            className="mt-3.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs border border-slate-200 dark:border-slate-700 transition cursor-pointer shadow-2xs flex items-center justify-center gap-1.5"
           >
-            {lang === 'vi' ? 'Tiếp tục xem trên trình duyệt web ➔' : 'Continue viewing in web browser ➔'}
-          </button>
+            <span>{lang === 'vi' ? 'Tiếp tục xem trên trình duyệt web ➔' : 'Continue viewing in web browser ➔'}</span>
+          </motion.button>
         </div>
 
       </motion.div>

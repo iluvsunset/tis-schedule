@@ -15,44 +15,34 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
   };
 
   useEffect(() => {
-    // If iOS Safari in regular web page tab, skip immediately
-    if (typeof window !== 'undefined') {
-      const ua = window.navigator.userAgent;
-      const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      const isWebkit = /WebKit/i.test(ua);
-      const isSafari = isWebkit && !/CriOS|FxiOS|OPiOS|mercury/i.test(ua);
-      // @ts-expect-error iOS standalone property
-      const isStandalone = Boolean(window.navigator.standalone) || window.matchMedia('(display-mode: standalone)').matches;
-      if (isIOS && isSafari && !isStandalone) {
-        handleFinish();
-        return;
-      }
-    }
-
     const video = videoRef.current;
     if (!video) return;
 
+    // Strict Apple WebKit property enforcement
     video.muted = true;
     video.defaultMuted = true;
+    video.volume = 0;
     video.playsInline = true;
     video.setAttribute('playsinline', 'true');
     video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('muted', '');
+    video.setAttribute('autoplay', '');
 
     const startPlayback = () => {
       const p = video.play();
       if (p !== undefined) {
         p.catch((err) => {
-          console.warn("Video autoplay pending:", err);
+          console.warn("Autoplay pending/retry:", err);
         });
       }
     };
 
-    if (video.readyState >= 2) {
-      startPlayback();
-    } else {
-      video.addEventListener('loadedmetadata', startPlayback, { once: true });
-      video.addEventListener('canplay', startPlayback, { once: true });
-    }
+    startPlayback();
+    video.addEventListener('loadeddata', startPlayback);
+    video.addEventListener('canplay', startPlayback);
+    video.addEventListener('playing', () => {
+      // Video is playing actively
+    }, { once: true });
 
     // Safety timeout (5.5s) to guarantee app entry if video stalls
     const timeout = setTimeout(() => {
@@ -69,7 +59,7 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="fixed inset-0 z-[9999] bg-white flex items-center justify-center overflow-hidden select-none"
+          className="fixed inset-0 z-[999999] bg-white flex items-center justify-center overflow-hidden select-none"
         >
           <div className="w-full h-full flex items-center justify-center overflow-hidden">
             <video

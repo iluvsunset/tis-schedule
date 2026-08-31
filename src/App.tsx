@@ -184,7 +184,7 @@ export const App: React.FC = () => {
   }, [isMinimalMode, selectedDay]);
 
   return (
-    <div className={`min-h-screen min-h-[100dvh] relative text-slate-900 dark:text-slate-100 selection:bg-slate-900 selection:text-white dark:selection:bg-white dark:selection:text-slate-900 transition-colors duration-300 font-sans flex flex-col ${isMinimalMode ? 'justify-center items-center py-2 sm:py-4' : 'justify-between'} overflow-x-hidden`}>
+    <div className={`min-h-screen min-h-[100dvh] relative text-slate-900 dark:text-slate-100 selection:bg-slate-900 selection:text-white dark:selection:bg-white dark:selection:text-slate-900 transition-colors duration-300 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'} overflow-x-hidden`}>
       
       {/* Cinematic First-Access Video Intro / Loading Screen */}
       {showIntroVideo && (
@@ -224,7 +224,7 @@ export const App: React.FC = () => {
       </div>
 
       {/* Main Fluid Responsive Container with Safe Area Support */}
-      <div className={`relative z-10 w-full ${isMinimalMode ? 'max-w-[98%] xl:max-w-6xl 2xl:max-w-7xl my-auto justify-center' : 'max-w-[98%] sm:max-w-[95%] lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1550px] 3xl:max-w-[1850px] 4k:max-w-[2400px]'} mx-auto px-2 sm:px-4 lg:px-6 pt-[max(0.5rem,env(safe-area-inset-top,0px))] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] flex-1 flex flex-col transition-all duration-300`}>
+      <div className={`relative z-10 w-full ${isMinimalMode ? 'max-w-full sm:max-w-[98%] xl:max-w-6xl 2xl:max-w-7xl md:my-auto justify-start md:justify-center' : 'max-w-[98%] sm:max-w-[95%] lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1550px] 3xl:max-w-[1850px] 4k:max-w-[2400px]'} mx-auto px-2 sm:px-4 lg:px-6 pt-[max(0.5rem,env(safe-area-inset-top,0px))] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] flex-1 flex flex-col transition-all duration-300`}>
         
         {/* Top Header Card: Minimal Hero Card in Minimal Mode / Full Navbar in Standard Mode */}
         {isMinimalMode ? (
@@ -265,7 +265,7 @@ export const App: React.FC = () => {
         )}
 
         {/* Primary Schedule View (Auto-Centered in Minimal Mode) */}
-        <main className={`flex-1 ${isMinimalMode ? 'flex flex-col justify-center my-auto w-full' : 'mt-1 sm:mt-1.5'} relative z-0`}>
+        <main className={`flex-1 ${isMinimalMode ? 'flex flex-col md:justify-center md:my-auto w-full' : 'mt-1 sm:mt-1.5'} relative z-0`}>
           <AnimatePresence mode="wait">
             {viewMode === 'timeline' ? (
               <motion.div
@@ -274,7 +274,7 @@ export const App: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                className={isMinimalMode ? 'w-full my-auto' : ''}
+                className={isMinimalMode ? 'w-full md:my-auto' : ''}
               >
                 <TimelineView
                   selectedDay={selectedDay}

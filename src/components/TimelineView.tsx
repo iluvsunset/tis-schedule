@@ -172,13 +172,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
               />
             )}
 
-            <div className="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2 sm:px-2.5 py-1 rounded-lg sm:rounded-xl border border-slate-200/60 dark:border-slate-700/60 shrink-0">
-              {isAllDayHoliday ? (
-                <span className="text-rose-600 dark:text-rose-400 font-bold">🇻🇳 Nghỉ Lễ</span>
-              ) : (
+            {!isAllDayHoliday && (
+              <div className="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2 sm:px-2.5 py-1 rounded-lg sm:rounded-xl border border-slate-200/60 dark:border-slate-700/60 shrink-0">
                 <span>{totalPeriods} {language === 'vi' ? 'Tiết' : 'Periods'}</span>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Full-Screen Minimal Mode Toggle Button (Icon Only - Desktop / sm+) */}
             {onToggleMinimalMode && (

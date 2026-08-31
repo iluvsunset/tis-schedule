@@ -178,13 +178,11 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
 
         {/* Right: Actions */}
         <div className="flex items-center justify-end gap-2 shrink-0">
-          <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 shrink-0">
-            {isAllDayHoliday ? (
-              <span className="text-rose-600 dark:text-rose-400 font-bold">🇻🇳 Nghỉ Lễ</span>
-            ) : (
+          {!isAllDayHoliday && (
+            <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 shrink-0">
               <span>{totalPeriods} {language === 'vi' ? 'Tiết học' : 'Periods'}</span>
-            )}
-          </div>
+            </div>
+          )}
 
           {availableWeeks && availableWeeks.length > 0 && onSelectWeek && (
             <WeekSelectorButton
@@ -278,13 +276,11 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
             )}
           </div>
 
-          <div className="text-[10px] font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60 shrink-0">
-            {isAllDayHoliday ? (
-              <span className="text-rose-600 dark:text-rose-400">🇻🇳 Nghỉ Lễ</span>
-            ) : (
+          {!isAllDayHoliday && (
+            <div className="text-[10px] font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60 shrink-0">
               <span>{totalPeriods} {language === 'vi' ? 'Tiết' : 'Per'}</span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Tier 3: Full-Width Day Switcher Tabs */}

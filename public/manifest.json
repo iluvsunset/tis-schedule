@@ -1,6 +1,6 @@
 {
-  "name": "Thời Khóa Biểu 11-TN • TIS Schedule",
-  "short_name": "TIS 11-TN",
+  "name": "TIS Schedule",
+  "short_name": "TIS Schedule",
   "description": "Thời khóa biểu thông minh, tự động nhắc nhở lịch học mỗi tối dành riêng cho Lớp 11-TN Trường Quốc Tế TIS.",
   "start_url": "/",
   "display": "standalone",

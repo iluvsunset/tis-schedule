@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar } from 'lucide-react';
+import { Calendar, Maximize2 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { DayKey, Language, ScheduleItem, ScheduleData, WeekTabInfo } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
+import { listContainerVariants as containerVariants, listItemVariants as itemVariants } from '../utils/motionTokens';
 import { TimelineCard } from './TimelineCard';
 import { RecessIcon, LunchIcon, VietnamHolidayEmblem, MorningSessionIcon, AfternoonSessionIcon } from './CustomSubjectIcons';
 import { WeekSelectorButton } from './WeekSelectorButton';
@@ -18,6 +20,8 @@ interface TimelineViewProps {
   availableWeeks?: WeekTabInfo[];
   selectedWeekGid?: string;
   onSelectWeek?: (gid: string) => void;
+  isMinimalMode?: boolean;
+  onToggleMinimalMode?: () => void;
 }
 
 export const TimelineView: React.FC<TimelineViewProps> = ({
@@ -29,7 +33,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   scheduleData,
   availableWeeks,
   selectedWeekGid,
-  onSelectWeek
+  onSelectWeek,
+  isMinimalMode,
+  onToggleMinimalMode
 }) => {
   const currentSchedule = scheduleData || SCHEDULE_DATA;
   const dayData = currentSchedule.weekSchedule.find(d => d.dayKey === selectedDay) || currentSchedule.weekSchedule[0];
@@ -71,6 +77,27 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
   const totalPeriods = dayData.morning.filter(i => i.type !== 'break').length + dayData.afternoon.filter(i => i.type !== 'break').length;
 
+  const triggerCelebrationConfetti = (e?: React.MouseEvent) => {
+    if (e) {
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const x = (rect.left + rect.width / 2) / window.innerWidth;
+      const y = (rect.top + rect.height / 2) / window.innerHeight;
+      confetti({
+        particleCount: 75,
+        spread: 60,
+        origin: { x, y },
+        colors: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#fbbf24']
+      });
+    } else {
+      confetti({
+        particleCount: 90,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#fbbf24']
+      });
+    }
+  };
+
   const getPeriodStatus = (item: ScheduleItem) => {
     const [sh, sm] = item.startTime.split(':').map(Number);
     const [eh, em] = item.endTime.split(':').map(Number);
@@ -111,72 +138,94 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
   return (
     <div className="space-y-3 sm:space-y-4 relative z-20">
-      
-      {/* Day Header Bar with high z-index for floating dropdown */}
-      <motion.div 
-        key={`header-${selectedDay}`}
-        initial={{ opacity: 0, y: -6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-        className="glass-card rounded-2xl px-4 py-2 sm:px-4.5 sm:py-2.5 shadow-2xs flex items-center justify-between relative z-40"
-      >
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          <Calendar className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-          <h2 className="text-xs sm:text-sm md:text-base font-display font-extrabold text-slate-900 dark:text-slate-100">
-            {dayTitle}
-          </h2>
-          {isToday && (
-            <span className="px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full shadow-2xs">
-              {language === 'vi' ? 'Hôm Nay' : 'Today'}
+      {/* Day Header Bar (Only in Standard Mode; Minimal Mode uses MinimalHeaderCard) */}
+      {!isMinimalMode && (
+        <motion.div 
+          key={`header-${selectedDay}`}
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className="glass-card rounded-2xl px-4 py-2 sm:px-4.5 sm:py-2.5 shadow-2xs flex items-center justify-between relative z-40"
+        >
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <Calendar className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+            <h2 className="text-xs sm:text-sm md:text-base font-display font-extrabold text-slate-900 dark:text-slate-100">
+              {dayTitle}
+            </h2>
+            {isToday && (
+              <span className="px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full shadow-2xs">
+                {language === 'vi' ? 'Hôm Nay' : 'Today'}
+              </span>
+            )}
+            <span className="text-xs text-slate-400 dark:text-slate-500 font-medium hidden sm:inline">
+              • {currentSchedule.gradeTitleVi || 'Lớp 11-TN'} (Phòng {currentSchedule.room || '504'})
             </span>
-          )}
-          <span className="text-xs text-slate-400 dark:text-slate-500 font-medium hidden sm:inline">
-            • {currentSchedule.gradeTitleVi || 'Lớp 11-TN'} (Phòng {currentSchedule.room || '504'})
-          </span>
-        </div>
+          </div>
 
-        <div className="flex items-center gap-2">
-          {availableWeeks && availableWeeks.length > 0 && onSelectWeek && (
-            <WeekSelectorButton
-              availableWeeks={availableWeeks}
-              selectedWeekGid={selectedWeekGid}
-              onSelectWeek={onSelectWeek}
-              language={language}
-            />
-          )}
+          <div className="flex items-center gap-2">
+            {availableWeeks && availableWeeks.length > 0 && onSelectWeek && (
+              <WeekSelectorButton
+                availableWeeks={availableWeeks}
+                selectedWeekGid={selectedWeekGid}
+                onSelectWeek={onSelectWeek}
+                language={language}
+              />
+            )}
 
-          <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
-            {isAllDayHoliday ? (
-              <span className="text-rose-600 dark:text-rose-400 font-bold">🇻🇳 Nghỉ Lễ</span>
-            ) : (
-              <span>{totalPeriods} {language === 'vi' ? 'Tiết học' : 'Periods'}</span>
+            <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1 rounded-xl border border-slate-200/60 dark:border-slate-700/60 shrink-0">
+              {isAllDayHoliday ? (
+                <span className="text-rose-600 dark:text-rose-400 font-bold">🇻🇳 Nghỉ Lễ</span>
+              ) : (
+                <span>{totalPeriods} {language === 'vi' ? 'Tiết học' : 'Periods'}</span>
+              )}
+            </div>
+
+            {/* Full-Screen Minimal Mode Toggle Button (Icon Only) */}
+            {onToggleMinimalMode && (
+              <motion.button
+                whileTap={{ scale: 0.94 }}
+                onClick={onToggleMinimalMode}
+                className="p-1.5 rounded-xl border transition flex items-center justify-center cursor-pointer shadow-2xs bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-slate-200/60 dark:border-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700"
+                title={language === 'vi' ? "Chế độ xem tối giản toàn màn hình (Phím F)" : "Full-screen minimal focus (F)"}
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+              </motion.button>
             )}
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      )}
 
       {/* If All-Day Holiday: Show Full-Width Celebration Banner */}
       {isAllDayHoliday ? (
         <motion.div 
           key={`holiday-${selectedDay}`}
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="glass-card rounded-3xl p-6 sm:p-10 border border-rose-200/80 dark:border-rose-900/40 bg-gradient-to-br from-rose-500/10 via-amber-500/5 to-transparent text-center space-y-4 shadow-sm"
+          initial={{ opacity: 0, scale: 0.97, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 350, damping: 26 }}
+          whileTap={{ scale: 0.99 }}
+          onClick={(e) => triggerCelebrationConfetti(e)}
+          className="glass-card rounded-3xl p-6 sm:p-10 border border-rose-200/80 dark:border-rose-900/40 bg-gradient-to-br from-rose-500/10 via-amber-500/5 to-transparent text-center space-y-4 shadow-sm cursor-pointer relative overflow-hidden group select-none"
         >
-          <div className="flex items-center justify-center">
-            <VietnamHolidayEmblem className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-sm transform hover:scale-105 transition-transform" />
+          {/* Celebratory Emblem */}
+          <div className="flex items-center justify-center my-2">
+            <div className="relative z-10">
+              <VietnamHolidayEmblem className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-md" />
+            </div>
           </div>
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-bold uppercase tracking-wider">
+
+          <div className="space-y-2 relative z-10">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-bold uppercase tracking-wider shadow-2xs">
+              <span>🇻🇳</span>
               <span>{language === 'vi' ? 'Kỳ Nghỉ Lễ Toàn Quốc' : 'National Public Holiday'}</span>
             </div>
+
             <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-black text-slate-900 dark:text-white tracking-tight">
               {language === 'vi' ? 'NGHỈ LỄ QUỐC KHÁNH 2/9' : 'VIETNAM NATIONAL DAY HOLIDAY'}
             </h3>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium max-w-md mx-auto">
               {language === 'vi' 
-                ? 'Toàn trường TIS nghỉ lễ theo quy định. Không có tiết học trong ngày.' 
-                : 'All TIS classes are off in observance of National Day. Enjoy your holiday!'}
+                ? 'Toàn trường TIS nghỉ lễ theo quy định. Không có tiết học trong ngày. Chúc bạn có kỳ nghỉ thật vui vẻ! (Nhấn để bắn pháo hoa giấy)' 
+                : 'All TIS classes are off in observance of National Day. Enjoy your holiday! (Tap card for confetti celebration)'}
             </p>
           </div>
         </motion.div>
@@ -200,37 +249,44 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 {language === 'vi' ? 'Không có tiết học nào phù hợp bộ lọc' : 'No periods matching filter'}
               </div>
             ) : (
-              morningItems.map((item, idx) => {
-                if (item.type === 'break') {
-                  return (
-                    <motion.div 
-                      key={`recess-morning-${idx}`}
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="px-3.5 py-2 rounded-xl bg-slate-100/70 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-800/60 flex items-center justify-between text-slate-600 dark:text-slate-400 text-xs"
-                    >
-                      <div className="flex items-center gap-2">
-                        <RecessIcon className="w-3.5 h-3.5" />
-                        <span className="font-semibold text-[11px]">{language === 'vi' ? item.subjectVi : item.subjectEn}</span>
-                        <span className="text-[10px] text-slate-400 dark:text-slate-500">• {item.note}</span>
-                      </div>
-                      <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">{item.time}</span>
-                    </motion.div>
-                  );
-                }
+              <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="space-y-2.5 sm:space-y-3"
+              >
+                {morningItems.map((item, idx) => {
+                  if (item.type === 'break') {
+                    return (
+                      <motion.div 
+                        key={`recess-morning-${idx}`}
+                        variants={itemVariants}
+                        className="px-3.5 py-2 rounded-xl bg-slate-100/70 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-800/60 flex items-center justify-between text-slate-600 dark:text-slate-400 text-xs"
+                      >
+                        <div className="flex items-center gap-2">
+                          <RecessIcon className="w-3.5 h-3.5" />
+                          <span className="font-semibold text-[11px]">{language === 'vi' ? item.subjectVi : item.subjectEn}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500">• {item.note}</span>
+                        </div>
+                        <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">{item.time}</span>
+                      </motion.div>
+                    );
+                  }
 
-                const status = getPeriodStatus(item);
-                return (
-                  <TimelineCard
-                    key={`morning-${item.period}-${idx}`}
-                    item={item}
-                    language={language}
-                    isCurrent={status.isCurrent}
-                    isPast={status.isPast}
-                    remainingMinutes={status.remainingMinutes}
-                  />
-                );
-              })
+                  const status = getPeriodStatus(item);
+                  return (
+                    <TimelineCard
+                      key={`morning-${item.period}-${idx}`}
+                      item={item}
+                      language={language}
+                      isCurrent={status.isCurrent}
+                      isPast={status.isPast}
+                      remainingMinutes={status.remainingMinutes}
+                      variants={itemVariants}
+                    />
+                  );
+                })}
+              </motion.div>
             )}
           </div>
 
@@ -241,6 +297,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             <motion.div 
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
+              whileTap={{ scale: 0.99 }}
               className={`p-2.5 sm:p-3 rounded-2xl border transition-all flex items-center justify-between text-xs ${
                 lunchStatus.isCurrent
                   ? 'bg-amber-500/15 border-amber-500/40 ring-1 ring-amber-400/40 text-amber-900 dark:text-amber-200 shadow-sm'
@@ -277,37 +334,44 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 {language === 'vi' ? 'Không có tiết học nào phù hợp bộ lọc' : 'No afternoon classes'}
               </div>
             ) : (
-              afternoonItems.map((item, idx) => {
-                if (item.type === 'break') {
-                  return (
-                    <motion.div 
-                      key={`recess-afternoon-${idx}`}
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="px-3.5 py-2 rounded-xl bg-slate-100/70 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-800/60 flex items-center justify-between text-slate-600 dark:text-slate-400 text-xs"
-                    >
-                      <div className="flex items-center gap-2">
-                        <RecessIcon className="w-3.5 h-3.5" />
-                        <span className="font-semibold text-[11px]">{language === 'vi' ? item.subjectVi : item.subjectEn}</span>
-                        <span className="text-[10px] text-slate-400 dark:text-slate-500">• {item.note}</span>
-                      </div>
-                      <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">{item.time}</span>
-                    </motion.div>
-                  );
-                }
+              <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="space-y-2.5 sm:space-y-3"
+              >
+                {afternoonItems.map((item, idx) => {
+                  if (item.type === 'break') {
+                    return (
+                      <motion.div 
+                        key={`recess-afternoon-${idx}`}
+                        variants={itemVariants}
+                        className="px-3.5 py-2 rounded-xl bg-slate-100/70 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-800/60 flex items-center justify-between text-slate-600 dark:text-slate-400 text-xs"
+                      >
+                        <div className="flex items-center gap-2">
+                          <RecessIcon className="w-3.5 h-3.5" />
+                          <span className="font-semibold text-[11px]">{language === 'vi' ? item.subjectVi : item.subjectEn}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500">• {item.note}</span>
+                        </div>
+                        <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">{item.time}</span>
+                      </motion.div>
+                    );
+                  }
 
-                const status = getPeriodStatus(item);
-                return (
-                  <TimelineCard
-                    key={`afternoon-${item.period}-${idx}`}
-                    item={item}
-                    language={language}
-                    isCurrent={status.isCurrent}
-                    isPast={status.isPast}
-                    remainingMinutes={status.remainingMinutes}
-                  />
-                );
-              })
+                  const status = getPeriodStatus(item);
+                  return (
+                    <TimelineCard
+                      key={`afternoon-${item.period}-${idx}`}
+                      item={item}
+                      language={language}
+                      isCurrent={status.isCurrent}
+                      isPast={status.isPast}
+                      remainingMinutes={status.remainingMinutes}
+                      variants={itemVariants}
+                    />
+                  );
+                })}
+              </motion.div>
             )}
           </div>
         </div>

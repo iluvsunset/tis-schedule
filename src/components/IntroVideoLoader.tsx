@@ -55,10 +55,10 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="fixed inset-0 z-[9999] bg-white flex items-center justify-center overflow-hidden cursor-pointer select-none"
+          className="fixed inset-0 w-screen h-screen h-[100dvh] z-[9999] bg-white flex items-center justify-center overflow-hidden cursor-pointer select-none"
           onClick={handleFinish}
         >
-          <div className="w-full h-full flex items-center justify-center overflow-hidden">
+          <div className="w-full h-full w-screen h-screen min-w-full min-h-full flex items-center justify-center overflow-hidden">
             <video
               ref={videoRef}
               src="/The_International_School_Logo.mp4"
@@ -68,7 +68,7 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
               preload="auto"
               onEnded={handleFinish}
               onError={handleFinish}
-              className="w-full h-full object-contain scale-[2.2] sm:scale-[1.6] md:scale-[1.2] lg:scale-100 transition-transform duration-500 transform-gpu"
+              className="w-full h-full w-screen h-screen min-w-full min-h-full object-cover"
             />
           </div>
         </motion.div>

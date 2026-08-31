@@ -113,7 +113,6 @@ export const NotificationPermissionModal: React.FC<NotificationPermissionModalPr
             {/* Actions */}
             <div className="flex items-center gap-2 pt-0.5">
               <motion.button
-                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleEnableNotifications}
                 className="flex-1 py-2.5 px-3.5 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs shadow-sm hover:bg-slate-800 dark:hover:bg-slate-100 transition cursor-pointer flex items-center justify-center gap-1.5"

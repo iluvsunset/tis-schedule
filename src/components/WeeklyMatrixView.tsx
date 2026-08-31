@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Printer } from 'lucide-react';
+import { Printer, Maximize2 } from 'lucide-react';
 import { Language, ScheduleData, WeekTabInfo } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { RecessIcon, LunchIcon } from './CustomSubjectIcons';
 import { WeekSelectorButton } from './WeekSelectorButton';
+import { springCard, gestureTokens, radarBeaconVariants } from '../utils/motionTokens';
 
 interface WeeklyMatrixViewProps {
   language: Language;
@@ -16,6 +17,8 @@ interface WeeklyMatrixViewProps {
   availableWeeks?: WeekTabInfo[];
   selectedWeekGid?: string;
   onSelectWeek?: (gid: string) => void;
+  isMinimalMode?: boolean;
+  onToggleMinimalMode?: () => void;
 }
 
 export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
@@ -26,7 +29,9 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
   scheduleData,
   availableWeeks,
   selectedWeekGid,
-  onSelectWeek
+  onSelectWeek,
+  isMinimalMode,
+  onToggleMinimalMode
 }) => {
   const periodsConfig = [
     { labelVi: "S1", labelEn: "M1", time: "08:00 - 08:45", startTime: "08:00", endTime: "08:45", isMorning: true, period: 1 },
@@ -49,41 +54,55 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
       initial={{ opacity: 0, scale: 0.99 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.99 }}
-      transition={{ duration: 0.25 }}
+      transition={springCard}
       className="glass-card rounded-2xl p-2.5 sm:p-3.5 shadow-soft border border-slate-200/80 dark:border-slate-800 relative z-20"
     >
-      {/* Top Header Bar with high z-index for floating dropdown */}
-      <div className="flex items-center justify-between mb-2.5 relative z-40">
-        <div className="flex items-center gap-2">
-          <h2 className="text-xs sm:text-sm font-display font-bold text-slate-900 dark:text-slate-100">
-            {language === 'vi' 
-              ? `Thời Khóa Biểu Tuần • ${currentSchedule.gradeTitleVi || 'Lớp 11-TN'}` 
-              : `Full Weekly Matrix • ${currentSchedule.gradeTitleEn || 'Grade 11-TN'}`}
-          </h2>
-          <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium hidden md:inline">
-            • Phòng {currentSchedule.room || '504'} (GVQN: {currentSchedule.homeroomTeacher?.name})
-          </span>
+      {/* Top Header Bar (Only in Standard Mode) */}
+      {!isMinimalMode && (
+        <div className="flex items-center justify-between mb-2.5 relative z-40">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs sm:text-sm font-display font-bold text-slate-900 dark:text-slate-100">
+              {language === 'vi' 
+                ? `Thời Khóa Biểu Tuần • ${currentSchedule.gradeTitleVi || 'Lớp 11-TN'}` 
+                : `Full Weekly Matrix • ${currentSchedule.gradeTitleEn || 'Grade 11-TN'}`}
+            </h2>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium hidden md:inline">
+              • Phòng {currentSchedule.room || '504'} (GVQN: {currentSchedule.homeroomTeacher?.name})
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            {availableWeeks && availableWeeks.length > 0 && onSelectWeek && (
+              <WeekSelectorButton
+                availableWeeks={availableWeeks}
+                selectedWeekGid={selectedWeekGid}
+                onSelectWeek={onSelectWeek}
+                language={language}
+              />
+            )}
+
+            {/* Full-Screen Minimal Mode Toggle Button (Icon Only) */}
+            {onToggleMinimalMode && (
+              <motion.button 
+                whileTap={gestureTokens.button.whileTap}
+                onClick={onToggleMinimalMode}
+                className="no-print p-1.5 rounded-xl border transition flex items-center justify-center cursor-pointer shadow-2xs bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700"
+                title={language === 'vi' ? "Chế độ xem tối giản (Phím F)" : "Full-screen minimal (F)"}
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+              </motion.button>
+            )}
+
+            <motion.button 
+              whileTap={gestureTokens.button.whileTap}
+              onClick={() => window.print()}
+              className="no-print px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>{language === 'vi' ? 'In Lịch' : 'Print'}</span>
+            </motion.button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          {availableWeeks && availableWeeks.length > 0 && onSelectWeek && (
-            <WeekSelectorButton
-              availableWeeks={availableWeeks}
-              selectedWeekGid={selectedWeekGid}
-              onSelectWeek={onSelectWeek}
-              language={language}
-            />
-          )}
-          <motion.button 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => window.print()}
-            className="no-print px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span>{language === 'vi' ? 'In Lịch' : 'Print'}</span>
-          </motion.button>
-        </div>
-      </div>
+      )}
 
       {/* Weekly Matrix Table Scroll Container */}
       <div className="overflow-x-auto">
@@ -200,7 +219,7 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                   return (
                     <td key={day.dayKey} className={`p-1 align-top ${isToday ? 'bg-slate-50/30 dark:bg-slate-800/20' : ''}`}>
                       <motion.div 
-                        whileHover={{ scale: 1.02 }}
+                        whileTap={gestureTokens.subtle.whileTap}
                         className={`p-1.5 rounded-xl transition-all relative ${
                           isCurrent 
                             ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-2 border-slate-700 shadow-sm ring-2 ring-emerald-400/40' 
@@ -211,7 +230,15 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                       >
                         {isCurrent && (
                           <div className="text-[9px] font-black uppercase text-emerald-400 tracking-wider mb-0.5 flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span className="relative flex h-2 w-2 items-center justify-center">
+                              <motion.span 
+                                variants={radarBeaconVariants}
+                                initial="initial"
+                                animate="animate"
+                                className="absolute -inset-0.5 rounded-full bg-emerald-400/50"
+                              />
+                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
+                            </span>
                             <span>Đang học</span>
                           </div>
                         )}

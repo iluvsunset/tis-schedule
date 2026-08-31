@@ -4,6 +4,13 @@ import { X, GraduationCap } from 'lucide-react';
 import { Language } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { CustomSubjectIcon } from './CustomSubjectIcons';
+import { 
+  modalBackdropVariants, 
+  modalSheetVariants, 
+  staggerListContainer, 
+  staggerListItem, 
+  gestureTokens 
+} from '../utils/motionTokens';
 
 interface TeacherModalProps {
   isOpen: boolean;
@@ -24,20 +31,20 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
           {/* Animated Ambient Backdrop */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-slate-950/50 backdrop-blur-md"
+            variants={modalBackdropVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="fixed inset-0 bg-slate-950/75 backdrop-blur-md"
             onClick={onClose}
           />
 
           {/* Animated Spring Modal Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.88, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.88, y: 15 }}
-            transition={{ type: "spring", stiffness: 450, damping: 28 }}
+            variants={modalSheetVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             className="relative z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto text-slate-900 dark:text-slate-100"
             onClick={(e) => e.stopPropagation()}
           >
@@ -58,8 +65,7 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
               </div>
 
               <motion.button
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.92 }}
+                whileTap={gestureTokens.iconButton.whileTap}
                 onClick={onClose}
                 className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center transition cursor-pointer"
               >
@@ -72,13 +78,7 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
               className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5"
               initial="hidden"
               animate="visible"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: { staggerChildren: 0.03 }
-                }
-              }}
+              variants={staggerListContainer}
             >
               {teachers.map((t, idx) => {
                 const subject = language === 'vi' ? t.subjectVi : t.subjectEn;
@@ -96,12 +96,9 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
                 return (
                   <motion.div
                     key={idx}
-                    variants={{
-                      hidden: { opacity: 0, y: 8, scale: 0.97 },
-                      visible: { opacity: 1, y: 0, scale: 1 }
-                    }}
-                    whileHover={{ y: -2 }}
-                    className="p-3 rounded-2xl bg-slate-50/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 transition-all flex flex-col justify-between"
+                    variants={staggerListItem}
+                    whileTap={gestureTokens.card.whileTap}
+                    className="p-3 rounded-2xl bg-slate-50/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 transition-all flex flex-col justify-between cursor-default"
                   >
                     <div>
                       <div className="flex items-center gap-2.5 mb-2">

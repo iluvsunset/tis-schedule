@@ -12,6 +12,7 @@ import { ClassSelectorModal } from './components/ClassSelectorModal';
 import { IntroVideoLoader } from './components/IntroVideoLoader';
 import { NotificationPermissionModal } from './components/NotificationPermissionModal';
 import { IPhoneInstallGuideModal } from './components/IPhoneInstallGuideModal';
+import { CampusBackgroundCarousel } from './components/CampusBackgroundCarousel';
 import { getVietnamTime, VietnamTimeInfo, getDateStatus } from './utils/vietnamTime';
 import { useParallaxMouse } from './hooks/useParallaxMouse';
 import { checkAndTriggerEveningReminder } from './utils/notificationService';
@@ -209,6 +210,9 @@ export const App: React.FC = () => {
 
       {/* iPhone Best Experience Guidance Screen (Add to Home Screen) */}
       <IPhoneInstallGuideModal language={language} onLanguageChange={setLanguage} />
+
+      {/* GPU WebGL-Accelerated Soft Blurred Campus Background Carousel */}
+      <CampusBackgroundCarousel />
 
       {/* Subtle Studio Ambient Lighting (Clean & Luxury) */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 no-print">

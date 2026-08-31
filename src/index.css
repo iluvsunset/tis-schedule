@@ -48,6 +48,11 @@ html, body, #root {
   padding: 0;
 }
 
+html {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 html.dark, html.dark body, html.dark #root {
   background-color: #080c14;
   color-scheme: dark;

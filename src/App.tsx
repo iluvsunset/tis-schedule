@@ -235,7 +235,7 @@ export const App: React.FC = () => {
       </div>
 
       {/* Main Fluid Responsive Container with Safe Area Support */}
-      <div className={`relative z-10 w-full ${isMinimalMode ? 'max-w-full sm:max-w-[98%] xl:max-w-6xl 2xl:max-w-7xl md:my-auto justify-start md:justify-center' : 'max-w-[98%] sm:max-w-[95%] lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1550px] 3xl:max-w-[1850px] 4k:max-w-[2400px]'} mx-auto px-2 sm:px-4 lg:px-6 pt-[max(0.5rem,env(safe-area-inset-top,0px))] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] flex-1 flex flex-col transition-all duration-300`}>
+      <div className={`relative z-10 w-full ${isMinimalMode ? 'max-w-full sm:max-w-[98%] xl:max-w-6xl 2xl:max-w-7xl md:my-auto justify-start md:justify-center' : 'max-w-[98%] sm:max-w-[95%] lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1550px] 3xl:max-w-[1850px] 4k:max-w-[2400px]'} mx-auto px-2 sm:px-4 lg:px-6 pt-[max(0.5rem,env(safe-area-inset-top,0px))] pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] flex-1 flex flex-col transition-all duration-300`}>
         
         {/* Top Header Card: Minimal Hero Card in Minimal Mode / Full Navbar in Standard Mode */}
         {isMinimalMode ? (

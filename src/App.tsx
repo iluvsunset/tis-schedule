@@ -20,7 +20,7 @@ export const App: React.FC = () => {
   const [scheduleData, setScheduleData] = useState<ScheduleData>(INITIAL_DATA);
   const [language, setLanguage] = useState<Language>('vi');
   const [theme, setTheme] = useState<ThemeKey>(() => {
-    return (localStorage.getItem('tis_theme_pref') as ThemeKey) || 'system';
+    return (localStorage.getItem('tis_theme_pref') as ThemeKey) || 'dark';
   });
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
   const [selectedDay, setSelectedDay] = useState<DayKey>('mon');
@@ -113,27 +113,37 @@ export const App: React.FC = () => {
     localStorage.setItem('tis_theme_pref', theme);
 
     const applyTheme = () => {
-      let isDark = false;
-      if (theme === 'system') {
-        isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      let isDark = true;
+      if (theme === 'light') {
+        isDark = false;
+      } else if (theme === 'system') {
+        isDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : true;
       } else {
-        isDark = theme === 'dark';
-        document.documentElement.setAttribute('data-theme', theme);
+        isDark = true;
       }
+
+      const activeColor = isDark ? '#080c14' : '#f8fafc';
+      const colorScheme = isDark ? 'dark' : 'light';
 
       if (isDark) {
         document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
       } else {
         document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
       }
 
-      // Synchronize mobile Safari theme-color meta tag & body background
-      const activeColor = isDark ? '#080c14' : '#f8fafc';
+      // Synchronize mobile Safari theme-color meta tag & root element styling
       const metaThemeColors = document.querySelectorAll('meta[name="theme-color"]');
       metaThemeColors.forEach(meta => meta.setAttribute('content', activeColor));
+
+      const metaColorScheme = document.querySelector('meta[name="color-scheme"]');
+      if (metaColorScheme) metaColorScheme.setAttribute('content', colorScheme);
+
       document.documentElement.style.backgroundColor = activeColor;
+      document.documentElement.style.colorScheme = colorScheme;
       document.body.style.backgroundColor = activeColor;
+      document.body.style.colorScheme = colorScheme;
     };
 
     applyTheme();

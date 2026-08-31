@@ -96,7 +96,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-hidden">
           
           {/* Backdrop with Fade */}
           <motion.div
@@ -105,7 +105,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
             animate="visible"
             exit="exit"
             onClick={allowClose ? onClose : undefined}
-            className="fixed inset-0 bg-slate-950/75 backdrop-blur-md"
+            className="absolute inset-0 bg-slate-950/75 backdrop-blur-md"
           />
 
           {/* Modal Window with spring sheet pop-in */}
@@ -114,55 +114,59 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="relative w-full max-w-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-5 sm:p-7 z-10 my-auto max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-2xl bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-[32px] sm:rounded-3xl shadow-2xl z-10 max-h-[85vh] sm:max-h-[85vh] flex flex-col overflow-hidden"
           >
             
-            {/* Header with Official TIS Logo */}
-            <div className="flex items-start justify-between gap-4 mb-5">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 p-1 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 overflow-hidden">
-                  <img 
-                    src="/tis-logo.png" 
-                    alt="TIS Logo" 
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div>
-                  <div className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-0.5">
-                    The International School • TIS
+            {/* Sticky Header with Official TIS Logo & Search Box */}
+            <div className="p-4 sm:p-6 pb-3 shrink-0 border-b border-slate-100 dark:border-slate-800/80">
+              <div className="flex items-start justify-between gap-3 mb-3 sm:mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white dark:bg-slate-800 p-1 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 overflow-hidden">
+                    <img 
+                      src="/tis-logo.png" 
+                      alt="TIS Logo" 
+                      className="w-full h-full object-contain"
+                    />
                   </div>
-                  <h3 className="font-display font-extrabold text-xl sm:text-2xl text-slate-900 dark:text-slate-100">
-                    {language === 'vi' ? 'Chọn Lớp Học Của Bạn' : 'Select Your Class'}
-                  </h3>
+                  <div>
+                    <div className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      The International School • TIS
+                    </div>
+                    <h3 className="font-display font-black text-lg sm:text-2xl text-slate-900 dark:text-slate-100">
+                      {language === 'vi' ? 'Chọn Lớp Học Của Bạn' : 'Select Your Class'}
+                    </h3>
+                  </div>
                 </div>
+
+                {allowClose && (
+                  <motion.button
+                    whileTap={{ scale: 0.92 }}
+                    onClick={onClose}
+                    className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </motion.button>
+                )}
               </div>
 
-              {allowClose && (
-                <motion.button
-                  whileTap={{ scale: 0.92 }}
-                  onClick={onClose}
-                  className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </motion.button>
-              )}
+              {/* Search Box */}
+              <div className="relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={language === 'vi' ? "Tìm theo tên lớp, phòng học, giáo viên..." : "Search by class, room, teacher..."}
+                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 outline-none focus:border-slate-400 dark:focus:border-slate-500 transition"
+                />
+              </div>
             </div>
 
-            {/* Search Box */}
-            <div className="relative mb-5">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={language === 'vi' ? "Tìm theo tên lớp, phòng học, giáo viên..." : "Search by class, room, teacher..."}
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 outline-none focus:border-slate-400 dark:focus:border-slate-500 transition"
-              />
-            </div>
-
-            {/* Classes Grid by Level */}
-            <div className="space-y-5">
-              
+            {/* Scrollable Classes List (iOS Safari Touch Pan Enabled) */}
+            <div 
+              className="p-4 sm:p-6 pt-3 overflow-y-auto overscroll-contain flex-1 touch-pan-y space-y-5"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
               {/* THPT Section */}
               {highSchool.length > 0 && (
                 <div>
@@ -199,7 +203,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                               </span>
                               <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${
                                 isSelected
-                                  ? 'bg-white/15 text-white border-white/20 font-bold'
+                                   ? 'bg-white/15 text-white border-white/20 font-bold'
                                   : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'
                               }`}>
                                 Phòng {c.room}
@@ -272,7 +276,6 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                   </motion.div>
                 </div>
               )}
-
             </div>
 
           </motion.div>

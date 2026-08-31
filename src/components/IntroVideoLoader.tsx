@@ -15,6 +15,20 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
   };
 
   useEffect(() => {
+    // If iOS Safari in regular web page tab, skip immediately
+    if (typeof window !== 'undefined') {
+      const ua = window.navigator.userAgent;
+      const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isWebkit = /WebKit/i.test(ua);
+      const isSafari = isWebkit && !/CriOS|FxiOS|OPiOS|mercury/i.test(ua);
+      // @ts-expect-error iOS standalone property
+      const isStandalone = Boolean(window.navigator.standalone) || window.matchMedia('(display-mode: standalone)').matches;
+      if (isIOS && isSafari && !isStandalone) {
+        handleFinish();
+        return;
+      }
+    }
+
     const video = videoRef.current;
     if (!video) return;
 

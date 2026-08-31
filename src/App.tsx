@@ -16,6 +16,18 @@ import { getVietnamTime, VietnamTimeInfo, getDateStatus } from './utils/vietnamT
 import { useParallaxMouse } from './hooks/useParallaxMouse';
 import { checkAndTriggerEveningReminder } from './utils/notificationService';
 
+// Helper to detect regular iOS Safari in browser tab (non-standalone Home Screen PWA)
+const isIOSSafariBrowser = (): boolean => {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
+  const ua = window.navigator.userAgent;
+  const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isWebkit = /WebKit/i.test(ua);
+  const isSafari = isWebkit && !/CriOS|FxiOS|OPiOS|mercury/i.test(ua);
+  // @ts-expect-error iOS Safari standalone property
+  const isStandalone = Boolean(window.navigator.standalone) || window.matchMedia('(display-mode: standalone)').matches;
+  return isIOS && isSafari && !isStandalone;
+};
+
 export const App: React.FC = () => {
   const [scheduleData, setScheduleData] = useState<ScheduleData>(INITIAL_DATA);
   const [language, setLanguage] = useState<Language>('vi');
@@ -27,8 +39,9 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [vnTime, setVnTime] = useState<VietnamTimeInfo>(getVietnamTime());
   
-  // Cinematic Intro Video Loader (plays on first access)
+  // Cinematic Intro Video Loader (plays on home screen app & desktop, skipped on direct iOS Safari web tab)
   const [showIntroVideo, setShowIntroVideo] = useState<boolean>(() => {
+    if (isIOSSafariBrowser()) return false;
     return !sessionStorage.getItem('tis_intro_seen');
   });
 

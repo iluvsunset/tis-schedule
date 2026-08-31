@@ -55,8 +55,7 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="fixed inset-0 w-screen h-screen h-[100dvh] z-[9999] bg-white flex items-center justify-center overflow-hidden cursor-pointer select-none"
-          onClick={handleFinish}
+          className="fixed inset-0 w-screen h-screen h-[100dvh] z-[9999] bg-white flex items-center justify-center overflow-hidden select-none"
         >
           <div className="w-full h-full w-screen h-screen min-w-full min-h-full flex items-center justify-center overflow-hidden">
             <video

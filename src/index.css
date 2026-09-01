@@ -35,21 +35,34 @@
   scrollbar-width: none;  /* Firefox */
 }
 
-/* Fluid Responsive Typography Scale & Permanent Dark Navy Canvas */
-html, body, #root {
+/* Fluid Responsive Typography Scale & Safari Liquid Glass Canvas */
+html {
   font-size: 15px;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #080c14 !important;
+  background-color: #080c14;
   color: #f1f5f9;
-  min-height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: transparent;
+  color: #f1f5f9;
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   position: relative;
   margin: 0;
   padding: 0;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: transparent;
+  position: relative;
 }
 
 @media (min-width: 640px) {

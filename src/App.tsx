@@ -178,7 +178,7 @@ export const App: React.FC = () => {
   }, [isMinimalMode, selectedDay]);
 
   return (
-    <div className={`min-h-screen min-h-[100dvh] bg-[#080c14] relative text-slate-100 selection:bg-white selection:text-slate-900 transition-colors duration-300 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'} overflow-x-hidden`}>
+    <div className={`min-h-screen min-h-[100dvh] bg-transparent relative text-slate-100 selection:bg-white selection:text-slate-900 transition-colors duration-300 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'} overflow-x-hidden`}>
       
       {/* Cinematic First-Access Video Intro / Loading Screen */}
       {showIntroVideo && (

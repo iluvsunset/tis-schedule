@@ -130,12 +130,10 @@ export const App: React.FC = () => {
         document.documentElement.setAttribute('data-theme', 'light');
       }
 
-      // Synchronize Safari theme-color meta tag dynamically
+      // Synchronize Safari theme-color meta tags dynamically
       const activeColor = isDark ? '#080c14' : '#f8fafc';
-      const metaTheme = document.querySelector('meta[name="theme-color"]') || document.getElementById('theme-color-meta');
-      if (metaTheme) {
-        metaTheme.setAttribute('content', activeColor);
-      }
+      const metaThemes = document.querySelectorAll('meta[name="theme-color"]');
+      metaThemes.forEach(meta => meta.setAttribute('content', activeColor));
     };
 
     applyTheme();

@@ -36,14 +36,17 @@
 }
 
 @layer base {
+  body, html {
+    background-color: #080c14;
+    margin: 0;
+    padding: 0;
+  }
+
   html, body, #root {
     /* Unlocks the viewport screen height so Safari can tint dynamically */
     height: auto !important;
     min-height: 100vh;
     overflow-y: auto;
-    /* Safely pads your timetable behind Safari's native toolbars */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
     color: #f8fafc;
   }
 
@@ -53,7 +56,6 @@
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #080c14;
     overflow-x: hidden;
   }
 
@@ -65,6 +67,15 @@
     background-color: #080c14;
     letter-spacing: -0.012em;
     overflow-x: hidden;
+  }
+
+  header {
+    padding-top: env(safe-area-inset-top);
+    background-color: transparent;
+  }
+
+  footer {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 

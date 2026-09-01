@@ -1,52 +1,64 @@
 <!DOCTYPE html>
 <html lang="vi" class="scroll-smooth dark" style="background-color: #080c14; color-scheme: dark;">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    
-    <!-- Primary Meta Tags -->
-    <title>TIS Schedule</title>
-    <meta name="title" content="TIS Schedule" />
-    <meta name="description" content="Thời khóa biểu thông minh toàn trường TIS (Khối THCS & THPT) – Tự động nhắc nhở lịch học mỗi tối, đồng bộ thời gian thực." />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- Tells Safari to treat the top/bottom bars as transparent -->
+  <meta name="theme-color" content="transparent" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#080c14" media="(prefers-color-scheme: dark)" />
 
-    <!-- Open Graph / Facebook / Zalo / Telegram / iMessage -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://tis-schedule.iluvsunset.workers.dev/" />
-    <meta property="og:title" content="TIS Schedule" />
-    <meta property="og:description" content="Thời khóa biểu thông minh toàn trường TIS (Khối THCS & THPT) – Tự động nhắc nhở lịch học mỗi tối, đồng bộ thời gian thực." />
-    <meta property="og:image" content="https://tis-schedule.iluvsunset.workers.dev/og-preview.png" />
-    <meta property="og:image:secure_url" content="https://tis-schedule.iluvsunset.workers.dev/og-preview.png" />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="The International School - TIS Schedule" />
-    <meta property="og:site_name" content="The International School (TIS)" />
+  <!-- Primary Meta Tags -->
+  <title>TIS Schedule</title>
+  <meta name="title" content="TIS Schedule" />
+  <meta name="description"
+    content="Thời khóa biểu thông minh toàn trường TIS (Khối THCS & THPT) – Tự động nhắc nhở lịch học mỗi tối, đồng bộ thời gian thực." />
 
-    <!-- Twitter / X -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://tis-schedule.iluvsunset.workers.dev/" />
-    <meta name="twitter:title" content="TIS Schedule" />
-    <meta name="twitter:description" content="Thời khóa biểu thông minh toàn trường TIS (Khối THCS & THPT) – Tự động nhắc nhở lịch học mỗi tối, đồng bộ thời gian thực." />
-    <meta name="twitter:image" content="https://tis-schedule.iluvsunset.workers.dev/og-preview.png" />
+  <!-- Open Graph / Facebook / Zalo / Telegram / iMessage -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://tis-schedule.iluvsunset.workers.dev/" />
+  <meta property="og:title" content="TIS Schedule" />
+  <meta property="og:description"
+    content="Thời khóa biểu thông minh toàn trường TIS (Khối THCS & THPT) – Tự động nhắc nhở lịch học mỗi tối, đồng bộ thời gian thực." />
+  <meta property="og:image" content="https://tis-schedule.iluvsunset.workers.dev/og-preview.png" />
+  <meta property="og:image:secure_url" content="https://tis-schedule.iluvsunset.workers.dev/og-preview.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The International School - TIS Schedule" />
+  <meta property="og:site_name" content="The International School (TIS)" />
 
-    <!-- Favicon & PWA Manifest -->
-    <link rel="icon" type="image/png" href="/tis-logo.png" />
-    <link rel="manifest" href="/manifest.json" />
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://tis-schedule.iluvsunset.workers.dev/" />
+  <meta name="twitter:title" content="TIS Schedule" />
+  <meta name="twitter:description"
+    content="Thời khóa biểu thông minh toàn trường TIS (Khối THCS & THPT) – Tự động nhắc nhở lịch học mỗi tối, đồng bộ thời gian thực." />
+  <meta name="twitter:image" content="https://tis-schedule.iluvsunset.workers.dev/og-preview.png" />
 
-    <!-- iOS / iPadOS PWA Full Screen & Status Bar -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="TIS Schedule" />
-    <link rel="apple-touch-icon" href="/tis-logo.png" />
+  <!-- Favicon & PWA Manifest -->
+  <link rel="icon" type="image/png" href="/tis-logo.png" />
+  <link rel="manifest" href="/manifest.json" />
 
-    <!-- Google Fonts: Quicksand & Plus Jakarta Sans -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet" />
-  </head>
-  <body class="selection:bg-slate-900 selection:text-white dark:selection:bg-white dark:selection:text-slate-900 transition-colors duration-300">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <!-- iOS / iPadOS PWA Full Screen & Status Bar -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="TIS Schedule" />
+  <link rel="apple-touch-icon" href="/tis-logo.png" />
+
+  <!-- Google Fonts: Quicksand & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Quicksand:wght@500;600;700&display=swap"
+    rel="stylesheet" />
+</head>
+
+<body
+  class="selection:bg-slate-900 selection:text-white dark:selection:bg-white dark:selection:text-slate-900 transition-colors duration-300">
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>

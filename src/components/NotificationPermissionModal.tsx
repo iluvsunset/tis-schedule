@@ -39,20 +39,21 @@ export const NotificationPermissionModal: React.FC<NotificationPermissionModalPr
     setShowPrompt(false);
   };
 
+  if (!showPrompt) return null;
+
   return (
     <aside 
       aria-label="Notification Pill" 
       className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[9998] pointer-events-none no-print max-w-[92vw]"
     >
       <AnimatePresence>
-        {showPrompt && (
-          <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.92 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.92 }}
-            transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            className="pointer-events-auto flex items-center gap-2 sm:gap-3 pl-3 pr-2 py-1.5 rounded-full bg-slate-900/95 dark:bg-slate-900/95 text-white backdrop-blur-2xl border border-white/15 shadow-2xl ring-1 ring-black/20"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 30, scale: 0.92 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20, scale: 0.92 }}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+          className="pointer-events-auto flex items-center gap-2 sm:gap-3 pl-3 pr-2 py-1.5 rounded-full bg-slate-900/95 dark:bg-slate-900/95 text-white backdrop-blur-2xl border border-white/15 shadow-2xl ring-1 ring-black/20"
+        >
             {/* Glowing Bell */}
             <div className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
               <Bell className="w-3.5 h-3.5 animate-pulse" />
@@ -81,7 +82,6 @@ export const NotificationPermissionModal: React.FC<NotificationPermissionModalPr
               <X className="w-3.5 h-3.5" />
             </button>
           </motion.div>
-        )}
       </AnimatePresence>
     </aside>
   );

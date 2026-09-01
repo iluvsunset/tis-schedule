@@ -9,6 +9,7 @@ import { TimelineView } from './components/TimelineView';
 import { WeeklyMatrixView } from './components/WeeklyMatrixView';
 import { TeacherModal } from './components/TeacherModal';
 import { ClassSelectorModal } from './components/ClassSelectorModal';
+import { IntroVideoLoader } from './components/IntroVideoLoader';
 import { NotificationPermissionModal } from './components/NotificationPermissionModal';
 import { IPhoneInstallGuideModal } from './components/IPhoneInstallGuideModal';
 import { getVietnamTime, VietnamTimeInfo, getDateStatus } from './utils/vietnamTime';
@@ -25,6 +26,9 @@ export const App: React.FC = () => {
   const [selectedDay, setSelectedDay] = useState<DayKey>('mon');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [vnTime, setVnTime] = useState<VietnamTimeInfo>(getVietnamTime());
+  
+  // Cinematic Intro Video Loader
+  const [showIntroVideo, setShowIntroVideo] = useState<boolean>(true);
 
   // Universal Class & Multi-Week State
   const [selectedClassId, setSelectedClassId] = useState<string>(() => {
@@ -51,6 +55,10 @@ export const App: React.FC = () => {
   };
 
   const mouse = useParallaxMouse();
+
+  const handleIntroComplete = () => {
+    setShowIntroVideo(false);
+  };
 
   // 1. Initialize day, load weeks & fetch schedule on startup
   useEffect(() => {
@@ -175,11 +183,18 @@ export const App: React.FC = () => {
   return (
     <div className={`min-h-[100dvh] bg-transparent relative text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'}`}>
       
-      {/* Non-intrusive First-Time Notification Permission & Install Prompt */}
-      <NotificationPermissionModal language={language} />
+      {/* Cinematic First-Access Video Intro / Loading Screen */}
+      {showIntroVideo && (
+        <IntroVideoLoader onComplete={handleIntroComplete} />
+      )}
 
-      {/* iPhone Best Experience Guidance Screen (Add to Home Screen) */}
-      <IPhoneInstallGuideModal language={language} onLanguageChange={setLanguage} />
+      {/* Non-intrusive First-Time Notification Permission & Install Prompt */}
+      {!showIntroVideo && <NotificationPermissionModal language={language} />}
+
+      {/* iPhone Best Experience Guidance Screen (Add to Home Screen) - Displays after Intro Video */}
+      {!showIntroVideo && (
+        <IPhoneInstallGuideModal language={language} onLanguageChange={setLanguage} />
+      )}
 
       {/* Subtle Studio Ambient Lighting (Clean & Luxury) */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 no-print">

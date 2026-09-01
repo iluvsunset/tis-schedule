@@ -164,7 +164,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="relative z-50 no-print mb-2.5 sm:mb-3.5">
+    <header className="sticky top-0 z-50 no-print pt-[max(0.25rem,env(safe-area-inset-top,0px))] pb-2 sm:pb-3">
       <div className="glass-card border rounded-2xl sm:rounded-3xl p-2.5 sm:p-3 shadow-xs flex flex-col gap-2 sm:gap-2.5">
         
         {/* Top Row: Left Brand/Class Info & Right Quick Action Buttons */}

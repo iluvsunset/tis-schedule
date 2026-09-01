@@ -107,7 +107,7 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.98 }}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      className="glass-card border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-xl mb-2.5 sm:mb-4 relative z-30 w-full"
+      className="glass-card border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-xl mb-2.5 sm:mb-4 sticky top-0 z-30 pt-[max(0.25rem,env(safe-area-inset-top,0px))] w-full"
     >
       {/* DESKTOP LAYOUT (>= md screens) */}
       <div className="hidden md:flex md:flex-row md:items-center md:justify-between gap-4">

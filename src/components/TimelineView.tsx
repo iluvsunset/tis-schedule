@@ -212,10 +212,6 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
           </div>
 
           <div className="space-y-2 relative z-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-bold uppercase tracking-wider shadow-2xs">
-              <span>🇻🇳</span>
-              <span>{language === 'vi' ? 'Kỳ Nghỉ Lễ Toàn Quốc' : 'National Public Holiday'}</span>
-            </div>
 
             <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-black text-slate-900 dark:text-white tracking-tight">
               {language === 'vi' ? 'NGHỈ LỄ QUỐC KHÁNH 2/9' : 'VIETNAM NATIONAL DAY HOLIDAY'}

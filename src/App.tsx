@@ -129,6 +129,13 @@ export const App: React.FC = () => {
         document.documentElement.classList.remove('dark');
         document.documentElement.setAttribute('data-theme', 'light');
       }
+
+      // Synchronize Safari theme-color meta tag dynamically
+      const activeColor = isDark ? '#080c14' : '#f8fafc';
+      const metaTheme = document.querySelector('meta[name="theme-color"]') || document.getElementById('theme-color-meta');
+      if (metaTheme) {
+        metaTheme.setAttribute('content', activeColor);
+      }
     };
 
     applyTheme();
@@ -158,10 +165,9 @@ export const App: React.FC = () => {
       }
       if (e.key === 'Escape' && isMinimalMode) {
         setIsMinimalMode(false);
-        localStorage.setItem('tis_minimal_mode', 'false');
-      } else if (e.key.toLowerCase() === 'f' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      } else if (e.key === 'f' || e.key === 'F') {
         handleToggleMinimalMode();
-      } else if (isMinimalMode && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
         const dayKeys: DayKey[] = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
         const currentIndex = dayKeys.indexOf(selectedDay);
         if (e.key === 'ArrowRight') {
@@ -178,7 +184,7 @@ export const App: React.FC = () => {
   }, [isMinimalMode, selectedDay]);
 
   return (
-    <div className={`min-h-screen min-h-[100dvh] bg-transparent relative text-slate-100 selection:bg-white selection:text-slate-900 transition-colors duration-300 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'} overflow-x-hidden`}>
+    <div className={`min-h-[100dvh] bg-transparent relative text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'} overflow-x-hidden`}>
       
       {/* Cinematic First-Access Video Intro / Loading Screen */}
       {showIntroVideo && (

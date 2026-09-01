@@ -36,12 +36,6 @@
 }
 
 @layer base {
-  html, body, #root {
-    height: auto !important;
-    min-height: 100vh;
-    overflow-y: auto;
-  }
-
   html {
     font-size: 15px;
     scroll-behavior: smooth;
@@ -58,10 +52,19 @@
     background-color: var(--bg-color);
     color: var(--text-primary);
     letter-spacing: -0.012em;
+    min-height: 100dvh;
+    min-height: 100vh;
     overflow-x: hidden;
     margin: 0;
     padding: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  #root {
+    min-height: 100dvh;
+    min-height: 100vh;
+    background: transparent !important;
+    position: relative;
   }
 
   header {

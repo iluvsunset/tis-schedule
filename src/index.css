@@ -35,34 +35,37 @@
   scrollbar-width: none;  /* Firefox */
 }
 
-/* Fluid Responsive Typography Scale & Safari Liquid Glass Canvas */
-html {
-  font-size: 15px;
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #080c14;
-  color: #f1f5f9;
-  overflow-x: hidden;
-}
+@layer base {
+  html, body, #root {
+    /* Unlocks the viewport screen height so Safari can tint dynamically */
+    height: auto !important;
+    min-height: 100vh;
+    overflow-y: auto;
+    /* Safely pads your timetable behind Safari's native toolbars */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    color: #f8fafc;
+  }
 
-body {
-  background-color: transparent;
-  color: #f1f5f9;
-  min-height: 100vh;
-  min-height: 100dvh;
-  overflow-x: hidden;
-  position: relative;
-  margin: 0;
-  padding: 0;
-}
+  html {
+    font-size: 15px;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #080c14;
+    overflow-x: hidden;
+  }
 
-#root {
-  min-height: 100vh;
-  min-height: 100dvh;
-  background-color: transparent;
-  position: relative;
+  body {
+    background: radial-gradient(at 0% 0%, #0d1527 0px, transparent 55%),
+                radial-gradient(at 100% 0%, #0a101d 0px, transparent 50%),
+                radial-gradient(at 50% 100%, #06090f 0px, transparent 50%),
+                #05080e;
+    background-color: #080c14;
+    letter-spacing: -0.012em;
+    overflow-x: hidden;
+  }
 }
 
 @media (min-width: 640px) {
@@ -122,17 +125,6 @@ body {
   --card-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.45);
   --orb-1: rgba(30, 41, 59, 0.35);
   --orb-2: rgba(15, 23, 42, 0.5);
-}
-
-body {
-  background: var(--bg-gradient);
-  background-color: var(--bg-color);
-  min-height: 100vh;
-  min-height: 100dvh;
-  color: var(--text-primary);
-  letter-spacing: -0.012em;
-  transition: background-color 0.4s ease, color 0.4s ease;
-  overscroll-behavior-y: none;
 }
 
 /* Luxury Glassmorphic Surface Cards */

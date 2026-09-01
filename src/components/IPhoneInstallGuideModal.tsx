@@ -48,16 +48,17 @@ export const IPhoneInstallGuideModal: React.FC<IPhoneInstallGuideModalProps> = (
   if (!isLocked) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-2xl flex items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top,16px))] pb-[max(1.5rem,env(safe-area-inset-bottom,24px))] overflow-y-auto">
-      {/* Subtle Studio Glow */}
-      <div className="absolute top-1/4 -left-20 w-80 h-80 bg-blue-600/15 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-amber-500/15 rounded-full blur-[100px] pointer-events-none" />
+    <div className="fixed inset-0 z-[99999] bg-slate-950/85 flex items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top,16px))] pb-[max(1.5rem,env(safe-area-inset-bottom,24px))] overflow-y-auto">
+      {/* Subtle Hardware-Accelerated Glow */}
+      <div className="absolute top-1/4 -left-20 w-72 h-72 bg-blue-600/10 rounded-full blur-3xl pointer-events-none transform-gpu" />
+      <div className="absolute bottom-1/4 -right-20 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none transform-gpu" />
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 350, damping: 28 }}
-        className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 rounded-[32px] shadow-2xl max-w-md w-full p-6 text-slate-800 dark:text-slate-100 relative overflow-hidden ring-1 ring-black/5 dark:ring-white/5"
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.96 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[28px] shadow-2xl max-w-md w-full p-5 sm:p-6 text-slate-800 dark:text-slate-100 relative overflow-hidden transform-gpu"
       >
         {/* Top Header Bar with Language Switcher */}
         <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">

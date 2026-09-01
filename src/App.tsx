@@ -13,7 +13,6 @@ import { IntroVideoLoader } from './components/IntroVideoLoader';
 import { NotificationPermissionModal } from './components/NotificationPermissionModal';
 import { IPhoneInstallGuideModal } from './components/IPhoneInstallGuideModal';
 import { getVietnamTime, VietnamTimeInfo, getDateStatus } from './utils/vietnamTime';
-import { useParallaxMouse } from './hooks/useParallaxMouse';
 import { checkAndTriggerEveningReminder } from './utils/notificationService';
 
 export const App: React.FC = () => {
@@ -53,8 +52,6 @@ export const App: React.FC = () => {
       return next;
     });
   };
-
-  const mouse = useParallaxMouse();
 
   const handleIntroComplete = () => {
     setShowIntroVideo(false);
@@ -196,30 +193,10 @@ export const App: React.FC = () => {
         <IPhoneInstallGuideModal language={language} onLanguageChange={setLanguage} />
       )}
 
-      {/* Subtle Studio Ambient Lighting (Clean & Luxury) */}
+      {/* Subtle Studio Ambient Lighting (Hardware-Accelerated & 60fps) */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 no-print">
-        <motion.div
-          animate={{
-            x: [0, 15, -15, 0],
-            y: [0, -20, 10, 0],
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          style={{
-            transform: `translate(${mouse.x * 12}px, ${mouse.y * 12}px)`
-          }}
-          className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-slate-200/30 dark:bg-slate-800/20 blur-[120px] transition-transform duration-500 ease-out"
-        />
-        <motion.div
-          animate={{
-            x: [0, -15, 10, 0],
-            y: [0, 20, -15, 0],
-          }}
-          transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
-          style={{
-            transform: `translate(${mouse.x * -15}px, ${mouse.y * -15}px)`
-          }}
-          className="absolute top-1/3 -right-40 w-[600px] h-[600px] rounded-full bg-slate-300/20 dark:bg-slate-800/15 blur-[140px] transition-transform duration-500 ease-out"
-        />
+        <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full bg-slate-300/20 dark:bg-slate-800/20 blur-3xl transform-gpu pointer-events-none" />
+        <div className="absolute top-1/3 -right-32 w-80 h-80 rounded-full bg-slate-400/15 dark:bg-slate-800/15 blur-3xl transform-gpu pointer-events-none" />
       </div>
 
       {/* Main Fluid Responsive Container with Safe Area Support */}

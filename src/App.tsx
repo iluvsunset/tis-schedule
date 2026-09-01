@@ -122,10 +122,9 @@ export const App: React.FC = () => {
         document.documentElement.setAttribute('data-theme', 'light');
       }
 
-      // Synchronize Safari theme-color meta tags dynamically
-      const activeColor = isDark ? '#080c14' : '#f8fafc';
+      // Maintain Safari Liquid Glass transparency
       const metaThemes = document.querySelectorAll('meta[name="theme-color"]');
-      metaThemes.forEach(meta => meta.setAttribute('content', activeColor));
+      metaThemes.forEach(meta => meta.setAttribute('content', 'transparent'));
     };
 
     applyTheme();

@@ -36,18 +36,10 @@
 }
 
 @layer base {
-  body, html {
-    background-color: #080c14;
-    margin: 0;
-    padding: 0;
-  }
-
   html, body, #root {
-    /* Unlocks the viewport screen height so Safari can tint dynamically */
     height: auto !important;
     min-height: 100vh;
     overflow-y: auto;
-    color: #f8fafc;
   }
 
   html {
@@ -57,16 +49,19 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
   }
 
   body {
-    background: radial-gradient(at 0% 0%, #0d1527 0px, transparent 55%),
-                radial-gradient(at 100% 0%, #0a101d 0px, transparent 50%),
-                radial-gradient(at 50% 100%, #06090f 0px, transparent 50%),
-                #05080e;
-    background-color: #080c14;
+    background: var(--bg-gradient);
+    background-color: var(--bg-color);
+    color: var(--text-primary);
     letter-spacing: -0.012em;
     overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   header {

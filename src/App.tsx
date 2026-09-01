@@ -117,10 +117,13 @@ export const App: React.FC = () => {
       if (theme === 'light') {
         isDark = false;
       } else if (theme === 'system') {
-        isDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : true;
+        isDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : false;
       } else {
         isDark = true;
       }
+
+      const activeColor = isDark ? '#080c14' : '#f8fafc';
+      const colorScheme = isDark ? 'dark' : 'light';
 
       if (isDark) {
         document.documentElement.classList.add('dark');
@@ -129,6 +132,15 @@ export const App: React.FC = () => {
         document.documentElement.classList.remove('dark');
         document.documentElement.setAttribute('data-theme', 'light');
       }
+
+      const metaTheme = document.querySelector('meta[name="theme-color"]');
+      if (metaTheme) metaTheme.setAttribute('content', activeColor);
+
+      const metaColorSch = document.querySelector('meta[name="color-scheme"]');
+      if (metaColorSch) metaColorSch.setAttribute('content', colorScheme);
+
+      document.documentElement.style.backgroundColor = activeColor;
+      document.body.style.backgroundColor = activeColor;
     };
 
     applyTheme();

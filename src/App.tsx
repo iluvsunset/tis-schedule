@@ -122,9 +122,6 @@ export const App: React.FC = () => {
         isDark = true;
       }
 
-      const activeColor = isDark ? '#080c14' : '#f8fafc';
-      const colorScheme = isDark ? 'dark' : 'light';
-
       if (isDark) {
         document.documentElement.classList.add('dark');
         document.documentElement.setAttribute('data-theme', 'dark');
@@ -132,15 +129,6 @@ export const App: React.FC = () => {
         document.documentElement.classList.remove('dark');
         document.documentElement.setAttribute('data-theme', 'light');
       }
-
-      const metaTheme = document.querySelector('meta[name="theme-color"]');
-      if (metaTheme) metaTheme.setAttribute('content', activeColor);
-
-      const metaColorSch = document.querySelector('meta[name="color-scheme"]');
-      if (metaColorSch) metaColorSch.setAttribute('content', colorScheme);
-
-      document.documentElement.style.backgroundColor = activeColor;
-      document.body.style.backgroundColor = activeColor;
     };
 
     applyTheme();

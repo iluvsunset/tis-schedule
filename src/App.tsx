@@ -172,13 +172,19 @@ export const App: React.FC = () => {
     }
   }, [location.pathname, language, selectedClassId, navigate]);
 
-  // Handle Class Switch (delegates single fetch to useEffect)
+  // Handle Class Switch (instant cache load + background network sync)
   const handleSelectClass = (classId: string) => {
     const normalizedId = classId.toLowerCase();
     if (normalizedId === selectedClassId) {
       setIsClassModalOpen(false);
       return;
     }
+    try {
+      const cached = localStorage.getItem(`tis_schedule_cache_${normalizedId}`);
+      if (cached) {
+        setScheduleData(JSON.parse(cached));
+      }
+    } catch (e) {}
     setSelectedClassId(normalizedId);
     localStorage.setItem('tis_selected_class_id', normalizedId);
     setIsClassModalOpen(false);

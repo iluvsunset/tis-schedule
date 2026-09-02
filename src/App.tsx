@@ -110,9 +110,8 @@ export const App: React.FC = () => {
     setShowIntroVideo(false);
   };
 
-  // 1. Initialize day, load weeks & fetch schedule on startup (waits for video intro)
+  // 1. Initialize day, load weeks & fetch schedule on startup immediately in parallel with video intro
   useEffect(() => {
-    if (showIntroVideo) return; // Priority load the video intro first before everything
     const currentVn = getVietnamTime();
     setVnTime(currentVn);
     
@@ -125,7 +124,7 @@ export const App: React.FC = () => {
 
     if (!selectedClassId) return;
 
-    // Discover all available week tabs
+    // Discover all available week tabs & fetch schedule immediately (ready before video ends)
     getAllSheetTabs().then((tabs) => {
       setAvailableWeeks(tabs);
       const latestGid = tabs[tabs.length - 1]?.gid || '676068602';
@@ -146,7 +145,7 @@ export const App: React.FC = () => {
         }
       }).catch((e) => console.warn('Initial live sync fallback:', e));
     }).catch((e) => console.warn('Tabs fetch fallback:', e));
-  }, [showIntroVideo, selectedClassId]);
+  }, [selectedClassId]);
 
   // Synchronize route changes from browser navigation / back / forward / deep links
   useEffect(() => {

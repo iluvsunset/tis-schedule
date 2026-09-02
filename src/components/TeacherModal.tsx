@@ -4,6 +4,7 @@ import { X, GraduationCap } from 'lucide-react';
 import { Language } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { CustomSubjectIcon } from './CustomSubjectIcons';
+import { AnimatedText } from './AnimatedText';
 import { 
   modalBackdropVariants, 
   modalSheetVariants, 
@@ -23,6 +24,15 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
   onClose,
   language
 }) => {
+  // Lock body scroll while modal is open
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen]);
   const { teachers, homeroomTeacher } = SCHEDULE_DATA;
 
   return (
@@ -55,9 +65,11 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
                   <GraduationCap className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm sm:text-base font-display font-extrabold text-slate-900 dark:text-slate-100">
-                    {language === 'vi' ? 'Đội Ngũ Giáo Viên Lớp 11-TN' : 'Grade 11-TN Faculty Directory'}
-                  </h3>
+                  <AnimatedText
+                    text={language === 'vi' ? 'Đội Ngũ Giáo Viên Bộ Môn' : 'Faculty Directory'}
+                    as="h3"
+                    className="text-sm sm:text-base font-display font-extrabold text-slate-900 dark:text-slate-100"
+                  />
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     {language === 'vi' ? `GVQN: ${homeroomTeacher.name} • Phòng 504` : `Homeroom: ${homeroomTeacher.name} • Room 504`}
                   </p>

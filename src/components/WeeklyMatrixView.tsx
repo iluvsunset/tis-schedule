@@ -6,6 +6,7 @@ import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { RecessIcon, LunchIcon } from './CustomSubjectIcons';
 import { WeekSelectorButton } from './WeekSelectorButton';
+import { AnimatedText } from './AnimatedText';
 import { springCard, gestureTokens, radarBeaconVariants } from '../utils/motionTokens';
 
 interface WeeklyMatrixViewProps {
@@ -61,11 +62,13 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
       {!isMinimalMode && (
         <div className="flex items-center justify-between mb-2.5 relative z-40">
           <div className="flex items-center gap-2">
-            <h2 className="text-xs sm:text-sm font-display font-bold text-slate-900 dark:text-slate-100">
-              {language === 'vi' 
+            <AnimatedText
+              text={language === 'vi' 
                 ? `Thời Khóa Biểu Tuần • ${currentSchedule.gradeTitleVi || 'Lớp 11-TN'}` 
                 : `Full Weekly Matrix • ${currentSchedule.gradeTitleEn || 'Grade 11-TN'}`}
-            </h2>
+              as="h2"
+              className="text-xs sm:text-sm font-display font-bold text-slate-900 dark:text-slate-100"
+            />
             <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium hidden md:inline">
               • Phòng {currentSchedule.room || '504'} (GVQN: {currentSchedule.homeroomTeacher?.name})
             </span>

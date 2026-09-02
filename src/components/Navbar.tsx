@@ -22,6 +22,7 @@ import { Language, ThemeKey, ViewMode, DayKey, ScheduleData } from '../types/sch
 import { exportScheduleToICS } from '../utils/icsExport';
 import { VietnamTimeInfo } from '../utils/vietnamTime';
 import { SCHEDULE_DATA } from '../data/scheduleData';
+import { AnimatedText } from './AnimatedText';
 import { 
   isNotificationEnabled, 
   requestNotificationPermission, 
@@ -199,9 +200,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="flex items-center gap-1.5 cursor-pointer group text-left max-w-full"
                 title={language === 'vi' ? "Nhấn để chọn lớp khác" : "Click to switch class"}
               >
-                <h1 className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none truncate group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                  {currentClassName}
-                </h1>
+                <AnimatedText
+                  text={currentClassName}
+                  as="h1"
+                  className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors"
+                />
                 <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/80 group-hover:border-amber-400/50 transition-colors shrink-0">
                   P.{currentRoom}
                 </span>

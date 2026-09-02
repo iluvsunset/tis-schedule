@@ -10,6 +10,7 @@ import {
 import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, WeekTabInfo } from '../types/schedule';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { WeekSelectorButton } from './WeekSelectorButton';
+import { AnimatedText } from './AnimatedText';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 
 interface MinimalHeaderCardProps {
@@ -117,9 +118,11 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
 
             <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
               <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <span className="text-slate-900 dark:text-slate-200 font-bold">
-                {displayDayName} • {currentDayData.date}
-              </span>
+              <AnimatedText
+                text={`${displayDayName} • ${currentDayData.date}`}
+                as="span"
+                className="text-slate-900 dark:text-slate-200 font-bold"
+              />
               {isSelectedToday && (
                 <span className="px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-md shadow-2xs">
                   {language === 'vi' ? 'Hôm nay' : 'Today'}
@@ -253,9 +256,11 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
         <div className="flex items-center justify-between gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800/80 pt-2">
           <div className="flex items-center gap-1.5 min-w-0">
             <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
-            <span className="text-slate-900 dark:text-slate-200 font-bold truncate">
-              {displayDayName} • {currentDayData.date}
-            </span>
+            <AnimatedText
+              text={`${displayDayName} • ${currentDayData.date}`}
+              as="span"
+              className="text-slate-900 dark:text-slate-200 font-bold"
+            />
             {isSelectedToday && (
               <span className="px-1 py-0.2 text-[8px] font-bold uppercase tracking-wider bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded shadow-2xs shrink-0">
                 {language === 'vi' ? 'Hôm nay' : 'Today'}

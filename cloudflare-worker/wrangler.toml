@@ -2,9 +2,9 @@ name = "tis-schedule-sync"
 main = "src/index.js"
 compatibility_date = "2024-01-01"
 
-# ⏰ Cron Trigger: Runs automatically every 15 minutes (100% Free on Cloudflare)
+# ⏰ Cron Trigger: Runs automatically once every 24 hours (00:00 UTC)
 [triggers]
-crons = ["*/15 * * * *"]
+crons = ["0 0 * * *"]
 
 # 📦 Cloudflare KV Namespace for storing schedule hashes and subscriber push tokens
 # Run `npx wrangler kv:namespace create SCHEDULE_KV` to create your KV and paste the id below:

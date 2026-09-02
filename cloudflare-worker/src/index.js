@@ -4,7 +4,7 @@
  * Features:
  * 1. Serves the full Vite React Frontend Web App (UI, Icons, PWA).
  * 2. Auto-discovers the newest week tab (e.g. Tuần 5/8, Tuần 6/8, etc.) dynamically.
- * 3. Runs background Cron check every 15 minutes.
+ * 3. Runs background Cron check once every 24 hours.
  * 4. Broadcasts "Có thời khóa biểu mới" when changes or new weeks are detected.
  */
 
@@ -12,7 +12,7 @@ const SPREADSHEET_ID = "1H5U71l1QHVPwCBg9c3KPaADG_jjaaRmxfsCNIXpBQJ4";
 
 export default {
   /**
-   * ⏰ Cron Scheduled Handler (Fires every 15 minutes)
+   * ⏰ Cron Scheduled Handler (Fires once every 24 hours)
    */
   async scheduled(event, env, ctx) {
     ctx.waitUntil(checkGoogleSheetForUpdates(env));

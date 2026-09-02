@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 
 interface AnimatedTextProps {
@@ -38,21 +38,28 @@ const letterVariants: Variants = {
   },
 };
 
-export const AnimatedText: React.FC<AnimatedTextProps> = ({
+export const AnimatedText: React.FC<AnimatedTextProps> = React.memo(({
   text,
   className = '',
   stagger = 0.02,
   delay = 0.02,
   as = 'span',
 }) => {
+  // Keep track of the last string that successfully played the entrance animation
+  const lastAnimatedTextRef = useRef<string>('');
+  const shouldAnimate = lastAnimatedTextRef.current !== text;
+
+  useEffect(() => {
+    lastAnimatedTextRef.current = text;
+  }, [text]);
+
   const words = text.split(' ');
   const Component = motion[as] as any;
 
   return (
     <Component
-      key={text}
       variants={makeContainerVariants(stagger, delay)}
-      initial="hidden"
+      initial={shouldAnimate ? 'hidden' : false}
       animate="visible"
       className={`inline-flex flex-wrap ${className}`}
     >
@@ -62,6 +69,7 @@ export const AnimatedText: React.FC<AnimatedTextProps> = ({
             <motion.span
               key={cIdx}
               variants={letterVariants}
+              initial={shouldAnimate ? 'hidden' : false}
               className="inline-block"
             >
               {char}
@@ -71,4 +79,4 @@ export const AnimatedText: React.FC<AnimatedTextProps> = ({
       ))}
     </Component>
   );
-};
+});

@@ -111,7 +111,14 @@ export const App: React.FC = () => {
       
       // Fetch live schedule for user's selected class and latest week
       fetchLiveSchedule(latestGid, selectedClassId).then((freshData) => {
-        if (freshData) setScheduleData(freshData);
+        if (freshData) {
+          setScheduleData(prev => {
+            if (prev.classId === freshData.classId && prev.grade === freshData.grade && prev.weekSchedule === freshData.weekSchedule) {
+              return prev;
+            }
+            return freshData;
+          });
+        }
       }).catch((e) => console.warn('Initial live sync fallback:', e));
     }).catch((e) => console.warn('Tabs fetch fallback:', e));
   }, [showIntroVideo, selectedClassId]);
@@ -140,20 +147,17 @@ export const App: React.FC = () => {
     }
   }, [location.pathname, language, selectedClassId, navigate]);
 
-  // Handle Class Switch
-  const handleSelectClass = async (classId: string) => {
+  // Handle Class Switch (delegates single fetch to useEffect)
+  const handleSelectClass = (classId: string) => {
     const normalizedId = classId.toLowerCase();
+    if (normalizedId === selectedClassId) {
+      setIsClassModalOpen(false);
+      return;
+    }
     setSelectedClassId(normalizedId);
     localStorage.setItem('tis_selected_class_id', normalizedId);
     setIsClassModalOpen(false);
     navigate(`/${language}/${normalizedId}`);
-    try {
-      const targetGid = selectedWeekGid || (availableWeeks[availableWeeks.length - 1]?.gid) || '676068602';
-      const freshData = await fetchLiveSchedule(targetGid, normalizedId);
-      if (freshData) setScheduleData(freshData);
-    } catch (e) {
-      console.warn('Class switch fetch fallback:', e);
-    }
   };
 
   // Handle Language Switch with Route Sync

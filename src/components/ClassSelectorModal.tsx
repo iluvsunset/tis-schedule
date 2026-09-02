@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ClassInfo, Language } from '../types/schedule';
+import { AnimatedText } from './AnimatedText';
 
 interface ClassSelectorModalProps {
   isOpen: boolean;
@@ -12,37 +13,6 @@ interface ClassSelectorModalProps {
   onLanguageChange?: (lang: Language) => void;
   allowClose?: boolean;
 }
-
-// Letter-by-letter title container
-const titleContainerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.025,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-// Letter variant: delicate spring reveal with blur clear
-const letterVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 10,
-    filter: 'blur(5px)',
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: {
-      type: 'spring',
-      stiffness: 450,
-      damping: 26,
-    },
-  },
-};
 
 // Stagger container: reveals every class one at a time
 const listContainerVariants: Variants = {
@@ -215,27 +185,11 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
         {/* Center Stage: Question with Letter-by-Letter Animation + Minimized Button / Staggered Expanded List */}
         <main className="w-full max-w-md mx-auto my-auto py-4 sm:py-8 flex flex-col items-center">
           {/* Pure Question with Letter-by-Letter Staggered Spring Reveal */}
-          <motion.h1
-            key={questionText}
-            variants={titleContainerVariants}
-            initial="hidden"
-            animate="visible"
+          <AnimatedText
+            text={questionText}
+            as="h1"
             className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-white text-center mb-6 flex flex-wrap justify-center"
-          >
-            {questionText.split(' ').map((word, wordIndex) => (
-              <span key={wordIndex} className="inline-block whitespace-nowrap mr-2 last:mr-0">
-                {Array.from(word).map((char, charIndex) => (
-                  <motion.span
-                    key={charIndex}
-                    variants={letterVariants}
-                    className="inline-block"
-                  >
-                    {char}
-                  </motion.span>
-                ))}
-              </span>
-            ))}
-          </motion.h1>
+          />
 
           <div ref={containerRef} className="w-full flex flex-col items-center">
             <AnimatePresence mode="wait">

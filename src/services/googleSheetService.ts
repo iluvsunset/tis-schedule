@@ -14,13 +14,16 @@ const DEFAULT_CONFIG: SheetConfig = {
 
 // In-memory cache for ultra-fast instant switching between weeks & classes
 const scheduleCache = new Map<string, ScheduleData>();
+const inFlightSchedules = new Map<string, Promise<ScheduleData>>();
 let cachedTabs: WeekTabInfo[] | null = null;
+let inFlightTabsPromise: Promise<WeekTabInfo[]> | null = null;
 
 /**
  * Discovers all week tabs from Google Spreadsheet HTML view
  */
 export async function getAllSheetTabs(sheetId: string = DEFAULT_CONFIG.sheetId): Promise<WeekTabInfo[]> {
   if (cachedTabs && cachedTabs.length > 0) return cachedTabs;
+  if (inFlightTabsPromise) return inFlightTabsPromise;
 
   try {
     const res = await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/htmlview`, { cache: 'no-store' });
@@ -472,13 +475,25 @@ export async function fetchLiveSchedule(
   if (scheduleCache.has(cacheKey)) {
     return scheduleCache.get(cacheKey)!;
   }
+  if (inFlightSchedules.has(cacheKey)) {
+    return inFlightSchedules.get(cacheKey)!;
+  }
 
-  const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${activeGid}`;
-  const res = await fetch(csvUrl, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Failed to fetch CSV: ${res.statusText}`);
+  const fetchPromise = (async () => {
+    try {
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${activeGid}`;
+      const res = await fetch(csvUrl, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`Failed to fetch CSV: ${res.statusText}`);
 
-  const csvText = await res.text();
-  const parsed = parseSheetCSV(csvText, targetClassId);
-  scheduleCache.set(cacheKey, parsed);
-  return parsed;
+      const csvText = await res.text();
+      const parsed = parseSheetCSV(csvText, targetClassId);
+      scheduleCache.set(cacheKey, parsed);
+      return parsed;
+    } finally {
+      inFlightSchedules.delete(cacheKey);
+    }
+  })();
+
+  inFlightSchedules.set(cacheKey, fetchPromise);
+  return fetchPromise;
 }

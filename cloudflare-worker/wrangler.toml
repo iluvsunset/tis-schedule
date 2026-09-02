@@ -11,3 +11,11 @@ crons = ["*/15 * * * *"]
 [[kv_namespaces]]
 binding = "SCHEDULE_KV"
 id = "SCHEDULE_KV_ID_HERE"
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+persist = true

@@ -91,14 +91,6 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
   const currentDayData = days.find(d => d.dayKey === selectedDay) || days[0];
   const isSelectedToday = getDateStatus(currentDayData.date, vnTime.dateStr) === 'today';
   
-  const isAllDayHoliday = 
-    currentDayData.morning.some(i => i.subjectVi.toLowerCase().includes('nghỉ lễ') || (i.note && i.note.toLowerCase().includes('nghỉ lễ'))) ||
-    currentDayData.afternoon.some(i => i.subjectVi.toLowerCase().includes('nghỉ lễ') || (i.note && i.note.toLowerCase().includes('nghỉ lễ'))) ||
-    (currentDayData.date && (currentDayData.date.startsWith('31/8') || currentDayData.date.startsWith('1/9') || currentDayData.date.startsWith('01/9') || currentDayData.date.startsWith('2/9') || currentDayData.date.startsWith('02/9')));
-
-  const totalPeriods = currentDayData.morning.filter(i => i.type !== 'break').length + 
-                       currentDayData.afternoon.filter(i => i.type !== 'break').length;
-
   const displayDayName = language === 'vi' ? dayNamesVi[selectedDay] : dayNamesEn[selectedDay];
 
   return (
@@ -178,11 +170,6 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
 
         {/* Right: Actions */}
         <div className="flex items-center justify-end gap-2 shrink-0">
-          {!isAllDayHoliday && (
-            <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 shrink-0">
-              <span>{totalPeriods} {language === 'vi' ? 'Tiết học' : 'Periods'}</span>
-            </div>
-          )}
 
           {availableWeeks && availableWeeks.length > 0 && onSelectWeek && (
             <WeekSelectorButton
@@ -275,12 +262,6 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
               </span>
             )}
           </div>
-
-          {!isAllDayHoliday && (
-            <div className="text-[10px] font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60 shrink-0">
-              <span>{totalPeriods} {language === 'vi' ? 'Tiết' : 'Per'}</span>
-            </div>
-          )}
         </div>
 
         {/* Tier 3: Full-Width Day Switcher Tabs */}

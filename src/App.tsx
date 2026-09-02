@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, WeekTabInfo, INITIAL_CLASSES } from './types/schedule';
 import { SCHEDULE_DATA as INITIAL_DATA } from './data/scheduleData';
@@ -11,15 +12,42 @@ import { TeacherModal } from './components/TeacherModal';
 import { ClassSelectorModal } from './components/ClassSelectorModal';
 import { IntroVideoLoader } from './components/IntroVideoLoader';
 import { NotificationPermissionModal } from './components/NotificationPermissionModal';
-import { IPhoneInstallGuideModal } from './components/IPhoneInstallGuideModal';
 import { getVietnamTime, VietnamTimeInfo, getDateStatus } from './utils/vietnamTime';
 import { checkAndTriggerEveningReminder } from './utils/notificationService';
 
+const VALID_CLASS_IDS = ['6', '7', '8', '9', '10-tn', '10-nt', '11-tn', '12-tn'];
+
+function parsePath(pathname: string): { lang?: Language; classId?: string } {
+  const clean = pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
+  if (!clean) return {};
+  const segments = clean.split('/').filter(Boolean);
+
+  let lang: Language | undefined;
+  let classId: string | undefined;
+
+  if (segments[0] === 'vi' || segments[0] === 'en') {
+    lang = segments[0] as Language;
+    if (segments[1] && VALID_CLASS_IDS.includes(segments[1])) {
+      classId = segments[1];
+    }
+  } else if (VALID_CLASS_IDS.includes(segments[0])) {
+    classId = segments[0];
+  }
+
+  return { lang, classId };
+}
+
 export const App: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [scheduleData, setScheduleData] = useState<ScheduleData>(INITIAL_DATA);
-  const [language, setLanguage] = useState<Language>('vi');
+  const [language, setLanguage] = useState<Language>(() => {
+    const route = parsePath(window.location.pathname);
+    return route.lang || (localStorage.getItem('tis_language') as Language) || 'vi';
+  });
   const [theme, setTheme] = useState<ThemeKey>(() => {
-    return (localStorage.getItem('tis_theme_pref') as ThemeKey) || 'dark';
+    return (localStorage.getItem('tis_theme_pref') as ThemeKey) || 'system';
   });
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
   const [selectedDay, setSelectedDay] = useState<DayKey>('mon');
@@ -29,12 +57,15 @@ export const App: React.FC = () => {
   // Cinematic Intro Video Loader
   const [showIntroVideo, setShowIntroVideo] = useState<boolean>(true);
 
-  // Universal Class & Multi-Week State
+  // Universal Class & Multi-Week State (from URL or localStorage)
   const [selectedClassId, setSelectedClassId] = useState<string>(() => {
-    return localStorage.getItem('tis_selected_class_id') || '11-tn';
+    const route = parsePath(window.location.pathname);
+    return route.classId || localStorage.getItem('tis_selected_class_id') || '';
   });
   const [isClassModalOpen, setIsClassModalOpen] = useState<boolean>(() => {
-    return !localStorage.getItem('tis_selected_class_id'); // Auto prompt on first visit
+    const route = parsePath(window.location.pathname);
+    if (route.classId) return false;
+    return !localStorage.getItem('tis_selected_class_id'); // Auto prompt on first visit if no class
   });
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
   const [availableWeeks, setAvailableWeeks] = useState<WeekTabInfo[]>([]);
@@ -57,8 +88,9 @@ export const App: React.FC = () => {
     setShowIntroVideo(false);
   };
 
-  // 1. Initialize day, load weeks & fetch schedule on startup
+  // 1. Initialize day, load weeks & fetch schedule on startup (waits for video intro)
   useEffect(() => {
+    if (showIntroVideo) return; // Priority load the video intro first before everything
     const currentVn = getVietnamTime();
     setVnTime(currentVn);
     
@@ -68,6 +100,8 @@ export const App: React.FC = () => {
     } else {
       setSelectedDay('mon');
     }
+
+    if (!selectedClassId) return;
 
     // Discover all available week tabs
     getAllSheetTabs().then((tabs) => {
@@ -80,17 +114,56 @@ export const App: React.FC = () => {
         if (freshData) setScheduleData(freshData);
       }).catch((e) => console.warn('Initial live sync fallback:', e));
     }).catch((e) => console.warn('Tabs fetch fallback:', e));
-  }, [selectedClassId]);
+  }, [showIntroVideo, selectedClassId]);
+
+  // Synchronize route changes from browser navigation / back / forward / deep links
+  useEffect(() => {
+    const route = parsePath(location.pathname);
+
+    if (route.lang && route.lang !== language) {
+      setLanguage(route.lang);
+      localStorage.setItem('tis_language', route.lang);
+    }
+
+    if (route.classId && route.classId !== selectedClassId) {
+      setSelectedClassId(route.classId);
+      localStorage.setItem('tis_selected_class_id', route.classId);
+      setIsClassModalOpen(false);
+    }
+
+    // If on root '/', normalize URL if we already have a selected class
+    if (location.pathname === '/') {
+      const savedClass = route.classId || selectedClassId || localStorage.getItem('tis_selected_class_id');
+      if (savedClass && VALID_CLASS_IDS.includes(savedClass)) {
+        navigate(`/${route.lang || language}/${savedClass}`, { replace: true });
+      }
+    }
+  }, [location.pathname, language, selectedClassId, navigate]);
 
   // Handle Class Switch
   const handleSelectClass = async (classId: string) => {
-    setSelectedClassId(classId);
-    localStorage.setItem('tis_selected_class_id', classId);
+    const normalizedId = classId.toLowerCase();
+    setSelectedClassId(normalizedId);
+    localStorage.setItem('tis_selected_class_id', normalizedId);
+    setIsClassModalOpen(false);
+    navigate(`/${language}/${normalizedId}`);
     try {
-      const freshData = await fetchLiveSchedule(selectedWeekGid, classId);
+      const targetGid = selectedWeekGid || (availableWeeks[availableWeeks.length - 1]?.gid) || '676068602';
+      const freshData = await fetchLiveSchedule(targetGid, normalizedId);
       if (freshData) setScheduleData(freshData);
     } catch (e) {
       console.warn('Class switch fetch fallback:', e);
+    }
+  };
+
+  // Handle Language Switch with Route Sync
+  const handleLanguageChange = (newLang: Language) => {
+    setLanguage(newLang);
+    localStorage.setItem('tis_language', newLang);
+    if (selectedClassId) {
+      navigate(`/${newLang}/${selectedClassId}`);
+    } else {
+      navigate(`/${newLang}`);
     }
   };
 
@@ -177,21 +250,16 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMinimalMode, selectedDay]);
 
+  // Priority load the video intro first before everything even the background
+  if (showIntroVideo) {
+    return <IntroVideoLoader onComplete={handleIntroComplete} />;
+  }
+
   return (
     <div className={`min-h-[100dvh] bg-transparent relative text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'}`}>
       
-      {/* Cinematic First-Access Video Intro / Loading Screen */}
-      {showIntroVideo && (
-        <IntroVideoLoader onComplete={handleIntroComplete} />
-      )}
-
       {/* Non-intrusive First-Time Notification Permission & Install Prompt */}
-      {!showIntroVideo && <NotificationPermissionModal language={language} />}
-
-      {/* iPhone Best Experience Guidance Screen (Add to Home Screen) - Displays after Intro Video */}
-      {!showIntroVideo && (
-        <IPhoneInstallGuideModal language={language} onLanguageChange={setLanguage} />
-      )}
+      <NotificationPermissionModal language={language} />
 
       {/* Subtle Studio Ambient Lighting (Hardware-Accelerated & 60fps) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 no-print">
@@ -222,7 +290,7 @@ export const App: React.FC = () => {
         ) : (
           <Navbar
             language={language}
-            onLanguageChange={setLanguage}
+            onLanguageChange={handleLanguageChange}
             theme={theme}
             onThemeChange={setTheme}
             searchQuery={searchQuery}

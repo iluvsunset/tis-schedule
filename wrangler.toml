@@ -4,3 +4,11 @@ pages_build_output_dir = "dist"
 
 [assets]
 directory = "./dist"
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+persist = true

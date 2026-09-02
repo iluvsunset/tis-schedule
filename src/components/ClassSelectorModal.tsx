@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, GraduationCap, School, Search } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ClassInfo, Language } from '../types/schedule';
-import { modalBackdropVariants, modalContentVariants, listContainerVariants, listItemVariants, springTactile } from '../utils/motionTokens';
 
 interface ClassSelectorModalProps {
   isOpen: boolean;
@@ -14,55 +12,46 @@ interface ClassSelectorModalProps {
   allowClose?: boolean;
 }
 
-/**
- * Minimalist luxury 1-stroke checkmark (clean single-ring vector animation)
- */
-const LuxuryAnimatedCheckmark: React.FC = () => (
-  <motion.div
-    initial={{ scale: 0.6, opacity: 0 }}
-    animate={{ scale: 1, opacity: 1 }}
-    exit={{ scale: 0.6, opacity: 0 }}
-    transition={springTactile}
-    className="w-6 h-6 flex items-center justify-center shrink-0 text-amber-500 dark:text-amber-400"
-  >
-    <svg 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      xmlns="http://www.w3.org/2000/svg" 
-      className="w-5 h-5"
-    >
-      <circle
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        className="opacity-30"
-      />
-      <motion.circle
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-      />
-      <motion.path
-        d="M7.5 12.2L10.5 15.2L16.5 8.8"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 0.25, delay: 0.1, ease: "easeOut" }}
-      />
-    </svg>
-  </motion.div>
-);
+// Stagger container: reveals every class one at a time
+const listContainerVariants: Variants = {
+  hidden: { opacity: 0, y: 10, scale: 0.98 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.22,
+      ease: [0.16, 1, 0.3, 1],
+      when: 'beforeChildren',
+      staggerChildren: 0.045, // Stagger each class item sequentially
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: 8,
+    scale: 0.98,
+    transition: { duration: 0.15, ease: 'easeIn' },
+  },
+};
+
+// Item variant: slide up, de-blur, and spring into place
+const classItemVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 12,
+    filter: 'blur(4px)',
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: {
+      type: 'spring',
+      stiffness: 420,
+      damping: 28,
+    },
+  },
+};
 
 export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
   isOpen,
@@ -73,214 +62,255 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
   language,
   allowClose = true
 }) => {
-  const [search, setSearch] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const filteredClasses = classes.filter(c => {
-    const q = search.toLowerCase();
-    return (
-      c.nameVi.toLowerCase().includes(q) ||
-      c.nameEn.toLowerCase().includes(q) ||
-      c.room.toLowerCase().includes(q) ||
-      c.homeroomTeacher.toLowerCase().includes(q)
-    );
-  });
+  // ESC key listener
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (isExpanded) {
+          setIsExpanded(false);
+        } else if (allowClose) {
+          onClose();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isExpanded, allowClose, onClose]);
 
-  const middleSchool = filteredClasses.filter(c => c.level === 'middle');
-  const highSchool = filteredClasses.filter(c => c.level === 'high');
+  // Click outside to collapse
+  useEffect(() => {
+    if (!isExpanded) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsExpanded(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isExpanded]);
 
-  const handleChoose = (id: string) => {
+  const selectedClass = useMemo(() => {
+    return classes.find(c => c.id === selectedClassId);
+  }, [classes, selectedClassId]);
+
+  const highSchool = useMemo(() => classes.filter(c => c.level === 'high'), [classes]);
+  const middleSchool = useMemo(() => classes.filter(c => c.level === 'middle'), [classes]);
+
+  const handleSelect = (id: string) => {
     onSelectClass(id);
+    setIsExpanded(false);
     onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-hidden">
-          
-          {/* Backdrop with Fade */}
-          <motion.div
-            variants={modalBackdropVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            onClick={allowClose ? onClose : undefined}
-            className="absolute inset-0 bg-slate-950/75 backdrop-blur-md"
-          />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+        className="fixed inset-0 z-[150] w-screen h-screen min-h-[100dvh] bg-[#f2f2f7] dark:bg-black sm:dark:bg-[#09090b] text-slate-900 dark:text-white flex flex-col justify-between p-5 sm:p-8 overflow-y-auto select-none font-sans transition-colors duration-300"
+      >
+        {/* Minimalist Top Bar (Zero Icons) */}
+        <header className="w-full max-w-md mx-auto flex items-center justify-between shrink-0">
+          <span className="text-[11px] font-mono tracking-widest uppercase text-slate-400 dark:text-slate-500">
+            TIS SCHEDULE
+          </span>
 
-          {/* Modal Window with spring sheet pop-in */}
-          <motion.div
-            variants={modalContentVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="relative w-full max-w-2xl bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-[32px] sm:rounded-3xl shadow-2xl z-10 max-h-[85vh] sm:max-h-[85vh] flex flex-col overflow-hidden"
-          >
-            
-            {/* Sticky Header with Official TIS Logo & Search Box */}
-            <div className="p-4 sm:p-6 pb-3 shrink-0 border-b border-slate-100 dark:border-slate-800/80">
-              <div className="flex items-start justify-between gap-3 mb-3 sm:mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white dark:bg-slate-800 p-1 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 overflow-hidden">
-                    <img 
-                      src="/tis-logo.png" 
-                      alt="TIS Logo" 
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div>
-                    <div className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                      The International School • TIS
-                    </div>
-                    <h3 className="font-display font-black text-lg sm:text-2xl text-slate-900 dark:text-slate-100">
-                      {language === 'vi' ? 'Chọn Lớp Học Của Bạn' : 'Select Your Class'}
-                    </h3>
-                  </div>
-                </div>
-
-                {allowClose && (
-                  <motion.button
-                    whileTap={{ scale: 0.92 }}
-                    onClick={onClose}
-                    className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                  >
-                    <X className="w-5 h-5" />
-                  </motion.button>
-                )}
-              </div>
-
-              {/* Search Box */}
-              <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder={language === 'vi' ? "Tìm theo tên lớp, phòng học, giáo viên..." : "Search by class, room, teacher..."}
-                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 outline-none focus:border-slate-400 dark:focus:border-slate-500 transition"
-                />
-              </div>
-            </div>
-
-            {/* Scrollable Classes List (iOS Safari Touch Pan Enabled) */}
-            <div 
-              className="p-4 sm:p-6 pt-3 overflow-y-auto overscroll-contain flex-1 touch-pan-y space-y-5"
-              style={{ WebkitOverflowScrolling: 'touch' }}
+          {allowClose && (
+            <button
+              onClick={onClose}
+              className="px-3 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-black/5 hover:bg-black/10 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] border border-black/10 dark:border-white/[0.08] transition cursor-pointer"
             >
-              {/* THPT Section */}
-              {highSchool.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2.5">
-                    <GraduationCap className="w-4 h-4 text-amber-500" />
-                    <h4 className="text-xs sm:text-sm font-bold font-display uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                      {language === 'vi' ? 'Khối Trung Học Phổ Thông (THPT)' : 'High School (Grades 10 – 12)'}
-                    </h4>
+              <span>{language === 'vi' ? 'Đóng' : 'Close'}</span>
+            </button>
+          )}
+        </header>
+
+        {/* Center Stage: Question + Minimized Button / Staggered Expanded List */}
+        <main className="w-full max-w-md mx-auto my-auto py-8 flex flex-col items-center">
+          {/* Pure Question */}
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-white text-center mb-6">
+            {language === 'vi' ? 'Bạn học ở lớp nào?' : 'Which class are you in?'}
+          </h1>
+
+          <div ref={containerRef} className="w-full flex flex-col items-center">
+            <AnimatePresence mode="wait">
+              {!isExpanded ? (
+                /* Minimized Button (Zero Icons) */
+                <motion.button
+                  key="minimized-trigger"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setIsExpanded(true)}
+                  className="w-full max-w-sm px-5 py-3.5 rounded-2xl bg-white dark:bg-white/[0.06] text-slate-900 dark:text-white border border-black/[0.06] dark:border-white/[0.08] shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-between"
+                >
+                  <div className="flex flex-col text-left truncate mr-2">
+                    <span className="text-[15px] font-medium text-slate-900 dark:text-white truncate">
+                      {selectedClass 
+                        ? (language === 'vi' ? selectedClass.nameVi : selectedClass.nameEn)
+                        : (language === 'vi' ? 'Chọn lớp học' : 'Select class')}
+                    </span>
+                    {selectedClass && (
+                      <span className="text-xs text-slate-400 dark:text-slate-500 truncate">
+                        Phòng {selectedClass.room} • {selectedClass.homeroomTeacher}
+                      </span>
+                    )}
                   </div>
+
+                  <span className="shrink-0 px-3 py-1 rounded-xl text-xs font-semibold bg-black/5 dark:bg-white/10 text-slate-700 dark:text-slate-300">
+                    {language === 'vi' ? 'Chọn lớp' : 'Choose'}
+                  </span>
+                </motion.button>
+              ) : (
+                /* Expanded Apple Inset Grouped List with Staggered Entrance */
+                <motion.div
+                  key="expanded-list"
+                  variants={listContainerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="w-full rounded-2xl bg-white dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.08] shadow-md dark:shadow-none backdrop-blur-xl overflow-hidden divide-y divide-black/[0.05] dark:divide-white/[0.06]"
+                >
+                  {/* Header with Collapse Button */}
                   <motion.div 
-                    variants={listContainerVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="grid grid-cols-1 sm:grid-cols-2 gap-2.5"
+                    variants={classItemVariants}
+                    className="px-4 py-2.5 bg-slate-100/60 dark:bg-white/[0.03] flex items-center justify-between"
                   >
-                    {highSchool.map((c) => {
-                      const isSelected = selectedClassId === c.id;
-                      return (
-                        <motion.button
-                          key={c.id}
-                          variants={listItemVariants}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => handleChoose(c.id)}
-                          className={`p-3.5 rounded-2xl border text-left transition-all relative flex items-center justify-between gap-3 cursor-pointer ${
-                            isSelected
-                              ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-amber-500/80 dark:border-amber-400/80 shadow-md ring-2 ring-amber-400/25'
-                              : 'bg-slate-100/80 hover:bg-slate-200/70 dark:bg-slate-800/70 dark:hover:bg-slate-800 border-slate-200/90 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 shadow-2xs'
-                          }`}
-                        >
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className={`font-display font-extrabold text-base ${isSelected ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>
-                                {language === 'vi' ? c.nameVi : c.nameEn}
-                              </span>
-                              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${
-                                isSelected
-                                   ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 font-bold'
-                                  : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'
-                              }`}>
-                                Phòng {c.room}
-                              </span>
-                            </div>
-                            <div className={`text-xs mt-0.5 truncate ${isSelected ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>
-                              GVQN: {c.homeroomTeacher}
-                            </div>
-                          </div>
-
-                          {isSelected && <LuxuryAnimatedCheckmark />}
-                        </motion.button>
-                      );
-                    })}
+                    <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      {language === 'vi' ? 'Danh sách lớp học' : 'All Classes'}
+                    </span>
+                    <button
+                      onClick={() => setIsExpanded(false)}
+                      className="text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white px-2 py-0.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition cursor-pointer"
+                    >
+                      {language === 'vi' ? 'Thu gọn' : 'Minimize'}
+                    </button>
                   </motion.div>
-                </div>
-              )}
 
-              {/* THCS Section */}
-              {middleSchool.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2.5">
-                    <School className="w-4 h-4 text-blue-500" />
-                    <h4 className="text-xs sm:text-sm font-bold font-display uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                      {language === 'vi' ? 'Khối Trung Học Cơ Sở (THCS)' : 'Middle School (Grades 6 – 9)'}
-                    </h4>
-                  </div>
+                  {/* THPT Group Header */}
                   <motion.div 
-                    variants={listContainerVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="grid grid-cols-1 sm:grid-cols-2 gap-2.5"
+                    variants={classItemVariants}
+                    className="px-4 py-1.5 bg-slate-50/50 dark:bg-white/[0.01] text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider"
                   >
-                    {middleSchool.map((c) => {
-                      const isSelected = selectedClassId === c.id;
-                      return (
-                        <motion.button
-                          key={c.id}
-                          variants={listItemVariants}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => handleChoose(c.id)}
-                          className={`p-3.5 rounded-2xl border text-left transition-all relative flex items-center justify-between gap-3 cursor-pointer ${
-                            isSelected
-                              ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-amber-500/80 dark:border-amber-400/80 shadow-md ring-2 ring-amber-400/25'
-                              : 'bg-slate-100/80 hover:bg-slate-200/70 dark:bg-slate-800/70 dark:hover:bg-slate-800 border-slate-200/90 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 shadow-2xs'
-                          }`}
-                        >
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className={`font-display font-extrabold text-base ${isSelected ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>
-                                {language === 'vi' ? c.nameVi : c.nameEn}
-                              </span>
-                              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${
-                                isSelected
-                                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 font-bold'
-                                  : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'
-                              }`}>
-                                Phòng {c.room}
-                              </span>
-                            </div>
-                            <div className={`text-xs mt-0.5 truncate ${isSelected ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>
-                              GVQN: {c.homeroomTeacher}
-                            </div>
-                          </div>
-
-                          {isSelected && <LuxuryAnimatedCheckmark />}
-                        </motion.button>
-                      );
-                    })}
+                    {language === 'vi' ? 'Khối THPT' : 'High School'}
                   </motion.div>
-                </div>
-              )}
-            </div>
 
-          </motion.div>
-        </div>
-      )}
+                  {/* THPT Classes: Each appears one at a time */}
+                  {highSchool.map((c) => {
+                    const isSelected = selectedClassId === c.id;
+                    return (
+                      <motion.button
+                        key={c.id}
+                        variants={classItemVariants}
+                        whileTap={{ scale: 0.99 }}
+                        onClick={() => handleSelect(c.id)}
+                        className={`w-full px-4 py-3 flex items-center justify-between text-left transition-colors cursor-pointer ${
+                          isSelected
+                            ? 'bg-amber-500/10 dark:bg-white/[0.08]'
+                            : 'hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.04] dark:active:bg-white/[0.08]'
+                        }`}
+                      >
+                        <div className="flex flex-col">
+                          <span className={`text-[15px] ${
+                            isSelected 
+                              ? 'font-semibold text-amber-600 dark:text-amber-400' 
+                              : 'font-medium text-slate-900 dark:text-slate-100'
+                          }`}>
+                            {language === 'vi' ? c.nameVi : c.nameEn}
+                          </span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            GVCN: {c.homeroomTeacher}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                            Phòng {c.room}
+                          </span>
+                          {isSelected && (
+                            <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/15 dark:bg-amber-400/10">
+                              {language === 'vi' ? 'Đang chọn' : 'Selected'}
+                            </span>
+                          )}
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+
+                  {/* THCS Group Header */}
+                  <motion.div 
+                    variants={classItemVariants}
+                    className="px-4 py-1.5 bg-slate-50/50 dark:bg-white/[0.01] text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-t border-black/[0.05] dark:border-white/[0.06]"
+                  >
+                    {language === 'vi' ? 'Khối THCS' : 'Middle School'}
+                  </motion.div>
+
+                  {/* THCS Classes: Each appears one at a time */}
+                  {middleSchool.map((c) => {
+                    const isSelected = selectedClassId === c.id;
+                    return (
+                      <motion.button
+                        key={c.id}
+                        variants={classItemVariants}
+                        whileTap={{ scale: 0.99 }}
+                        onClick={() => handleSelect(c.id)}
+                        className={`w-full px-4 py-3 flex items-center justify-between text-left transition-colors cursor-pointer ${
+                          isSelected
+                            ? 'bg-amber-500/10 dark:bg-white/[0.08]'
+                            : 'hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.04] dark:active:bg-white/[0.08]'
+                        }`}
+                      >
+                        <div className="flex flex-col">
+                          <span className={`text-[15px] ${
+                            isSelected 
+                              ? 'font-semibold text-amber-600 dark:text-amber-400' 
+                              : 'font-medium text-slate-900 dark:text-slate-100'
+                          }`}>
+                            {language === 'vi' ? c.nameVi : c.nameEn}
+                          </span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            GVCN: {c.homeroomTeacher}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                            Phòng {c.room}
+                          </span>
+                          {isSelected && (
+                            <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/15 dark:bg-amber-400/10">
+                              {language === 'vi' ? 'Đang chọn' : 'Selected'}
+                            </span>
+                          )}
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </main>
+
+        {/* Quiet Footer */}
+        <footer className="w-full max-w-md mx-auto text-center shrink-0">
+          <span className="text-[11px] font-mono text-slate-400 dark:text-slate-600">
+            The International School • UTC+7
+          </span>
+        </footer>
+      </motion.div>
     </AnimatePresence>
   );
 };

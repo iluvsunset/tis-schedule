@@ -75,8 +75,6 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     dayData.afternoon.some(i => i.subjectVi.toLowerCase().includes('nghỉ lễ') || (i.note && i.note.toLowerCase().includes('nghỉ lễ'))) ||
     (dayData.date && (dayData.date.startsWith('31/8') || dayData.date.startsWith('1/9') || dayData.date.startsWith('01/9') || dayData.date.startsWith('2/9') || dayData.date.startsWith('02/9')));
 
-  const totalPeriods = dayData.morning.filter(i => i.type !== 'break').length + dayData.afternoon.filter(i => i.type !== 'break').length;
-
   const triggerCelebrationConfetti = (e?: React.MouseEvent) => {
     if (e) {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -172,11 +170,6 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
               />
             )}
 
-            {!isAllDayHoliday && (
-              <div className="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2 sm:px-2.5 py-1 rounded-lg sm:rounded-xl border border-slate-200/60 dark:border-slate-700/60 shrink-0">
-                <span>{totalPeriods} {language === 'vi' ? 'Tiết' : 'Periods'}</span>
-              </div>
-            )}
 
             {/* Full-Screen Minimal Mode Toggle Button (Icon Only - Desktop / sm+) */}
             {onToggleMinimalMode && (

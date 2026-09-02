@@ -46,6 +46,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const isToday = dateStatus === 'today';
   const isPastDay = dateStatus === 'past';
 
+  const hasAnimatedRef = React.useRef(false);
+  React.useEffect(() => {
+    hasAnimatedRef.current = true;
+  }, [selectedDay]);
+
   const matchesFilterAndSearch = (item: ScheduleItem) => {
     if (item.type === 'break') return true;
     if (activeFilter !== 'all' && item.type !== activeFilter) {
@@ -242,7 +247,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             ) : (
               <motion.div 
                 variants={containerVariants}
-                initial="hidden"
+                initial={hasAnimatedRef.current ? false : "hidden"}
                 animate="visible"
                 className="space-y-2.5 sm:space-y-3"
               >
@@ -329,7 +334,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             ) : (
               <motion.div 
                 variants={containerVariants}
-                initial="hidden"
+                initial={hasAnimatedRef.current ? false : "hidden"}
                 animate="visible"
                 className="space-y-2.5 sm:space-y-3"
               >

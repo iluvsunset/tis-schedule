@@ -385,6 +385,7 @@ export const App: React.FC = () => {
           selectedClassId={selectedClassId}
           onSelectClass={handleSelectClass}
           language={language}
+          onLanguageChange={handleLanguageChange}
           allowClose={Boolean(localStorage.getItem('tis_selected_class_id'))}
         />
 

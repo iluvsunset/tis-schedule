@@ -17,6 +17,16 @@ import { checkAndTriggerEveningReminder } from './utils/notificationService';
 
 const VALID_CLASS_IDS = ['6', '7', '8', '9', '10-tn', '10-nt', '11-tn', '12-tn'];
 
+const DAY_OF_WEEK_MAP: Record<number, DayKey> = {
+  0: 'mon',
+  1: 'mon',
+  2: 'tue',
+  3: 'wed',
+  4: 'thu',
+  5: 'fri',
+  6: 'sat',
+};
+
 function parsePath(pathname: string): { lang?: Language; classId?: string } {
   const clean = pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
   if (!clean) return {};
@@ -50,7 +60,10 @@ export const App: React.FC = () => {
     return (localStorage.getItem('tis_theme_pref') as ThemeKey) || 'system';
   });
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
-  const [selectedDay, setSelectedDay] = useState<DayKey>('mon');
+  const [selectedDay, setSelectedDay] = useState<DayKey>(() => {
+    const currentVn = getVietnamTime();
+    return DAY_OF_WEEK_MAP[currentVn.dayOfWeek] || 'mon';
+  });
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [vnTime, setVnTime] = useState<VietnamTimeInfo>(getVietnamTime());
   
@@ -98,7 +111,7 @@ export const App: React.FC = () => {
     if (todayInSchedule) {
       setSelectedDay(todayInSchedule.dayKey);
     } else {
-      setSelectedDay('mon');
+      setSelectedDay(DAY_OF_WEEK_MAP[currentVn.dayOfWeek] || 'mon');
     }
 
     if (!selectedClassId) return;
@@ -369,14 +382,14 @@ export const App: React.FC = () => {
           <footer className="mt-auto pt-6 pb-3 text-center text-[11px] text-slate-400 dark:text-slate-500 no-print">
             <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
               <span className="font-semibold text-slate-600 dark:text-slate-400">
-                {scheduleData.gradeTitleVi || 'Lớp 11-TN'} • TIS Schedule
+                {language === 'vi' ? (scheduleData.gradeTitleVi || 'Lớp 11-TN') : (scheduleData.gradeTitleEn || 'Grade 11-TN')} • TIS Schedule
               </span>
               <span>•</span>
-              <span>Phòng {scheduleData.room || '504'}</span>
+              <span>{language === 'vi' ? 'Phòng' : 'Room'} {scheduleData.room || '504'}</span>
               <span>•</span>
-              <span>GVQN: {scheduleData.homeroomTeacher?.name}</span>
+              <span>{language === 'vi' ? 'GVQN' : 'HR'}: {scheduleData.homeroomTeacher?.name}</span>
               <span>•</span>
-              <span>Giờ Việt Nam (UTC+7)</span>
+              <span>{language === 'vi' ? 'Giờ Việt Nam (UTC+7)' : 'Vietnam Time (UTC+7)'}</span>
             </div>
           </footer>
         )}

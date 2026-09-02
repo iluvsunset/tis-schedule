@@ -18,11 +18,10 @@ import {
   Maximize2,
   Minimize2
 } from 'lucide-react';
-import { Language, ThemeKey, ViewMode, DayKey, ScheduleData } from '../types/schedule';
+import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, INITIAL_CLASSES } from '../types/schedule';
 import { exportScheduleToICS } from '../utils/icsExport';
 import { VietnamTimeInfo } from '../utils/vietnamTime';
 import { SCHEDULE_DATA } from '../data/scheduleData';
-import { AnimatedText } from './AnimatedText';
 import { 
   isNotificationEnabled, 
   requestNotificationPermission, 
@@ -77,9 +76,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
 
   const days = (scheduleData || SCHEDULE_DATA).weekSchedule;
+  const matchedClass = INITIAL_CLASSES.find(c => c.id === scheduleData?.classId) || 
+                       INITIAL_CLASSES.find(c => c.nameVi === scheduleData?.gradeTitleVi) ||
+                       INITIAL_CLASSES.find(c => c.id === '11-tn');
   const currentClassName = language === 'vi' 
-    ? (scheduleData?.gradeTitleVi || 'Lớp 11-TN') 
-    : (scheduleData?.gradeTitleEn || 'Grade 11-TN');
+    ? (matchedClass?.nameVi || scheduleData?.gradeTitleVi || 'Lớp 11-TN') 
+    : (matchedClass?.nameEn || scheduleData?.gradeTitleEn || 'Grade 11-TN');
   const currentRoom = scheduleData?.room || '504';
   const currentTeacher = scheduleData?.homeroomTeacher?.name || 'Cô Tiềng';
 
@@ -200,19 +202,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="flex items-center gap-1.5 cursor-pointer group text-left max-w-full"
                 title={language === 'vi' ? "Nhấn để chọn lớp khác" : "Click to switch class"}
               >
-                <AnimatedText
-                  text={currentClassName}
-                  as="h1"
-                  className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors"
-                />
+                <h1 className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none truncate group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                  {currentClassName}
+                </h1>
                 <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/80 group-hover:border-amber-400/50 transition-colors shrink-0">
-                  P.{currentRoom}
+                  {language === 'vi' ? 'P.' : 'R.'}{currentRoom}
                 </span>
                 <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 group-hover:text-amber-500 transition-colors shrink-0" />
               </motion.button>
 
               <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">
-                <span className="truncate hidden xs:inline">GV: {currentTeacher}</span>
+                <span className="truncate hidden xs:inline">{language === 'vi' ? 'GV' : 'HR'}: {currentTeacher}</span>
                 <span className="text-slate-300 dark:text-slate-700 hidden xs:inline">•</span>
                 <span className="font-mono text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 tabular-nums shrink-0">
                   {vnTime.timeStr}

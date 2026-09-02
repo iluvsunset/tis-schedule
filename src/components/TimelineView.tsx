@@ -148,18 +148,16 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         >
           <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
             <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 dark:text-slate-400 shrink-0" />
-            <AnimatedText
-              text={dayTitle}
-              as="h2"
-              className="text-xs sm:text-sm md:text-base font-display font-extrabold text-slate-900 dark:text-slate-100"
-            />
+            <h2 className="text-xs sm:text-sm md:text-base font-display font-extrabold text-slate-900 dark:text-slate-100 truncate">
+              {dayTitle}
+            </h2>
             {isToday && (
               <span className="px-1.5 py-0.2 sm:px-2 sm:py-0.5 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-md shadow-2xs shrink-0">
                 {language === 'vi' ? 'Hôm Nay' : 'Today'}
               </span>
             )}
             <span className="text-xs text-slate-400 dark:text-slate-500 font-medium hidden sm:inline">
-              • {currentSchedule.gradeTitleVi || 'Lớp 11-TN'} (Phòng {currentSchedule.room || '504'})
+              • {language === 'vi' ? (currentSchedule.gradeTitleVi || 'Lớp 11-TN') : (currentSchedule.gradeTitleEn || 'Grade 11-TN')} ({language === 'vi' ? 'Phòng' : 'Room'} {currentSchedule.room || '504'})
             </span>
           </div>
 

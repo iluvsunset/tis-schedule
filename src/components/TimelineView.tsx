@@ -4,7 +4,7 @@ import { Calendar, Maximize2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { DayKey, Language, ScheduleItem, ScheduleData, WeekTabInfo } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
-import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
+import { VietnamTimeInfo, getDateStatus, formatScheduleDate } from '../utils/vietnamTime';
 import { listContainerVariants as containerVariants, listItemVariants as itemVariants } from '../utils/motionTokens';
 import { TimelineCard } from './TimelineCard';
 import { RecessIcon, LunchIcon, VietnamHolidayEmblem, MorningSessionIcon, AfternoonSessionIcon } from './CustomSubjectIcons';
@@ -66,9 +66,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const morningItems = dayData.morning.filter(matchesFilterAndSearch);
   const afternoonItems = dayData.afternoon.filter(matchesFilterAndSearch);
 
+  const formattedDate = formatScheduleDate(dayData.date);
   const dayTitle = language === 'vi' 
-    ? `${dayData.dayNameVi} • ${dayData.date}` 
-    : `${dayData.dayNameEn} • ${dayData.date}`;
+    ? `${dayData.dayNameVi} • ${formattedDate}` 
+    : `${dayData.dayNameEn} • ${formattedDate}`;
 
   // Check if this entire day is a National Holiday (e.g. Nghỉ Lễ 2/9)
   const isAllDayHoliday = 

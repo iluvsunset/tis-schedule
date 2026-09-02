@@ -1,5 +1,6 @@
 import { ScheduleData, DaySchedule, ScheduleItem, SubjectType, DayKey, WeekTabInfo, ClassInfo, INITIAL_CLASSES } from '../types/schedule';
 import { SCHEDULE_DATA as FALLBACK_DATA } from '../data/scheduleData';
+import { formatScheduleDate } from '../utils/vietnamTime';
 
 export interface SheetConfig {
   sheetId: string;
@@ -323,7 +324,8 @@ export function parseSheetCSV(csvText: string, targetClassId: string = '11-tn'):
       }
     }
 
-    const dateStr = (rows[startRow][3] || '').trim();
+    const rawDate = (rows[startRow][3] || '').trim();
+    const dateStr = formatScheduleDate(rawDate) || rawDate;
     const morningItems: ScheduleItem[] = [];
     const afternoonItems: ScheduleItem[] = [];
 

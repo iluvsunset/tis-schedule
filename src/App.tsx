@@ -50,8 +50,17 @@ function parsePath(pathname: string): { lang?: Language; classId?: string } {
 export const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
-  const [scheduleData, setScheduleData] = useState<ScheduleData>(INITIAL_DATA);
+  const [scheduleData, setScheduleData] = useState<ScheduleData>(() => {
+    try {
+      const route = parsePath(window.location.pathname);
+      const targetClass = route.classId || localStorage.getItem('tis_selected_class_id') || '11-tn';
+      const cached = localStorage.getItem(`tis_schedule_cache_${targetClass}`);
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } catch (e) {}
+    return INITIAL_DATA;
+  });
   const [language, setLanguage] = useState<Language>(() => {
     const route = parsePath(window.location.pathname);
     return route.lang || (localStorage.getItem('tis_language') as Language) || 'vi';
@@ -125,8 +134,11 @@ export const App: React.FC = () => {
       // Fetch live schedule for user's selected class and latest week
       fetchLiveSchedule(latestGid, selectedClassId).then((freshData) => {
         if (freshData) {
+          try {
+            localStorage.setItem(`tis_schedule_cache_${selectedClassId}`, JSON.stringify(freshData));
+          } catch (e) {}
           setScheduleData(prev => {
-            if (prev.classId === freshData.classId && prev.grade === freshData.grade && prev.weekSchedule === freshData.weekSchedule) {
+            if (JSON.stringify(prev) === JSON.stringify(freshData)) {
               return prev;
             }
             return freshData;

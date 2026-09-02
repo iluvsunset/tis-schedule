@@ -2,8 +2,8 @@ import { ScheduleData, SubjectType } from '../types/schedule';
 
 export const SCHEDULE_DATA: ScheduleData = {
   grade: "11-TN",
-  gradeTitleVi: "Lớp 11 - Tự Nhiên",
-  gradeTitleEn: "Grade 11 - Natural Sciences",
+  gradeTitleVi: "Lớp 11-TN",
+  gradeTitleEn: "Grade 11-TN",
   room: "504",
   homeroomTeacher: {
     name: "Cô Tiềng",
@@ -141,7 +141,7 @@ export const SCHEDULE_DATA: ScheduleData = {
       dayKey: "tue",
       dayNameVi: "Thứ Ba",
       dayNameEn: "Tuesday",
-      date: "01/9/2026",
+      date: "1/9/2026",
       morning: [
         {
           period: 1,
@@ -266,7 +266,7 @@ export const SCHEDULE_DATA: ScheduleData = {
       dayKey: "wed",
       dayNameVi: "Thứ Tư",
       dayNameEn: "Wednesday",
-      date: "02/9/2026",
+      date: "2/9/2026",
       morning: [
         {
           period: 1,
@@ -391,7 +391,7 @@ export const SCHEDULE_DATA: ScheduleData = {
       dayKey: "thu",
       dayNameVi: "Thứ Năm",
       dayNameEn: "Thursday",
-      date: "03/9/2026",
+      date: "3/9/2026",
       morning: [
         {
           period: 1,
@@ -516,7 +516,7 @@ export const SCHEDULE_DATA: ScheduleData = {
       dayKey: "fri",
       dayNameVi: "Thứ Sáu",
       dayNameEn: "Friday",
-      date: "04/9/2026",
+      date: "4/9/2026",
       morning: [
         {
           period: 1,
@@ -641,7 +641,7 @@ export const SCHEDULE_DATA: ScheduleData = {
       dayKey: "sat",
       dayNameVi: "Thứ Bảy",
       dayNameEn: "Saturday",
-      date: "05/9/2026",
+      date: "5/9/2026",
       morning: [
         {
           period: 1,

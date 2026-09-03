@@ -231,124 +231,118 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="w-full max-h-[58vh] sm:max-h-[68vh] overflow-y-auto overscroll-contain touch-pan-y rounded-2xl bg-white dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.08] shadow-md dark:shadow-none backdrop-blur-xl divide-y divide-black/[0.05] dark:divide-white/[0.06]"
+                  className="w-full rounded-2xl bg-white/95 dark:bg-[#13151d] border border-black/10 dark:border-white/10 shadow-2xl backdrop-blur-2xl overflow-hidden flex flex-col"
                 >
-                  {/* Header with Collapse Button */}
-                  <motion.div 
-                    variants={classItemVariants}
-                    className="px-4 py-2.5 bg-slate-100/60 dark:bg-white/[0.03] flex items-center justify-between sticky top-0 backdrop-blur-md z-10"
-                  >
-                    <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {/* Fixed Header with Collapse Button (Never scrolls or overlaps!) */}
+                  <div className="px-4 py-3 bg-slate-100/90 dark:bg-[#1a1c26] border-b border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between shrink-0 z-20">
+                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       {language === 'vi' ? 'Danh sách lớp học' : 'All Classes'}
                     </span>
                     <button
+                      type="button"
                       onClick={() => setIsExpanded(false)}
-                      className="text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white px-2 py-0.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition cursor-pointer"
+                      className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white px-2.5 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition cursor-pointer"
                     >
                       {language === 'vi' ? 'Thu gọn' : 'Minimize'}
                     </button>
-                  </motion.div>
+                  </div>
 
-                  {/* THPT Group Header */}
-                  <motion.div 
-                    variants={classItemVariants}
-                    className="px-4 py-1.5 bg-slate-50/50 dark:bg-white/[0.01] text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider"
-                  >
-                    {language === 'vi' ? 'Khối THPT' : 'High School'}
-                  </motion.div>
+                  {/* Scrollable Container (Strictly class items) */}
+                  <div className="w-full max-h-[50vh] sm:max-h-[60vh] overflow-y-auto overscroll-contain touch-pan-y divide-y divide-black/[0.05] dark:divide-white/[0.06]">
+                    {/* THPT Group Header */}
+                    <div className="px-4 py-2 bg-slate-50/95 dark:bg-[#161822]/95 backdrop-blur-md sticky top-0 z-10 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-black/[0.04] dark:border-white/[0.04]">
+                      {language === 'vi' ? 'Khối THPT' : 'High School'}
+                    </div>
 
-                  {/* THPT Classes: Each appears one at a time */}
-                  {highSchool.map((c) => {
-                    const isSelected = selectedClassId === c.id;
-                    return (
-                      <motion.button
-                        key={c.id}
-                        variants={classItemVariants}
-                        whileTap={{ scale: 0.99 }}
-                        onClick={() => handleSelect(c.id)}
-                        className={`w-full px-4 py-3 flex items-center justify-between text-left transition-colors cursor-pointer ${
-                          isSelected
-                            ? 'bg-amber-500/10 dark:bg-white/[0.08]'
-                            : 'hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.04] dark:active:bg-white/[0.08]'
-                        }`}
-                      >
-                        <div className="flex flex-col">
-                          <span className={`text-[15px] ${
-                            isSelected 
-                              ? 'font-semibold text-amber-600 dark:text-amber-400' 
-                              : 'font-medium text-slate-900 dark:text-slate-100'
-                          }`}>
-                            {language === 'vi' ? c.nameVi : c.nameEn}
-                          </span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            {language === 'vi' ? 'GVCN' : 'Homeroom'}: {c.homeroomTeacher}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                            {language === 'vi' ? 'Phòng' : 'Room'} {c.room}
-                          </span>
-                          {isSelected && (
-                            <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/15 dark:bg-amber-400/10">
-                              {language === 'vi' ? 'Đang chọn' : 'Selected'}
+                    {/* THPT Classes: Each appears one at a time */}
+                    {highSchool.map((c) => {
+                      const isSelected = selectedClassId === c.id;
+                      return (
+                        <motion.button
+                          key={c.id}
+                          variants={classItemVariants}
+                          whileTap={{ scale: 0.99 }}
+                          onClick={() => handleSelect(c.id)}
+                          className={`w-full px-4 py-3 flex items-center justify-between text-left transition-colors cursor-pointer ${
+                            isSelected
+                              ? 'bg-amber-500/10 dark:bg-amber-400/10'
+                              : 'hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.04] dark:active:bg-white/[0.08]'
+                          }`}
+                        >
+                          <div className="flex flex-col">
+                            <span className={`text-[15px] ${
+                              isSelected 
+                                ? 'font-semibold text-amber-600 dark:text-amber-400' 
+                                : 'font-medium text-slate-900 dark:text-slate-100'
+                            }`}>
+                              {language === 'vi' ? c.nameVi : c.nameEn}
                             </span>
-                          )}
-                        </div>
-                      </motion.button>
-                    );
-                  })}
-
-                  {/* THCS Group Header */}
-                  <motion.div 
-                    variants={classItemVariants}
-                    className="px-4 py-1.5 bg-slate-50/50 dark:bg-white/[0.01] text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-t border-black/[0.05] dark:border-white/[0.06]"
-                  >
-                    {language === 'vi' ? 'Khối THCS' : 'Middle School'}
-                  </motion.div>
-
-                  {/* THCS Classes: Each appears one at a time */}
-                  {middleSchool.map((c) => {
-                    const isSelected = selectedClassId === c.id;
-                    return (
-                      <motion.button
-                        key={c.id}
-                        variants={classItemVariants}
-                        whileTap={{ scale: 0.99 }}
-                        onClick={() => handleSelect(c.id)}
-                        className={`w-full px-4 py-3 flex items-center justify-between text-left transition-colors cursor-pointer ${
-                          isSelected
-                            ? 'bg-amber-500/10 dark:bg-white/[0.08]'
-                            : 'hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.04] dark:active:bg-white/[0.08]'
-                        }`}
-                      >
-                        <div className="flex flex-col">
-                          <span className={`text-[15px] ${
-                            isSelected 
-                              ? 'font-semibold text-amber-600 dark:text-amber-400' 
-                              : 'font-medium text-slate-900 dark:text-slate-100'
-                          }`}>
-                            {language === 'vi' ? c.nameVi : c.nameEn}
-                          </span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            {language === 'vi' ? 'GVCN' : 'Homeroom'}: {c.homeroomTeacher}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                            {language === 'vi' ? 'Phòng' : 'Room'} {c.room}
-                          </span>
-                          {isSelected && (
-                            <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/15 dark:bg-amber-400/10">
-                              {language === 'vi' ? 'Đang chọn' : 'Selected'}
+                            <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                              {language === 'vi' ? 'GVCN' : 'Homeroom'}: {c.homeroomTeacher}
                             </span>
-                          )}
-                        </div>
-                      </motion.button>
-                    );
-                  })}
+                          </div>
 
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                              {language === 'vi' ? 'Phòng' : 'Room'} {c.room}
+                            </span>
+                            {isSelected && (
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/15 dark:bg-amber-400/10">
+                                {language === 'vi' ? 'Đang chọn' : 'Selected'}
+                              </span>
+                            )}
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+
+                    {/* THCS Group Header */}
+                    <div className="px-4 py-2 bg-slate-50/95 dark:bg-[#161822]/95 backdrop-blur-md sticky top-0 z-10 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-black/[0.04] dark:border-white/[0.04]">
+                      {language === 'vi' ? 'Khối THCS' : 'Middle School'}
+                    </div>
+
+                    {/* THCS Classes: Each appears one at a time */}
+                    {middleSchool.map((c) => {
+                      const isSelected = selectedClassId === c.id;
+                      return (
+                        <motion.button
+                          key={c.id}
+                          variants={classItemVariants}
+                          whileTap={{ scale: 0.99 }}
+                          onClick={() => handleSelect(c.id)}
+                          className={`w-full px-4 py-3 flex items-center justify-between text-left transition-colors cursor-pointer ${
+                            isSelected
+                              ? 'bg-amber-500/10 dark:bg-amber-400/10'
+                              : 'hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.04] dark:active:bg-white/[0.08]'
+                          }`}
+                        >
+                          <div className="flex flex-col">
+                            <span className={`text-[15px] ${
+                              isSelected 
+                                ? 'font-semibold text-amber-600 dark:text-amber-400' 
+                                : 'font-medium text-slate-900 dark:text-slate-100'
+                            }`}>
+                              {language === 'vi' ? c.nameVi : c.nameEn}
+                            </span>
+                            <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                              {language === 'vi' ? 'GVCN' : 'Homeroom'}: {c.homeroomTeacher}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                              {language === 'vi' ? 'Phòng' : 'Room'} {c.room}
+                            </span>
+                            {isSelected && (
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/15 dark:bg-amber-400/10">
+                                {language === 'vi' ? 'Đang chọn' : 'Selected'}
+                              </span>
+                            )}
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

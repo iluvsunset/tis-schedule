@@ -9,7 +9,6 @@ import { listContainerVariants as containerVariants, listItemVariants as itemVar
 import { TimelineCard } from './TimelineCard';
 import { RecessIcon, LunchIcon, VietnamHolidayEmblem, MorningSessionIcon, AfternoonSessionIcon } from './CustomSubjectIcons';
 import { WeekSelectorButton } from './WeekSelectorButton';
-import { AnimatedText } from './AnimatedText';
 
 interface TimelineViewProps {
   selectedDay: DayKey;
@@ -232,11 +231,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
                 <MorningSessionIcon className="w-4 h-4" />
-                <AnimatedText
-                  text={language === 'vi' ? 'Buổi Sáng (08:00 – 11:30)' : 'Morning Session (08:00 – 11:30)'}
-                  as="span"
-                  className="font-display font-extrabold text-xs sm:text-sm text-slate-900 dark:text-slate-100"
-                />
+                <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 tracking-tight">
+                  {language === 'vi' ? 'Buổi Sáng (08:00 – 11:30)' : 'Morning Session (08:00 – 11:30)'}
+                </h3>
               </div>
             </div>
 
@@ -319,11 +316,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             <div className="flex items-center justify-between px-1 pt-1">
               <div className="flex items-center gap-2">
                 <AfternoonSessionIcon className="w-4 h-4" />
-                <AnimatedText
-                  text={language === 'vi' ? 'Buổi Chiều (13:30 – 16:05)' : 'Afternoon Session (13:30 – 16:05)'}
-                  as="span"
-                  className="font-display font-extrabold text-xs sm:text-sm text-slate-900 dark:text-slate-100"
-                />
+                <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 tracking-tight">
+                  {language === 'vi' ? 'Buổi Chiều (13:30 – 16:05)' : 'Afternoon Session (13:30 – 16:05)'}
+                </h3>
               </div>
             </div>
 

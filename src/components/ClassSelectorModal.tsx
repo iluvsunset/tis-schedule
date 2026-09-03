@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ClassInfo, Language } from '../types/schedule';
-import { AnimatedText } from './AnimatedText';
 
 interface ClassSelectorModalProps {
   isOpen: boolean;
@@ -184,12 +183,14 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
 
         {/* Center Stage: Question with Letter-by-Letter Animation + Minimized Button / Staggered Expanded List */}
         <main className="w-full max-w-md mx-auto my-auto py-4 sm:py-8 flex flex-col items-center">
-          {/* Pure Question with Letter-by-Letter Staggered Spring Reveal */}
-          <AnimatedText
-            text={questionText}
-            as="h1"
-            className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-white text-center mb-6 flex flex-wrap justify-center"
-          />
+          <motion.h1
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-white text-center mb-6"
+          >
+            {questionText}
+          </motion.h1>
 
           <div ref={containerRef} className="w-full flex flex-col items-center">
             <AnimatePresence mode="wait">

@@ -4,7 +4,6 @@ import { X, GraduationCap } from 'lucide-react';
 import { Language } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { CustomSubjectIcon } from './CustomSubjectIcons';
-import { AnimatedText } from './AnimatedText';
 import { 
   modalBackdropVariants, 
   modalSheetVariants, 
@@ -65,11 +64,9 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
                   <GraduationCap className="w-5 h-5" />
                 </div>
                 <div>
-                  <AnimatedText
-                    text={language === 'vi' ? 'Đội Ngũ Giáo Viên Bộ Môn' : 'Faculty Directory'}
-                    as="h3"
-                    className="text-sm sm:text-base font-display font-extrabold text-slate-900 dark:text-slate-100"
-                  />
+                  <h3 className="text-sm sm:text-base font-display font-bold text-slate-900 dark:text-slate-100">
+                    {language === 'vi' ? 'Đội Ngũ Giáo Viên Bộ Môn' : 'Faculty Directory'}
+                  </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     {language === 'vi' ? `GVQN: ${homeroomTeacher.name} • Phòng 504` : `Homeroom: ${homeroomTeacher.name} • Room 504`}
                   </p>

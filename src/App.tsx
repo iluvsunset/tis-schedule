@@ -76,8 +76,18 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [vnTime, setVnTime] = useState<VietnamTimeInfo>(getVietnamTime());
   
-  // Cinematic Intro Video Loader
-  const [showIntroVideo, setShowIntroVideo] = useState<boolean>(true);
+  // Cinematic Intro Video Loader: skip if offline, slow connection, or already seen in session
+  const [showIntroVideo, setShowIntroVideo] = useState<boolean>(() => {
+    try {
+      if (sessionStorage.getItem('tis_intro_seen') === 'true') return false;
+      if (typeof navigator !== 'undefined' && !navigator.onLine) return false;
+      const conn = (navigator as any)?.connection;
+      if (conn && (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g')) {
+        return false;
+      }
+    } catch (e) {}
+    return true;
+  });
 
   // Universal Class & Multi-Week State (from URL or localStorage)
   const [selectedClassId, setSelectedClassId] = useState<string>(() => {
@@ -107,6 +117,9 @@ export const App: React.FC = () => {
   };
 
   const handleIntroComplete = () => {
+    try {
+      sessionStorage.setItem('tis_intro_seen', 'true');
+    } catch (e) {}
     setShowIntroVideo(false);
   };
 

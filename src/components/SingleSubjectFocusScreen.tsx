@@ -25,18 +25,16 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
   const dateStatus = getDateStatus(dayData.date, vnTime.dateStr);
   const isToday = dateStatus === 'today';
 
-  // Find all active periods for the day (excluding break items for the subject display)
+  // Find all active periods for the day
   const allPeriods = useMemo(() => {
     return [...dayData.morning, ...dayData.afternoon].filter(item => item.type !== 'break');
   }, [dayData]);
 
-  // Current Vietnam minutes from midnight
   const currentTotalMinutes = vnTime.totalMinutes;
 
   // Determine current active or next starting subject
   const currentFocus = useMemo(() => {
     if (!isToday) {
-      // If viewing a non-today day, showcase the first subject of that day
       const first = allPeriods[0];
       return {
         type: 'scheduled' as const,
@@ -48,7 +46,6 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
       };
     }
 
-    // Today: Find active or upcoming
     let activeItem = null;
     let nextItem = null;
     let progressPercent = 0;
@@ -70,7 +67,6 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
         progressPercent = duration > 0 ? Math.min(100, Math.max(0, Math.round((elapsed / duration) * 100))) : 0;
         break;
       } else if (currentTotalMinutes < startMin && !nextItem) {
-        // Next starting subject
         nextItem = p;
         remainingMinutes = startMin - currentTotalMinutes;
       }
@@ -98,7 +94,6 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
       };
     }
 
-    // All classes ended for today
     return {
       type: 'concluded' as const,
       item: allPeriods[allPeriods.length - 1] || null,
@@ -113,31 +108,28 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
   const subjectName = subject ? (language === 'vi' ? subject.subjectVi : subject.subjectEn) : (language === 'vi' ? 'Chưa có tiết' : 'No Class');
   const className = subject ? (language === 'vi' ? (subject.classNameVi || currentSchedule.gradeTitleVi) : (subject.classNameEn || currentSchedule.gradeTitleEn)) : '';
   const teacher = subject?.teacher || (language === 'vi' ? 'Chưa phân công' : 'TBA');
-  const roomName = currentSchedule.roomNameEn || `Room ${currentSchedule.room}`;
+  const roomName = currentSchedule.roomNameVi || `Phòng ${currentSchedule.room}`;
   const floorName = language === 'vi' ? (currentSchedule.floorVi || 'Tầng 5') : (currentSchedule.floorEn || 'Floor 5');
 
   return (
     <div className="w-full max-w-4xl mx-auto py-6 sm:py-12 select-none">
-      
-      {/* Luxury Editorial Classroom Signage Stage (Aman / Hotel Hoa Nắng Aesthetics) */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="relative rounded-3xl border border-white/[0.09] bg-gradient-to-b from-white/[0.035] via-white/[0.015] to-transparent backdrop-blur-2xl p-6 sm:p-14 text-center overflow-hidden shadow-2xl"
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className="glass-card rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#151720] p-6 sm:p-14 text-center overflow-hidden shadow-xl space-y-6"
       >
-        
-        {/* Subtle Top Room Meta Pill (Zero Icons) */}
-        <div className="flex items-center justify-between gap-4 max-w-xl mx-auto mb-8 border-b border-white/[0.06] pb-4">
+        {/* Top Room Venue Header (Zero Icons) */}
+        <div className="flex items-center justify-between gap-4 max-w-xl mx-auto border-b border-slate-100 dark:border-slate-800 pb-4">
           <button
             type="button"
             onClick={onOpenRoomSelector}
             className="text-left group cursor-pointer"
           >
-            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#c5a869] block">
-              {language === 'vi' ? 'Không gian lớp học' : 'Classroom Venue'}
+            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">
+              {language === 'vi' ? 'Phòng Học' : 'Classroom Venue'}
             </span>
-            <span className="text-sm font-semibold text-white group-hover:text-[#c5a869] transition">
+            <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-500 transition">
               {roomName} · {floorName}
             </span>
           </button>
@@ -145,68 +137,67 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
           <button
             type="button"
             onClick={onSwitchToTableView}
-            className="px-3.5 py-1.5 rounded-full border border-white/10 hover:border-[#c5a869]/60 text-xs font-mono uppercase tracking-wider text-white/70 hover:text-white transition cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-xs font-mono font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
           >
             {language === 'vi' ? 'Xem cả tuần' : 'Full Timetable'}
           </button>
         </div>
 
-        {/* Live Status Badge (Zero Icons) */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#c5a869]/30 bg-[#c5a869]/10 text-[#c5a869] text-xs font-mono uppercase tracking-[0.2em] mb-6">
+        {/* Live Status Pill */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-mono font-bold uppercase tracking-wider shadow-sm">
           {currentFocus.statusText}
         </div>
 
-        {/* The 1 Single Starting / Active Subject */}
-        <div className="space-y-4 max-w-2xl mx-auto py-2">
+        {/* The 1 Single Starting Subject */}
+        <div className="space-y-3 max-w-2xl mx-auto py-2">
           {subject && typeof subject.period === 'number' && (
-            <span className="text-xs uppercase font-mono text-white/40 tracking-[0.3em] block">
+            <span className="text-xs uppercase font-mono text-slate-400 dark:text-slate-500 tracking-widest block font-semibold">
               {language === 'vi' ? `Tiết ${subject.period}` : `Period ${subject.period}`} · {subject.time}
             </span>
           )}
 
-          <h1 className="text-4xl sm:text-6xl font-serif text-white font-normal tracking-tight">
+          <h1 className="text-4xl sm:text-6xl font-display font-black text-slate-900 dark:text-white tracking-tight">
             {subjectName}
           </h1>
 
-          <div className="pt-2 text-base sm:text-lg text-white/70 font-light flex items-center justify-center gap-2 flex-wrap">
-            <span className="text-white font-medium">{className}</span>
-            <span className="text-white/20">·</span>
+          <div className="pt-2 text-base sm:text-lg text-slate-600 dark:text-slate-400 font-medium flex items-center justify-center gap-2 flex-wrap">
+            <span className="text-slate-900 dark:text-slate-100 font-bold">{className}</span>
+            <span className="text-slate-300 dark:text-slate-600">·</span>
             <span>{teacher}</span>
           </div>
         </div>
 
-        {/* Architectural Hairline Progress Line */}
+        {/* Hairline Progress Bar */}
         {currentFocus.type === 'active' && (
-          <div className="max-w-md mx-auto mt-10 space-y-2">
-            <div className="h-[2px] w-full bg-white/10 overflow-hidden rounded-full">
+          <div className="max-w-md mx-auto mt-8 space-y-2">
+            <div className="h-[2px] w-full bg-slate-100 dark:bg-slate-800 overflow-hidden rounded-full">
               <motion.div 
-                className="h-full bg-[#c5a869]"
+                className="h-full bg-slate-900 dark:bg-white"
                 initial={{ width: 0 }}
                 animate={{ width: `${currentFocus.progressPercent}%` }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
               />
             </div>
-            <div className="flex justify-between text-[11px] font-mono text-white/40">
+            <div className="flex justify-between text-[11px] font-mono text-slate-400 dark:text-slate-500">
               <span>{subject?.startTime}</span>
-              <span className="text-[#c5a869] font-medium">{subject?.endTime}</span>
+              <span className="font-semibold text-slate-700 dark:text-slate-300">{subject?.endTime}</span>
             </div>
           </div>
         )}
 
-        {/* Next Subject Anticipation */}
+        {/* Next Subject Preview */}
         {currentFocus.nextItem && (
-          <div className="mt-12 pt-8 border-t border-white/[0.06] max-w-md mx-auto flex items-center justify-between text-xs font-mono text-white/50">
-            <span className="uppercase tracking-wider text-[#c5a869]/80">
+          <div className="mt-10 pt-6 border-t border-slate-100 dark:border-slate-800 max-w-md mx-auto flex items-center justify-between text-xs font-mono text-slate-500">
+            <span className="uppercase tracking-wider font-semibold">
               {language === 'vi' ? 'Tiết tiếp theo' : 'Next Subject'}
             </span>
-            <span className="text-white">
+            <span className="text-slate-900 dark:text-slate-100 font-medium">
               {language === 'vi' ? currentFocus.nextItem.subjectVi : currentFocus.nextItem.subjectEn} · {currentFocus.nextItem.startTime}
             </span>
           </div>
         )}
 
       </motion.div>
-
     </div>
   );
 };

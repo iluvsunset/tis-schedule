@@ -368,7 +368,7 @@ export const App: React.FC = () => {
       {/* Subtle Studio Ambient Lighting (Hardware-Accelerated & 60fps) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 no-print">
         <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full bg-slate-300/20 dark:bg-slate-800/20 blur-3xl transform-gpu pointer-events-none" />
-        <div className="absolute top-1/3 -right-32 w-80 h-80 rounded-full bg-[#c5a869]/10 dark:bg-[#c5a869]/5 blur-3xl transform-gpu pointer-events-none" />
+        <div className="absolute top-1/3 -right-32 w-80 h-80 rounded-full bg-slate-400/15 dark:bg-slate-800/15 blur-3xl transform-gpu pointer-events-none" />
       </div>
 
       {/* Main Responsive Container */}

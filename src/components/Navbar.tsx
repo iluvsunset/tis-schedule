@@ -207,13 +207,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="flex items-center gap-1.5 cursor-pointer group text-left max-w-full"
                 title={language === 'vi' ? "Nhấn để nhập hoặc đổi số phòng học" : "Click to enter or change room number"}
               >
-                <h1 className="font-serif font-bold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none truncate group-hover:text-[#c5a869] transition-colors">
+                <h1 className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none truncate group-hover:text-blue-500 transition-colors">
                   {language === 'vi' ? (scheduleData?.roomNameVi || `Phòng ${currentRoom}`) : (scheduleData?.roomNameEn || `Room ${currentRoom}`)}
                 </h1>
-                <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-medium bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 group-hover:border-[#c5a869]/50 transition-colors shrink-0">
+                <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-medium bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 group-hover:border-slate-400 transition-colors shrink-0">
                   {currentClassName}
                 </span>
-                <span className="text-[10px] font-mono text-[#c5a869] opacity-70 group-hover:opacity-100 transition hidden xs:inline">
+                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-white transition hidden xs:inline">
                   [{language === 'vi' ? 'Đổi' : 'Change'}]
                 </span>
               </motion.button>
@@ -223,7 +223,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-slate-300 dark:text-slate-700 hidden xs:inline">•</span>
                 <span className="font-mono text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 tabular-nums shrink-0">
                   {vnTime.timeStr}
-                  <span className="text-[#c5a869] hidden xs:inline">:{String(vnTime.seconds).padStart(2, '0')}</span>
+                  <span className="text-blue-500 hidden xs:inline">:{String(vnTime.seconds).padStart(2, '0')}</span>
                 </span>
               </div>
             </div>
@@ -234,14 +234,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             
             {/* Screen Mode Switcher (Schedule vs Live Room 1-Subject) */}
             {onScreenModeChange && (
-              <div className="flex items-center p-0.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/[0.02] text-xs font-mono shrink-0">
+              <div className="flex items-center p-0.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-xs font-mono shrink-0">
                 <button
                   type="button"
                   onClick={() => onScreenModeChange('schedule')}
                   className={`px-2.5 py-1 rounded-lg transition cursor-pointer ${
                     screenMode === 'schedule'
-                      ? 'bg-[#c5a869] text-black font-bold'
-                      : 'text-slate-600 dark:text-white/60 hover:text-black dark:hover:text-white'
+                      ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold shadow-2xs'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                   title={language === 'vi' ? 'Xem toàn bộ thời khóa biểu' : 'Full schedule timetable'}
                 >
@@ -252,8 +252,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => onScreenModeChange('live-focus')}
                   className={`px-2.5 py-1 rounded-lg transition cursor-pointer ${
                     screenMode === 'live-focus'
-                      ? 'bg-[#c5a869] text-black font-bold'
-                      : 'text-slate-600 dark:text-white/60 hover:text-black dark:hover:text-white'
+                      ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold shadow-2xs'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                   title={language === 'vi' ? 'Màn hình hiển thị 1 môn đang bắt đầu' : 'Single starting subject display'}
                 >

@@ -102,7 +102,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
       particleCount: 70,
       spread: 60,
       origin,
-      colors: ['#c5a869', '#ffffff', '#e2d4b7', '#a38954']
+      colors: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444']
     });
   };
 
@@ -135,8 +135,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     ? `${dayData.dayNameVi} · ${formattedDate}`
     : `${dayData.dayNameEn} · ${formattedDate}`;
 
-  const roomName = currentSchedule.roomNameEn || `Room ${currentSchedule.room}`;
-  const floorName = language === 'vi' ? (currentSchedule.floorVi || 'Tầng 5') : (currentSchedule.floorEn || 'Floor 5');
+  const roomName = currentSchedule.roomNameVi || `Phòng ${currentSchedule.room}`;
   const className = language === 'vi' ? currentSchedule.gradeTitleVi : currentSchedule.gradeTitleEn;
 
   // Lunch status calculation
@@ -156,57 +155,46 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   })();
 
   return (
-    <div className="space-y-6 select-none relative z-20">
+    <div className="space-y-4 select-none relative z-20">
       
-      {/* Top Venue & Date Navigation (Aman / Hotel Hoa Nắng Luxury Editorial Header - Zero Icons) */}
+      {/* Top Header Bar (Zero Icons, Original Color Palette) */}
       {!isMinimalMode && (
         <motion.div 
           key={`header-${selectedDay}`}
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className="rounded-2xl border border-white/[0.08] bg-[#0f1016]/90 backdrop-blur-xl px-5 py-4 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-40"
+          className="glass-card rounded-2xl px-4 py-2.5 shadow-2xs flex items-center justify-between gap-3 border border-slate-200/80 dark:border-slate-800 relative z-40"
         >
-          {/* Venue & Date Meta */}
-          <div className="space-y-1">
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <h2 className="text-base sm:text-lg font-serif font-semibold text-white tracking-tight">
-                {dayTitle}
-              </h2>
-              {isToday && (
-                <span className="px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider bg-[#c5a869] text-black rounded">
-                  {language === 'vi' ? 'Hôm nay' : 'Today'}
-                </span>
-              )}
-            </div>
-
-            {/* Clickable Room Venue Badge */}
-            <div className="flex items-center gap-2 text-xs font-mono text-white/50">
-              <button
-                type="button"
-                onClick={onOpenRoomSelector}
-                className="hover:text-[#c5a869] transition cursor-pointer text-left"
-                title={language === 'vi' ? 'Nhấn để đổi phòng' : 'Click to change room'}
-              >
-                <span className="text-[#c5a869] font-medium">{roomName}</span>
-                <span className="text-white/30"> · </span>
-                <span>{floorName}</span>
-                <span className="text-white/30"> · </span>
-                <span>{className}</span>
-              </button>
-            </div>
+          {/* Day & Room Info */}
+          <div className="flex items-center gap-2 flex-wrap min-w-0">
+            <h2 className="text-sm sm:text-base font-display font-extrabold text-slate-900 dark:text-slate-100 truncate">
+              {dayTitle}
+            </h2>
+            {isToday && (
+              <span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-md shadow-2xs">
+                {language === 'vi' ? 'Hôm Nay' : 'Today'}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={onOpenRoomSelector}
+              className="text-xs text-slate-500 dark:text-slate-400 font-medium hover:text-slate-800 dark:hover:text-white transition cursor-pointer"
+            >
+              • {roomName} ({className})
+            </button>
           </div>
 
-          {/* Controls: Week Selector & Live Room Focus Mode (Zero Icons) */}
+          {/* Controls: Live Room Toggle & Week Selector (Zero Icons) */}
           <div className="flex items-center gap-2 shrink-0">
             {onSwitchToLiveFocus && (
               <button
                 type="button"
                 onClick={onSwitchToLiveFocus}
-                className="px-3.5 py-1.5 rounded-xl border border-[#c5a869]/40 bg-[#c5a869]/10 hover:bg-[#c5a869]/20 text-[#c5a869] text-xs font-mono uppercase tracking-wider font-semibold transition cursor-pointer"
-                title={language === 'vi' ? 'Màn hình hiển thị 1 môn đang bắt đầu' : 'Screen showing 1 starting subject'}
+                className="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-mono font-bold text-slate-800 dark:text-slate-200 transition cursor-pointer"
+                title={language === 'vi' ? 'Màn hình hiển thị 1 môn đang bắt đầu' : 'Single starting subject display'}
               >
-                {language === 'vi' ? 'Trực tiếp phòng' : 'Live Room'}
+                {language === 'vi' ? 'Phòng Trực Tiếp' : 'Live Room'}
               </button>
             )}
 
@@ -223,7 +211,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
               <button
                 type="button"
                 onClick={onToggleMinimalMode}
-                className="px-3 py-1.5 rounded-xl border border-white/10 hover:border-white/20 text-xs font-mono uppercase text-white/60 hover:text-white transition cursor-pointer hidden sm:block"
+                className="hidden sm:flex px-2.5 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-xs font-mono uppercase bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
                 title="Full-screen minimal focus (F)"
               >
                 Focus
@@ -233,7 +221,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         </motion.div>
       )}
 
-      {/* If All-Day Holiday: Show Editorial Celebration Card (Zero Icons) */}
+      {/* If All-Day Holiday: Show Celebration Card (Zero Icons, Original Palette) */}
       {isAllDayHoliday ? (
         <motion.div 
           key={`holiday-${selectedDay}`}
@@ -241,37 +229,31 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.3 }}
           onClick={(e) => triggerCelebrationConfetti(e)}
-          className="rounded-3xl p-8 sm:p-14 border border-[#c5a869]/30 bg-gradient-to-b from-[#c5a869]/10 via-transparent to-transparent text-center space-y-4 shadow-xl cursor-pointer select-none"
+          className="glass-card rounded-3xl p-8 sm:p-12 border border-rose-200/80 dark:border-rose-900/40 bg-gradient-to-br from-rose-500/10 via-amber-500/5 to-transparent text-center space-y-3 shadow-sm cursor-pointer select-none"
         >
-          <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-[#c5a869]">
-            National Observance
-          </div>
-          <h3 className="text-2xl sm:text-4xl font-serif text-white tracking-tight font-normal">
+          <h3 className="text-xl sm:text-3xl font-display font-black text-slate-900 dark:text-white tracking-tight">
             {language === 'vi' ? 'NGHỈ LỄ QUỐC KHÁNH 2/9' : 'VIETNAM NATIONAL DAY HOLIDAY'}
           </h3>
-          <p className="text-xs sm:text-sm font-mono text-white/50 max-w-md mx-auto">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium max-w-md mx-auto">
             {language === 'vi' 
               ? 'Toàn trường TIS nghỉ lễ theo quy định. Không có tiết học trong ngày. (Nhấn để mừng lễ)' 
               : 'All TIS classes are off in observance of National Day. (Tap to celebrate)'}
           </p>
         </motion.div>
       ) : (
-        /* Regular Day Morning & Afternoon Grid (Zero Icons, Aman Architectural Elegance) */
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+        /* Regular Day Morning & Afternoon Grid (Zero Icons, Original Color Palette) */
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           
           {/* Morning Session Column */}
-          <div className="space-y-3.5">
-            <div className="flex items-baseline justify-between border-b border-white/[0.08] pb-2 px-1">
-              <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#c5a869] font-semibold">
-                {language === 'vi' ? 'Buổi Sáng' : 'Morning Session'}
-              </span>
-              <span className="text-xs font-mono text-white/40">
-                08:00 — 11:30
-              </span>
+          <div className="space-y-2.5 sm:space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 tracking-tight">
+                {language === 'vi' ? 'Buổi Sáng (08:00 – 11:30)' : 'Morning Session (08:00 – 11:30)'}
+              </h3>
             </div>
 
             {morningItems.length === 0 ? (
-              <div className="p-8 text-center text-xs font-mono text-white/30 border border-white/[0.05] rounded-2xl">
+              <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500 glass-card rounded-2xl">
                 {language === 'vi' ? 'Không có tiết học nào phù hợp bộ lọc' : 'No periods matching filter'}
               </div>
             ) : (
@@ -279,7 +261,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 variants={containerVariants}
                 initial={hasAnimatedRef.current ? false : "hidden"}
                 animate="visible"
-                className="space-y-3"
+                className="space-y-2.5 sm:space-y-3"
               >
                 {morningItems.map((item, idx) => {
                   const status = getPeriodStatus(item);
@@ -300,42 +282,41 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
           </div>
 
           {/* Afternoon Session Column */}
-          <div className="space-y-3.5">
+          <div className="space-y-2.5 sm:space-y-3">
             
-            {/* Midday Lunch Interval Block (Zero Icons) */}
-            <div 
-              className={`p-3.5 rounded-xl border flex items-center justify-between text-xs font-mono transition ${
+            {/* Lunch Break Bar (Zero Icons, Original Amber Palette) */}
+            <motion.div 
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`p-2.5 sm:p-3 rounded-2xl border transition-all flex items-center justify-between text-xs ${
                 lunchStatus.isCurrent
-                  ? 'bg-[#c5a869]/15 border-[#c5a869]/50 text-white shadow-lg'
+                  ? 'bg-amber-500/15 border-amber-500/40 ring-1 ring-amber-400/40 text-amber-900 dark:text-amber-200 shadow-sm font-bold'
                   : lunchStatus.isPast
-                    ? 'border-white/[0.05] text-white/30 line-through'
-                    : 'bg-white/[0.02] border-white/[0.08] text-white/60'
+                    ? 'bg-slate-100/50 dark:bg-slate-800/30 border-slate-200/50 dark:border-slate-800/50 text-slate-400 dark:text-slate-500 line-through'
+                    : 'bg-amber-500/10 dark:bg-amber-500/10 border-amber-500/20 text-amber-900 dark:text-amber-300'
               }`}
             >
               <div className="flex items-center gap-2">
-                <span className="uppercase tracking-widest text-[#c5a869] font-semibold">
+                <span className="font-bold text-xs">
                   {language === 'vi' ? dayData.lunch.titleVi : dayData.lunch.titleEn}
                 </span>
                 {lunchStatus.isCurrent && (
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-[#c5a869] text-black font-bold">
-                    {language === 'vi' ? `${lunchStatus.remainingMinutes}p` : `${lunchStatus.remainingMinutes}m`}
+                  <span className="px-1.5 py-0.5 rounded-md bg-amber-500 text-slate-950 font-black text-[9px] uppercase">
+                    {lunchStatus.remainingMinutes}p
                   </span>
                 )}
               </div>
-              <span className="tabular-nums text-white/50">{dayData.lunch.time}</span>
-            </div>
+              <span className="font-mono text-xs font-semibold">{dayData.lunch.time}</span>
+            </motion.div>
 
-            <div className="flex items-baseline justify-between border-b border-white/[0.08] pb-2 px-1 pt-1">
-              <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#c5a869] font-semibold">
-                {language === 'vi' ? 'Buổi Chiều' : 'Afternoon Session'}
-              </span>
-              <span className="text-xs font-mono text-white/40">
-                13:30 — 16:05
-              </span>
+            <div className="flex items-center justify-between px-1 pt-1">
+              <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 tracking-tight">
+                {language === 'vi' ? 'Buổi Chiều (13:30 – 16:05)' : 'Afternoon Session (13:30 – 16:05)'}
+              </h3>
             </div>
 
             {afternoonItems.length === 0 ? (
-              <div className="p-8 text-center text-xs font-mono text-white/30 border border-white/[0.05] rounded-2xl">
+              <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500 glass-card rounded-2xl">
                 {language === 'vi' ? 'Không có tiết học buổi chiều' : 'No afternoon classes'}
               </div>
             ) : (
@@ -343,7 +324,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 variants={containerVariants}
                 initial={hasAnimatedRef.current ? false : "hidden"}
                 animate="visible"
-                className="space-y-3"
+                className="space-y-2.5 sm:space-y-3"
               >
                 {afternoonItems.map((item, idx) => {
                   const status = getPeriodStatus(item);

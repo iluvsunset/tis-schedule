@@ -558,7 +558,7 @@ export const App: React.FC = () => {
         )}
 
         {/* Primary Schedule View: Choice between Single Starting Subject Screen, Full Timetable, or Room Not Found Screen */}
-        <main className={`flex-1 ${isMinimalMode ? 'flex flex-col md:justify-center md:my-auto w-full' : 'mt-1 sm:mt-1.5'} relative z-0`}>
+        <main className={`flex-1 ${viewType === 'room' || isMinimalMode ? 'flex flex-col justify-center items-center my-auto w-full' : 'mt-1 sm:mt-1.5'} relative z-0`}>
           <AnimatePresence mode="wait">
             {!scheduleData ? (
               /* Room Not Found Screen (Zero Icons, Pure High-Contrast Typography) */
@@ -613,7 +613,7 @@ export const App: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full"
+                className="w-full flex justify-center items-center my-auto"
               >
                 <SingleSubjectFocusScreen
                   scheduleData={scheduleData}
@@ -675,8 +675,8 @@ export const App: React.FC = () => {
           </AnimatePresence>
         </main>
 
-        {/* Sleek Hotel Luxury Minimalist Footer (Zero Icons) */}
-        {!isMinimalMode && scheduleData && (
+        {/* Sleek Hotel Luxury Minimalist Footer (Zero Icons - Only in Class View) */}
+        {!isMinimalMode && scheduleData && viewType === 'class' && (
           <footer className="mt-auto pt-8 pb-3 text-center text-[11px] font-mono text-slate-400 dark:text-white/40 no-print">
             <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
               <span className="font-semibold text-slate-600 dark:text-white/70">

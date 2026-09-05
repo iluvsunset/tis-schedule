@@ -45,7 +45,7 @@ interface NavbarProps {
   onOpenTeacherModal: () => void;
   onOpenClassModal?: () => void;
   onOpenRoomSelector?: () => void;
-  scheduleData?: ScheduleData;
+  scheduleData?: ScheduleData | null;
   isMinimalMode?: boolean;
   onToggleMinimalMode?: () => void;
   screenMode?: 'schedule' | 'live-focus';
@@ -83,12 +83,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   const days = (scheduleData || SCHEDULE_DATA).weekSchedule;
   const matchedClass = INITIAL_CLASSES.find(c => c.id === scheduleData?.classId) || 
                        INITIAL_CLASSES.find(c => c.nameVi === scheduleData?.gradeTitleVi) ||
-                       INITIAL_CLASSES.find(c => c.id === '11-tn');
+                       INITIAL_CLASSES.find(c => c.room === scheduleData?.room);
   const currentClassName = language === 'vi' 
-    ? (matchedClass?.nameVi || scheduleData?.gradeTitleVi || 'Lớp 11-TN') 
-    : (matchedClass?.nameEn || scheduleData?.gradeTitleEn || 'Grade 11-TN');
+    ? (matchedClass?.nameVi || scheduleData?.gradeTitleVi || (scheduleData ? 'Lớp 11-TN' : 'Chưa xác định')) 
+    : (matchedClass?.nameEn || scheduleData?.gradeTitleEn || (scheduleData ? 'Grade 11-TN' : 'Not Found'));
   const currentRoom = scheduleData?.room || '504';
-  const currentTeacher = scheduleData?.homeroomTeacher?.name || 'Cô Tiềng';
+  const currentTeacher = scheduleData?.homeroomTeacher?.name || (scheduleData ? 'Cô Tiềng' : '—');
 
   const dayLabelsVi: Record<DayKey, string> = { mon: 'T2', tue: 'T3', wed: 'T4', thu: 'T5', fri: 'T6', sat: 'T7' };
   const dayLabelsEn: Record<DayKey, string> = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat' };

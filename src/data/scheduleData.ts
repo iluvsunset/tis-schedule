@@ -869,7 +869,8 @@ export const SUBJECT_METADATA: Record<SubjectType, {
   }
 };
 
-export function getFallbackRoomSchedule(roomId: string = '504'): ScheduleData {
+export function getFallbackRoomSchedule(roomId: string = '504'): ScheduleData | null {
+  const cleanId = roomId.trim().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
   const roomMeta: Record<string, { floorVi: string; floorEn: string; classVi: string; classEn: string; teacher: string }> = {
     '504': { floorVi: 'Tầng 5', floorEn: 'Floor 5', classVi: 'Lớp 11-TN', classEn: 'Grade 11-TN', teacher: 'Cô Tiềng' },
     '4012': { floorVi: 'Tầng 4', floorEn: 'Floor 4', classVi: 'Lớp 10-TN', classEn: 'Grade 10-TN', teacher: 'Cô Đặng' },
@@ -881,20 +882,18 @@ export function getFallbackRoomSchedule(roomId: string = '504'): ScheduleData {
     '501': { floorVi: 'Tầng 5', floorEn: 'Floor 5', classVi: 'Lớp 6', classEn: 'Grade 6', teacher: 'Cô Uyển Nhi' },
   };
 
-  const meta = roomMeta[roomId] || {
-    floorVi: roomId.startsWith('5') ? 'Tầng 5' : roomId.startsWith('4') ? 'Tầng 4' : 'Tầng 3',
-    floorEn: roomId.startsWith('5') ? 'Floor 5' : roomId.startsWith('4') ? 'Floor 4' : 'Floor 3',
-    classVi: `Phòng ${roomId}`,
-    classEn: `Room ${roomId}`,
-    teacher: 'Ban Giảng Huấn'
-  };
+  const meta = roomMeta[cleanId];
+  if (!meta) {
+    // Room is not in the recognized roster; do not generate fake schedule
+    return null;
+  }
 
   return {
     ...SCHEDULE_DATA,
-    roomId,
-    room: roomId,
-    roomNameVi: `Phòng ${roomId}`,
-    roomNameEn: `Room ${roomId}`,
+    roomId: cleanId,
+    room: cleanId,
+    roomNameVi: `Phòng ${cleanId}`,
+    roomNameEn: `Room ${cleanId}`,
     floorVi: meta.floorVi,
     floorEn: meta.floorEn,
     gradeTitleVi: meta.classVi,
@@ -907,13 +906,13 @@ export function getFallbackRoomSchedule(roomId: string = '504'): ScheduleData {
       ...day,
       morning: day.morning.map(item => ({
         ...item,
-        room: roomId,
+        room: cleanId,
         classNameVi: meta.classVi,
         classNameEn: meta.classEn
       })),
       afternoon: day.afternoon.map(item => ({
         ...item,
-        room: roomId,
+        room: cleanId,
         classNameVi: meta.classVi,
         classNameEn: meta.classEn
       }))

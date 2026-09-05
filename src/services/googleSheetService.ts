@@ -14,8 +14,8 @@ const DEFAULT_CONFIG: SheetConfig = {
 };
 
 // In-memory cache for ultra-fast instant switching between weeks & classes
-const scheduleCache = new Map<string, ScheduleData>();
-const inFlightSchedules = new Map<string, Promise<ScheduleData>>();
+const scheduleCache = new Map<string, ScheduleData | null>();
+const inFlightSchedules = new Map<string, Promise<ScheduleData | null>>();
 let cachedTabs: WeekTabInfo[] | null = null;
 let inFlightTabsPromise: Promise<WeekTabInfo[]> | null = null;
 
@@ -532,10 +532,10 @@ export async function fetchLiveSchedule(
 
   const cacheKey = `${activeGid}-${targetClassId}`;
   if (scheduleCache.has(cacheKey)) {
-    return scheduleCache.get(cacheKey)!;
+    return scheduleCache.get(cacheKey)! as ScheduleData;
   }
   if (inFlightSchedules.has(cacheKey)) {
-    return inFlightSchedules.get(cacheKey)!;
+    return inFlightSchedules.get(cacheKey)! as Promise<ScheduleData>;
   }
 
   const fetchPromise = (async () => {
@@ -560,19 +560,24 @@ export async function fetchLiveSchedule(
 /**
  * Parses raw CSV content dynamically for any specified Room
  */
-export function parseSheetCSVForRoom(csvText: string, targetRoomId: string = '504'): ScheduleData {
+export function parseSheetCSVForRoom(csvText: string, targetRoomId: string = '504'): ScheduleData | null {
+  const cleanTarget = targetRoomId.trim().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
   const rows = parseCSVTokens(csvText);
   const availableRooms = getAvailableRoomsFromCSV(rows);
-  const matchedRoom = availableRooms.find(r => r.id.toLowerCase() === targetRoomId.toLowerCase())
-    || INITIAL_ROOMS.find(r => r.id.toLowerCase() === targetRoomId.toLowerCase())
-    || availableRooms[0] || INITIAL_ROOMS[0];
+  const matchedRoom = availableRooms.find(r => r.id.toLowerCase() === cleanTarget.toLowerCase())
+    || INITIAL_ROOMS.find(r => r.id.toLowerCase() === cleanTarget.toLowerCase());
+
+  // Strict check: if room is not found, return null
+  if (!matchedRoom) {
+    return null;
+  }
 
   const availableClasses = getAvailableClassesFromCSV(rows);
   const matchedClass = availableClasses.find(c => (c.room || '').toLowerCase() === matchedRoom.id.toLowerCase())
     || availableClasses[0];
 
   // Base schedule for the primary class in this room
-  const baseSchedule = parseSheetCSV(csvText, matchedClass.id);
+  const baseSchedule = parseSheetCSV(csvText, matchedClass ? matchedClass.id : '11-tn');
 
   // Enhance items with room and class tags
   const enhancedWeekSchedule = baseSchedule.weekSchedule.map(day => ({
@@ -580,14 +585,14 @@ export function parseSheetCSVForRoom(csvText: string, targetRoomId: string = '50
     morning: day.morning.map(item => ({
       ...item,
       room: matchedRoom.id,
-      classNameVi: matchedClass.nameVi,
-      classNameEn: matchedClass.nameEn
+      classNameVi: matchedClass ? matchedClass.nameVi : matchedRoom.defaultClassVi,
+      classNameEn: matchedClass ? matchedClass.nameEn : matchedRoom.defaultClassEn
     })),
     afternoon: day.afternoon.map(item => ({
       ...item,
       room: matchedRoom.id,
-      classNameVi: matchedClass.nameVi,
-      classNameEn: matchedClass.nameEn
+      classNameVi: matchedClass ? matchedClass.nameVi : matchedRoom.defaultClassVi,
+      classNameEn: matchedClass ? matchedClass.nameEn : matchedRoom.defaultClassEn
     }))
   }));
 
@@ -618,14 +623,15 @@ export async function fetchLiveRoomSchedule(
   gid?: string, 
   targetRoomId: string = '504',
   sheetId: string = DEFAULT_CONFIG.sheetId
-): Promise<ScheduleData> {
+): Promise<ScheduleData | null> {
+  const cleanTarget = targetRoomId.trim().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
   let activeGid = gid;
   if (!activeGid) {
     const latest = await getLatestSheetTab(sheetId);
     activeGid = latest?.gid || DEFAULT_CONFIG.gid;
   }
 
-  const cacheKey = `room-${activeGid}-${targetRoomId}`;
+  const cacheKey = `room-${activeGid}-${cleanTarget}`;
   if (scheduleCache.has(cacheKey)) {
     return scheduleCache.get(cacheKey)!;
   }
@@ -640,12 +646,16 @@ export async function fetchLiveRoomSchedule(
       if (!res.ok) throw new Error(`Failed to fetch CSV: ${res.statusText}`);
 
       const csvText = await res.text();
-      const parsed = parseSheetCSVForRoom(csvText, targetRoomId);
+      const parsed = parseSheetCSVForRoom(csvText, cleanTarget);
+      if (!parsed) {
+        // Room not found in live sheet
+        return null;
+      }
       scheduleCache.set(cacheKey, parsed);
       return parsed;
     } catch (e) {
-      console.warn(`Falling back to static schedule for room ${targetRoomId}:`, e);
-      return getFallbackRoomSchedule(targetRoomId);
+      console.warn(`Falling back to static schedule for room ${cleanTarget}:`, e);
+      return getFallbackRoomSchedule(cleanTarget);
     } finally {
       inFlightSchedules.delete(cacheKey);
     }

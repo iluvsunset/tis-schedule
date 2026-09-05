@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, WeekTabInfo, INITIAL_ROOMS, RoomInfo } from './types/schedule';
+import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, WeekTabInfo, INITIAL_ROOMS, INITIAL_CLASSES, RoomInfo } from './types/schedule';
 import { getFallbackRoomSchedule } from './data/scheduleData';
 import { fetchLiveRoomSchedule, getAllSheetTabs } from './services/googleSheetService';
 import { Navbar } from './components/Navbar';
@@ -38,13 +38,14 @@ const CLASS_TO_ROOM_MAP: Record<string, string> = {
   '12-tn': '503'
 };
 
-function parsePath(pathname: string): { lang?: Language; roomId?: string; isLive?: boolean } {
+function parsePath(pathname: string): { lang?: Language; roomId?: string; classId?: string; isLive?: boolean } {
   const clean = pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
   if (!clean) return {};
   const segments = clean.split('/').filter(Boolean);
 
   let lang: Language | undefined;
   let roomId: string | undefined;
+  let classId: string | undefined;
   let isLive = false;
 
   let idx = 0;
@@ -56,7 +57,12 @@ function parsePath(pathname: string): { lang?: Language; roomId?: string; isLive
   if (segments[idx] === 'room' && segments[idx + 1]) {
     roomId = segments[idx + 1];
     idx += 2;
+  } else if (segments[idx] === 'class' && segments[idx + 1]) {
+    classId = segments[idx + 1];
+    roomId = CLASS_TO_ROOM_MAP[classId] || classId;
+    idx += 2;
   } else if (segments[idx] && CLASS_TO_ROOM_MAP[segments[idx]]) {
+    classId = segments[idx];
     roomId = CLASS_TO_ROOM_MAP[segments[idx]];
     idx++;
   } else if (segments[idx] && /^\d+/.test(segments[idx])) {
@@ -68,7 +74,7 @@ function parsePath(pathname: string): { lang?: Language; roomId?: string; isLive
     isLive = true;
   }
 
-  return { lang, roomId, isLive };
+  return { lang, roomId, classId, isLive };
 }
 
 export const App: React.FC = () => {
@@ -81,6 +87,11 @@ export const App: React.FC = () => {
     return route.roomId || localStorage.getItem('tis_selected_room') || '504';
   });
 
+  const [selectedClassId, setSelectedClassId] = useState<string>(() => {
+    const route = parsePath(window.location.pathname);
+    return route.classId || localStorage.getItem('tis_selected_class') || '11-tn';
+  });
+
   // Screen Mode: 'schedule' (full timetable) vs 'live-focus' (1 starting subject display)
   const [screenMode, setScreenMode] = useState<'schedule' | 'live-focus'>(() => {
     const route = parsePath(window.location.pathname);
@@ -88,7 +99,7 @@ export const App: React.FC = () => {
     return (localStorage.getItem('tis_screen_mode') as 'schedule' | 'live-focus') || 'schedule';
   });
 
-  const [scheduleData, setScheduleData] = useState<ScheduleData>(() => {
+  const [scheduleData, setScheduleData] = useState<ScheduleData | null>(() => {
     try {
       const route = parsePath(window.location.pathname);
       const targetRoom = route.roomId || localStorage.getItem('tis_selected_room') || '504';
@@ -168,9 +179,13 @@ export const App: React.FC = () => {
     const currentVn = getVietnamTime();
     setVnTime(currentVn);
     
-    const todayInSchedule = scheduleData.weekSchedule.find(d => getDateStatus(d.date, currentVn.dateStr) === 'today');
-    if (todayInSchedule) {
-      setSelectedDay(todayInSchedule.dayKey);
+    if (scheduleData) {
+      const todayInSchedule = scheduleData.weekSchedule.find(d => getDateStatus(d.date, currentVn.dateStr) === 'today');
+      if (todayInSchedule) {
+        setSelectedDay(todayInSchedule.dayKey);
+      } else {
+        setSelectedDay(DAY_OF_WEEK_MAP[currentVn.dayOfWeek] || 'mon');
+      }
     } else {
       setSelectedDay(DAY_OF_WEEK_MAP[currentVn.dayOfWeek] || 'mon');
     }
@@ -190,8 +205,15 @@ export const App: React.FC = () => {
             localStorage.setItem(`tis_room_cache_${selectedRoomId}`, JSON.stringify(freshData));
           } catch (e) {}
           setScheduleData(freshData);
+        } else {
+          const fallback = getFallbackRoomSchedule(selectedRoomId);
+          setScheduleData(fallback);
         }
-      }).catch((e) => console.warn('Initial live room sync fallback:', e));
+      }).catch((e) => {
+        console.warn('Initial live room sync fallback:', e);
+        const fallback = getFallbackRoomSchedule(selectedRoomId);
+        setScheduleData(fallback);
+      });
     }).catch((e) => console.warn('Tabs fetch fallback:', e));
   }, [selectedRoomId]);
 
@@ -210,6 +232,11 @@ export const App: React.FC = () => {
       setIsRoomModalOpen(false);
     }
 
+    if (route.classId && route.classId !== selectedClassId) {
+      setSelectedClassId(route.classId);
+      localStorage.setItem('tis_selected_class', route.classId);
+    }
+
     if (route.isLive !== (screenMode === 'live-focus')) {
       setScreenMode(route.isLive ? 'live-focus' : 'schedule');
     }
@@ -219,31 +246,18 @@ export const App: React.FC = () => {
       const room = route.roomId || selectedRoomId || '504';
       navigate(`/${route.lang || language}/room/${room}`, { replace: true });
     }
-  }, [location.pathname, language, selectedRoomId, screenMode, navigate]);
+  }, [location.pathname, language, selectedRoomId, selectedClassId, screenMode, navigate]);
 
   // Handle Room Selection
   const handleSelectRoom = (roomId: string) => {
-    const cleanId = roomId.trim();
-    if (cleanId === selectedRoomId) {
-      setIsRoomModalOpen(false);
-      return;
-    }
-
-    // Immediate optimistic fallback display
-    try {
-      const cached = localStorage.getItem(`tis_room_cache_${cleanId}`);
-      if (cached) {
-        setScheduleData(JSON.parse(cached));
-      } else {
-        setScheduleData(getFallbackRoomSchedule(cleanId));
-      }
-    } catch (e) {
-      setScheduleData(getFallbackRoomSchedule(cleanId));
-    }
-
+    const cleanId = roomId.trim().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
     setSelectedRoomId(cleanId);
     localStorage.setItem('tis_selected_room', cleanId);
     setIsRoomModalOpen(false);
+
+    // Immediate optimistic fallback display
+    const fallback = getFallbackRoomSchedule(cleanId);
+    setScheduleData(fallback);
 
     const targetUrl = `/${language}/room/${cleanId}${screenMode === 'live-focus' ? '/live' : ''}`;
     navigate(targetUrl);
@@ -255,8 +269,40 @@ export const App: React.FC = () => {
           localStorage.setItem(`tis_room_cache_${cleanId}`, JSON.stringify(freshData));
         } catch (e) {}
         setScheduleData(freshData);
+      } else {
+        if (!fallback) {
+          setScheduleData(null);
+        }
       }
-    }).catch(err => console.warn('Room fetch live error:', err));
+    }).catch(err => {
+      console.warn('Room fetch live error:', err);
+      if (!fallback) setScheduleData(null);
+    });
+  };
+
+  // Handle Class Selection
+  const handleSelectClass = (classId: string, mappedRoomId?: string) => {
+    const cleanRoom = mappedRoomId || CLASS_TO_ROOM_MAP[classId] || '504';
+    setSelectedClassId(classId);
+    setSelectedRoomId(cleanRoom);
+    localStorage.setItem('tis_selected_class', classId);
+    localStorage.setItem('tis_selected_room', cleanRoom);
+    setIsRoomModalOpen(false);
+
+    const fallback = getFallbackRoomSchedule(cleanRoom);
+    setScheduleData(fallback);
+
+    const targetUrl = `/${language}/room/${cleanRoom}${screenMode === 'live-focus' ? '/live' : ''}`;
+    navigate(targetUrl);
+
+    fetchLiveRoomSchedule(selectedWeekGid, cleanRoom).then((freshData) => {
+      if (freshData) {
+        try {
+          localStorage.setItem(`tis_room_cache_${cleanRoom}`, JSON.stringify(freshData));
+        } catch (e) {}
+        setScheduleData(freshData);
+      }
+    }).catch(err => console.warn('Class fetch live error:', err));
   };
 
   // Handle Screen Mode Switch
@@ -415,10 +461,55 @@ export const App: React.FC = () => {
           />
         )}
 
-        {/* Primary Schedule View: Choice between Single Starting Subject Screen and Full Timetable */}
+        {/* Primary Schedule View: Choice between Single Starting Subject Screen, Full Timetable, or Room Not Found Screen */}
         <main className={`flex-1 ${isMinimalMode ? 'flex flex-col md:justify-center md:my-auto w-full' : 'mt-1 sm:mt-1.5'} relative z-0`}>
           <AnimatePresence mode="wait">
-            {screenMode === 'live-focus' ? (
+            {!scheduleData ? (
+              /* Room Not Found Screen (Zero Icons, Pure High-Contrast Typography) */
+              <motion.div
+                key={`not-found-${selectedRoomId}`}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -14 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full max-w-lg mx-auto my-auto py-16 px-6 text-center space-y-6"
+              >
+                <div className="w-16 h-16 mx-auto rounded-3xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 flex items-center justify-center font-mono font-black text-2xl text-slate-500 dark:text-slate-400 select-none">
+                  404
+                </div>
+
+                <div className="space-y-2">
+                  <span className="text-xs font-mono uppercase tracking-[0.25em] text-rose-500 dark:text-rose-400 font-bold block">
+                    {language === 'vi' ? 'PHÒNG HỌC KHÔNG TỒN TẠI' : 'ROOM NOT FOUND'}
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                    {language === 'vi' ? `Không tìm thấy phòng "${selectedRoomId}"` : `Room "${selectedRoomId}" not found`}
+                  </h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
+                    {language === 'vi'
+                      ? 'Số phòng này không có trong danh sách thời khóa biểu của trường. Vui lòng kiểm tra lại hoặc thử chọn trực tiếp theo Lớp học của bạn.'
+                      : 'This room number was not found in the timetable. Please check the room number or choose your class.'}
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsRoomModalOpen(true)}
+                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-mono font-bold text-xs uppercase tracking-wider transition cursor-pointer shadow-sm"
+                  >
+                    {language === 'vi' ? 'Chọn theo Lớp học' : 'Choose by Class'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsRoomModalOpen(true)}
+                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-mono font-semibold text-xs uppercase tracking-wider transition cursor-pointer border border-slate-200 dark:border-slate-700"
+                  >
+                    {language === 'vi' ? 'Nhập lại số phòng' : 'Re-enter Room'}
+                  </button>
+                </div>
+              </motion.div>
+            ) : screenMode === 'live-focus' ? (
               <motion.div
                 key={`live-focus-${selectedRoomId}-${selectedDay}`}
                 initial={{ opacity: 0, y: 12 }}
@@ -488,7 +579,7 @@ export const App: React.FC = () => {
         </main>
 
         {/* Sleek Hotel Luxury Minimalist Footer (Zero Icons) */}
-        {!isMinimalMode && (
+        {!isMinimalMode && scheduleData && (
           <footer className="mt-auto pt-8 pb-3 text-center text-[11px] font-mono text-slate-400 dark:text-white/40 no-print">
             <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
               <span className="font-semibold text-slate-600 dark:text-white/70">
@@ -504,16 +595,19 @@ export const App: React.FC = () => {
           </footer>
         )}
 
-        {/* Room Selection & Number Input Modal (Zero Icons, Aman / Hotel Hoa Nắng Aesthetics) */}
+        {/* Two-Panel Horizontal Room Selection & Class Choosing Modal */}
         <RoomSelectorModal
           isOpen={isRoomModalOpen}
           onClose={() => setIsRoomModalOpen(false)}
           rooms={rooms}
+          classes={INITIAL_CLASSES}
           selectedRoomId={selectedRoomId}
+          selectedClassId={selectedClassId}
           onSelectRoom={handleSelectRoom}
+          onSelectClass={handleSelectClass}
           language={language}
           onLanguageChange={handleLanguageChange}
-          allowClose={Boolean(localStorage.getItem('tis_selected_room'))}
+          allowClose={Boolean(localStorage.getItem('tis_selected_room')) && scheduleData !== null}
         />
 
         {/* Teacher Roster Modal */}

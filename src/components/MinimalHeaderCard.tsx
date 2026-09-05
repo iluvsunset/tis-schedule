@@ -19,7 +19,7 @@ interface MinimalHeaderCardProps {
   language: Language;
   theme: ThemeKey;
   onThemeChange: (theme: ThemeKey) => void;
-  scheduleData: ScheduleData;
+  scheduleData?: ScheduleData | null;
   availableWeeks?: WeekTabInfo[];
   selectedWeekGid?: string;
   onSelectWeek?: (gid: string) => void;

@@ -1,13 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Maximize2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { DayKey, Language, ScheduleItem, ScheduleData, WeekTabInfo } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus, formatScheduleDate } from '../utils/vietnamTime';
 import { listContainerVariants as containerVariants, listItemVariants as itemVariants } from '../utils/motionTokens';
 import { TimelineCard } from './TimelineCard';
-import { RecessIcon, LunchIcon, VietnamHolidayEmblem, MorningSessionIcon, AfternoonSessionIcon } from './CustomSubjectIcons';
 import { WeekSelectorButton } from './WeekSelectorButton';
 
 interface TimelineViewProps {
@@ -22,6 +20,8 @@ interface TimelineViewProps {
   onSelectWeek?: (gid: string) => void;
   isMinimalMode?: boolean;
   onToggleMinimalMode?: () => void;
+  onOpenRoomSelector?: () => void;
+  onSwitchToLiveFocus?: () => void;
 }
 
 export const TimelineView: React.FC<TimelineViewProps> = ({
@@ -35,7 +35,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   selectedWeekGid,
   onSelectWeek,
   isMinimalMode,
-  onToggleMinimalMode
+  onToggleMinimalMode,
+  onOpenRoomSelector,
+  onSwitchToLiveFocus
 }) => {
   const currentSchedule = scheduleData || SCHEDULE_DATA;
   const dayData = currentSchedule.weekSchedule.find(d => d.dayKey === selectedDay) || currentSchedule.weekSchedule[0];
@@ -48,83 +50,96 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const hasAnimatedRef = React.useRef(false);
   React.useEffect(() => {
     hasAnimatedRef.current = true;
-  }, [selectedDay]);
+  }, []);
 
-  const matchesFilterAndSearch = (item: ScheduleItem) => {
-    if (item.type === 'break') return true;
-    if (activeFilter !== 'all' && item.type !== activeFilter) {
-      return false;
-    }
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      const subject = `${item.subjectVi} ${item.subjectEn}`.toLowerCase();
-      const teacher = (item.teacher || '').toLowerCase();
-      const note = (item.note || '').toLowerCase();
-      if (!subject.includes(q) && !teacher.includes(q) && !note.includes(q)) {
-        return false;
+  // Filter helper
+  const filterItems = (items: ScheduleItem[]) => {
+    return items.filter(item => {
+      if (item.type === 'break') return true;
+
+      // Search Query Filter
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchSubject = (item.subjectVi || '').toLowerCase().includes(q) || (item.subjectEn || '').toLowerCase().includes(q);
+        const matchTeacher = (item.teacher || '').toLowerCase().includes(q);
+        const matchRoom = (item.room || '').toLowerCase().includes(q);
+        const matchClass = (item.classNameVi || '').toLowerCase().includes(q) || (item.classNameEn || '').toLowerCase().includes(q);
+        const matchNote = (item.note || '').toLowerCase().includes(q);
+        if (!matchSubject && !matchTeacher && !matchRoom && !matchClass && !matchNote) return false;
       }
-    }
-    return true;
+
+      // Category / Type Filter
+      if (activeFilter === 'all') return true;
+      if (activeFilter === 'stem') {
+        return ['math', 'physics', 'chemistry', 'biology', 'cs', 'science'].includes(item.type);
+      }
+      if (activeFilter === 'humanities') {
+        return ['literature', 'english'].includes(item.type);
+      }
+      if (activeFilter === 'activity') {
+        return ['pe', 'homeroom', 'event'].includes(item.type);
+      }
+      return item.type === activeFilter;
+    });
   };
 
-  const morningItems = dayData.morning.filter(matchesFilterAndSearch);
-  const afternoonItems = dayData.afternoon.filter(matchesFilterAndSearch);
+  const morningItems = filterItems(dayData.morning);
+  const afternoonItems = filterItems(dayData.afternoon);
 
-  const formattedDate = formatScheduleDate(dayData.date);
-  const dayTitle = language === 'vi' 
-    ? `${dayData.dayNameVi} • ${formattedDate}` 
-    : `${dayData.dayNameEn} • ${formattedDate}`;
-
-  // Check if this entire day is a National Holiday (e.g. Nghỉ Lễ 2/9)
-  const isAllDayHoliday = 
-    dayData.morning.some(i => i.subjectVi.toLowerCase().includes('nghỉ lễ') || (i.note && i.note.toLowerCase().includes('nghỉ lễ'))) ||
-    dayData.afternoon.some(i => i.subjectVi.toLowerCase().includes('nghỉ lễ') || (i.note && i.note.toLowerCase().includes('nghỉ lễ'))) ||
-    (dayData.date && (dayData.date.startsWith('31/8') || dayData.date.startsWith('1/9') || dayData.date.startsWith('01/9') || dayData.date.startsWith('2/9') || dayData.date.startsWith('02/9')));
+  // Check if entire day is a national holiday
+  const isAllDayHoliday = React.useMemo(() => {
+    const holidayMorning = dayData.morning.filter(i => i.type !== 'break').every(i => /nghỉ lễ/i.test(i.subjectVi) || /holiday/i.test(i.subjectEn));
+    const holidayAfternoon = dayData.afternoon.filter(i => i.type !== 'break').every(i => /nghỉ lễ/i.test(i.subjectVi) || /holiday/i.test(i.subjectEn));
+    return (dayData.morning.length > 0 || dayData.afternoon.length > 0) && holidayMorning && holidayAfternoon;
+  }, [dayData]);
 
   const triggerCelebrationConfetti = (e?: React.MouseEvent) => {
-    if (e) {
-      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-      const x = (rect.left + rect.width / 2) / window.innerWidth;
-      const y = (rect.top + rect.height / 2) / window.innerHeight;
-      confetti({
-        particleCount: 75,
-        spread: 60,
-        origin: { x, y },
-        colors: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#fbbf24']
-      });
-    } else {
-      confetti({
-        particleCount: 90,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#fbbf24']
-      });
-    }
+    const origin = e 
+      ? { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight }
+      : { x: 0.5, y: 0.5 };
+
+    confetti({
+      particleCount: 70,
+      spread: 60,
+      origin,
+      colors: ['#c5a869', '#ffffff', '#e2d4b7', '#a38954']
+    });
   };
 
+  // Helper to determine active/past states of periods
   const getPeriodStatus = (item: ScheduleItem) => {
-    const [sh, sm] = item.startTime.split(':').map(Number);
-    const [eh, em] = item.endTime.split(':').map(Number);
-    const startMin = (sh || 0) * 60 + (sm || 0);
-    const endMin = (eh || 0) * 60 + (em || 0);
-    const currentMin = vnTime.totalMinutes;
+    if (!isToday) {
+      return { isCurrent: false, isPast: isPastDay, remainingMinutes: 0 };
+    }
 
-    if (isToday) {
+    try {
+      const [sh, sm] = (item.startTime || '').split(':').map(Number);
+      const [eh, em] = (item.endTime || '').split(':').map(Number);
+      const startMin = (sh || 0) * 60 + (sm || 0);
+      const endMin = (eh || 0) * 60 + (em || 0);
+      const currentMin = vnTime.totalMinutes;
+
       const isCurrent = currentMin >= startMin && currentMin < endMin;
       const isPast = currentMin >= endMin;
       const remainingMinutes = isCurrent ? endMin - currentMin : 0;
+
       return { isCurrent, isPast, remainingMinutes };
+    } catch {
+      return { isCurrent: false, isPast: false, remainingMinutes: 0 };
     }
-
-    if (isPastDay) {
-      return { isCurrent: false, isPast: true, remainingMinutes: 0 };
-    }
-
-    // Future date
-    return { isCurrent: false, isPast: false, remainingMinutes: 0 };
   };
 
-  // Lunch break status
+  // Format date display
+  const formattedDate = formatScheduleDate(dayData.date) || dayData.date;
+  const dayTitle = language === 'vi' 
+    ? `${dayData.dayNameVi} · ${formattedDate}`
+    : `${dayData.dayNameEn} · ${formattedDate}`;
+
+  const roomName = currentSchedule.roomNameEn || `Room ${currentSchedule.room}`;
+  const floorName = language === 'vi' ? (currentSchedule.floorVi || 'Tầng 5') : (currentSchedule.floorEn || 'Floor 5');
+  const className = language === 'vi' ? currentSchedule.gradeTitleVi : currentSchedule.gradeTitleEn;
+
+  // Lunch status calculation
   const lunchStatus = (() => {
     const startMin = 11 * 60 + 30;
     const endMin = 13 * 60 + 30;
@@ -141,32 +156,60 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   })();
 
   return (
-    <div className="space-y-3 sm:space-y-4 relative z-20">
-      {/* Day Header Bar (Only in Standard Mode; Minimal Mode uses MinimalHeaderCard) */}
+    <div className="space-y-6 select-none relative z-20">
+      
+      {/* Top Venue & Date Navigation (Aman / Hotel Hoa Nắng Luxury Editorial Header - Zero Icons) */}
       {!isMinimalMode && (
         <motion.div 
           key={`header-${selectedDay}`}
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className="glass-card rounded-xl sm:rounded-2xl px-2.5 sm:px-4.5 py-1.5 sm:py-2.5 shadow-2xs flex items-center justify-between gap-1.5 relative z-40"
+          className="rounded-2xl border border-white/[0.08] bg-[#0f1016]/90 backdrop-blur-xl px-5 py-4 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-40"
         >
-          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 dark:text-slate-400 shrink-0" />
-            <h2 className="text-xs sm:text-sm md:text-base font-display font-extrabold text-slate-900 dark:text-slate-100 truncate">
-              {dayTitle}
-            </h2>
-            {isToday && (
-              <span className="px-1.5 py-0.2 sm:px-2 sm:py-0.5 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-md shadow-2xs shrink-0">
-                {language === 'vi' ? 'Hôm Nay' : 'Today'}
-              </span>
-            )}
-            <span className="text-xs text-slate-400 dark:text-slate-500 font-medium hidden sm:inline">
-              • {language === 'vi' ? (currentSchedule.gradeTitleVi || 'Lớp 11-TN') : (currentSchedule.gradeTitleEn || 'Grade 11-TN')} ({language === 'vi' ? 'Phòng' : 'Room'} {currentSchedule.room || '504'})
-            </span>
+          {/* Venue & Date Meta */}
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h2 className="text-base sm:text-lg font-serif font-semibold text-white tracking-tight">
+                {dayTitle}
+              </h2>
+              {isToday && (
+                <span className="px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider bg-[#c5a869] text-black rounded">
+                  {language === 'vi' ? 'Hôm nay' : 'Today'}
+                </span>
+              )}
+            </div>
+
+            {/* Clickable Room Venue Badge */}
+            <div className="flex items-center gap-2 text-xs font-mono text-white/50">
+              <button
+                type="button"
+                onClick={onOpenRoomSelector}
+                className="hover:text-[#c5a869] transition cursor-pointer text-left"
+                title={language === 'vi' ? 'Nhấn để đổi phòng' : 'Click to change room'}
+              >
+                <span className="text-[#c5a869] font-medium">{roomName}</span>
+                <span className="text-white/30"> · </span>
+                <span>{floorName}</span>
+                <span className="text-white/30"> · </span>
+                <span>{className}</span>
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Controls: Week Selector & Live Room Focus Mode (Zero Icons) */}
+          <div className="flex items-center gap-2 shrink-0">
+            {onSwitchToLiveFocus && (
+              <button
+                type="button"
+                onClick={onSwitchToLiveFocus}
+                className="px-3.5 py-1.5 rounded-xl border border-[#c5a869]/40 bg-[#c5a869]/10 hover:bg-[#c5a869]/20 text-[#c5a869] text-xs font-mono uppercase tracking-wider font-semibold transition cursor-pointer"
+                title={language === 'vi' ? 'Màn hình hiển thị 1 môn đang bắt đầu' : 'Screen showing 1 starting subject'}
+              >
+                {language === 'vi' ? 'Trực tiếp phòng' : 'Live Room'}
+              </button>
+            )}
+
             {availableWeeks && availableWeeks.length > 0 && onSelectWeek && (
               <WeekSelectorButton
                 availableWeeks={availableWeeks}
@@ -176,69 +219,59 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
               />
             )}
 
-
-            {/* Full-Screen Minimal Mode Toggle Button (Icon Only - Desktop / sm+) */}
             {onToggleMinimalMode && (
-              <motion.button
-                whileTap={{ scale: 0.94 }}
+              <button
+                type="button"
                 onClick={onToggleMinimalMode}
-                className="hidden sm:flex p-1.5 rounded-xl border transition items-center justify-center cursor-pointer shadow-2xs bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-slate-200/60 dark:border-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700"
-                title={language === 'vi' ? "Chế độ xem tối giản toàn màn hình (Phím F)" : "Full-screen minimal focus (F)"}
+                className="px-3 py-1.5 rounded-xl border border-white/10 hover:border-white/20 text-xs font-mono uppercase text-white/60 hover:text-white transition cursor-pointer hidden sm:block"
+                title="Full-screen minimal focus (F)"
               >
-                <Maximize2 className="w-3.5 h-3.5" />
-              </motion.button>
+                Focus
+              </button>
             )}
           </div>
         </motion.div>
       )}
 
-      {/* If All-Day Holiday: Show Full-Width Celebration Banner */}
+      {/* If All-Day Holiday: Show Editorial Celebration Card (Zero Icons) */}
       {isAllDayHoliday ? (
         <motion.div 
           key={`holiday-${selectedDay}`}
-          initial={{ opacity: 0, scale: 0.97, y: 10 }}
+          initial={{ opacity: 0, scale: 0.98, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 350, damping: 26 }}
-          whileTap={{ scale: 0.99 }}
+          transition={{ duration: 0.3 }}
           onClick={(e) => triggerCelebrationConfetti(e)}
-          className="glass-card rounded-3xl p-6 sm:p-10 border border-rose-200/80 dark:border-rose-900/40 bg-gradient-to-br from-rose-500/10 via-amber-500/5 to-transparent text-center space-y-4 shadow-sm cursor-pointer relative overflow-hidden group select-none"
+          className="rounded-3xl p-8 sm:p-14 border border-[#c5a869]/30 bg-gradient-to-b from-[#c5a869]/10 via-transparent to-transparent text-center space-y-4 shadow-xl cursor-pointer select-none"
         >
-          {/* Celebratory Emblem */}
-          <div className="flex items-center justify-center my-2">
-            <div className="relative z-10">
-              <VietnamHolidayEmblem className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-md" />
-            </div>
+          <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-[#c5a869]">
+            National Observance
           </div>
-
-          <div className="space-y-2 relative z-10">
-
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-black text-slate-900 dark:text-white tracking-tight">
-              {language === 'vi' ? 'NGHỈ LỄ QUỐC KHÁNH 2/9' : 'VIETNAM NATIONAL DAY HOLIDAY'}
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium max-w-md mx-auto">
-              {language === 'vi' 
-                ? 'Toàn trường TIS nghỉ lễ theo quy định. Không có tiết học trong ngày. Chúc bạn có kỳ nghỉ thật vui vẻ! (Nhấn để bắn pháo hoa giấy)' 
-                : 'All TIS classes are off in observance of National Day. Enjoy your holiday! (Tap card for confetti celebration)'}
-            </p>
-          </div>
+          <h3 className="text-2xl sm:text-4xl font-serif text-white tracking-tight font-normal">
+            {language === 'vi' ? 'NGHỈ LỄ QUỐC KHÁNH 2/9' : 'VIETNAM NATIONAL DAY HOLIDAY'}
+          </h3>
+          <p className="text-xs sm:text-sm font-mono text-white/50 max-w-md mx-auto">
+            {language === 'vi' 
+              ? 'Toàn trường TIS nghỉ lễ theo quy định. Không có tiết học trong ngày. (Nhấn để mừng lễ)' 
+              : 'All TIS classes are off in observance of National Day. (Tap to celebrate)'}
+          </p>
         </motion.div>
       ) : (
-        /* Regular Day Morning & Afternoon Grid */
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+        /* Regular Day Morning & Afternoon Grid (Zero Icons, Aman Architectural Elegance) */
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           
           {/* Morning Session Column */}
-          <div className="space-y-2.5 sm:space-y-3">
-            <div className="flex items-center justify-between px-1">
-              <div className="flex items-center gap-2">
-                <MorningSessionIcon className="w-4 h-4" />
-                <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 tracking-tight">
-                  {language === 'vi' ? 'Buổi Sáng (08:00 – 11:30)' : 'Morning Session (08:00 – 11:30)'}
-                </h3>
-              </div>
+          <div className="space-y-3.5">
+            <div className="flex items-baseline justify-between border-b border-white/[0.08] pb-2 px-1">
+              <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#c5a869] font-semibold">
+                {language === 'vi' ? 'Buổi Sáng' : 'Morning Session'}
+              </span>
+              <span className="text-xs font-mono text-white/40">
+                08:00 — 11:30
+              </span>
             </div>
 
             {morningItems.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500 glass-card rounded-2xl">
+              <div className="p-8 text-center text-xs font-mono text-white/30 border border-white/[0.05] rounded-2xl">
                 {language === 'vi' ? 'Không có tiết học nào phù hợp bộ lọc' : 'No periods matching filter'}
               </div>
             ) : (
@@ -246,26 +279,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 variants={containerVariants}
                 initial={hasAnimatedRef.current ? false : "hidden"}
                 animate="visible"
-                className="space-y-2.5 sm:space-y-3"
+                className="space-y-3"
               >
                 {morningItems.map((item, idx) => {
-                  if (item.type === 'break') {
-                    return (
-                      <motion.div 
-                        key={`recess-morning-${idx}`}
-                        variants={itemVariants}
-                        className="px-3.5 py-2 rounded-xl bg-slate-100/70 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-800/60 flex items-center justify-between text-slate-600 dark:text-slate-400 text-xs"
-                      >
-                        <div className="flex items-center gap-2">
-                          <RecessIcon className="w-3.5 h-3.5" />
-                          <span className="font-semibold text-[11px]">{language === 'vi' ? item.subjectVi : item.subjectEn}</span>
-                          <span className="text-[10px] text-slate-400 dark:text-slate-500">• {item.note}</span>
-                        </div>
-                        <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">{item.time}</span>
-                      </motion.div>
-                    );
-                  }
-
                   const status = getPeriodStatus(item);
                   return (
                     <TimelineCard
@@ -284,73 +300,52 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
           </div>
 
           {/* Afternoon Session Column */}
-          <div className="space-y-2.5 sm:space-y-3">
+          <div className="space-y-3.5">
             
-            {/* Lunch Break Bar */}
-            <motion.div 
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileTap={{ scale: 0.99 }}
-              className={`p-2.5 sm:p-3 rounded-2xl border transition-all flex items-center justify-between text-xs ${
+            {/* Midday Lunch Interval Block (Zero Icons) */}
+            <div 
+              className={`p-3.5 rounded-xl border flex items-center justify-between text-xs font-mono transition ${
                 lunchStatus.isCurrent
-                  ? 'bg-amber-500/15 border-amber-500/40 ring-1 ring-amber-400/40 text-amber-900 dark:text-amber-200 shadow-sm'
+                  ? 'bg-[#c5a869]/15 border-[#c5a869]/50 text-white shadow-lg'
                   : lunchStatus.isPast
-                    ? 'bg-slate-100/50 dark:bg-slate-800/30 border-slate-200/50 dark:border-slate-800/50 text-slate-400 dark:text-slate-500 line-through'
-                    : 'bg-amber-500/10 dark:bg-amber-500/10 border-amber-500/20 text-amber-900 dark:text-amber-300'
+                    ? 'border-white/[0.05] text-white/30 line-through'
+                    : 'bg-white/[0.02] border-white/[0.08] text-white/60'
               }`}
             >
               <div className="flex items-center gap-2">
-                <LunchIcon className="w-4 h-4" />
-                <span className="font-bold text-xs">
+                <span className="uppercase tracking-widest text-[#c5a869] font-semibold">
                   {language === 'vi' ? dayData.lunch.titleVi : dayData.lunch.titleEn}
                 </span>
                 {lunchStatus.isCurrent && (
-                  <span className="px-1.5 py-0.5 rounded-md bg-amber-500 text-slate-950 font-black text-[9px] uppercase animate-pulse">
-                    {language === 'vi' ? `Đang nghỉ (${lunchStatus.remainingMinutes}p)` : `Lunch (${lunchStatus.remainingMinutes}m)`}
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-[#c5a869] text-black font-bold">
+                    {language === 'vi' ? `${lunchStatus.remainingMinutes}p` : `${lunchStatus.remainingMinutes}m`}
                   </span>
                 )}
               </div>
-              <span className="font-mono text-xs text-amber-800 dark:text-amber-400 font-semibold">{dayData.lunch.time}</span>
-            </motion.div>
+              <span className="tabular-nums text-white/50">{dayData.lunch.time}</span>
+            </div>
 
-            <div className="flex items-center justify-between px-1 pt-1">
-              <div className="flex items-center gap-2">
-                <AfternoonSessionIcon className="w-4 h-4" />
-                <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 tracking-tight">
-                  {language === 'vi' ? 'Buổi Chiều (13:30 – 16:05)' : 'Afternoon Session (13:30 – 16:05)'}
-                </h3>
-              </div>
+            <div className="flex items-baseline justify-between border-b border-white/[0.08] pb-2 px-1 pt-1">
+              <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#c5a869] font-semibold">
+                {language === 'vi' ? 'Buổi Chiều' : 'Afternoon Session'}
+              </span>
+              <span className="text-xs font-mono text-white/40">
+                13:30 — 16:05
+              </span>
             </div>
 
             {afternoonItems.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500 glass-card rounded-2xl">
-                {language === 'vi' ? 'Không có tiết học nào phù hợp bộ lọc' : 'No afternoon classes'}
+              <div className="p-8 text-center text-xs font-mono text-white/30 border border-white/[0.05] rounded-2xl">
+                {language === 'vi' ? 'Không có tiết học buổi chiều' : 'No afternoon classes'}
               </div>
             ) : (
               <motion.div 
                 variants={containerVariants}
                 initial={hasAnimatedRef.current ? false : "hidden"}
                 animate="visible"
-                className="space-y-2.5 sm:space-y-3"
+                className="space-y-3"
               >
                 {afternoonItems.map((item, idx) => {
-                  if (item.type === 'break') {
-                    return (
-                      <motion.div 
-                        key={`recess-afternoon-${idx}`}
-                        variants={itemVariants}
-                        className="px-3.5 py-2 rounded-xl bg-slate-100/70 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-800/60 flex items-center justify-between text-slate-600 dark:text-slate-400 text-xs"
-                      >
-                        <div className="flex items-center gap-2">
-                          <RecessIcon className="w-3.5 h-3.5" />
-                          <span className="font-semibold text-[11px]">{language === 'vi' ? item.subjectVi : item.subjectEn}</span>
-                          <span className="text-[10px] text-slate-400 dark:text-slate-500">• {item.note}</span>
-                        </div>
-                        <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">{item.time}</span>
-                      </motion.div>
-                    );
-                  }
-
                   const status = getPeriodStatus(item);
                   return (
                     <TimelineCard

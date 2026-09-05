@@ -46,6 +46,8 @@ export interface ScheduleItem {
   teacher: string;
   type: SubjectType;
   room?: string;
+  classNameVi?: string;
+  classNameEn?: string;
   note?: string;
 }
 
@@ -87,10 +89,15 @@ export interface HomeroomTeacher {
 
 export interface ScheduleData {
   classId?: string;
+  roomId?: string;
   grade: string;
   gradeTitleVi: string;
   gradeTitleEn: string;
   room: string;
+  roomNameVi?: string;
+  roomNameEn?: string;
+  floorVi?: string;
+  floorEn?: string;
   homeroomTeacher: HomeroomTeacher;
   weekSchedule: DaySchedule[];
   teachers: TeacherInfo[];
@@ -102,6 +109,28 @@ export interface HomeworkNote {
   done: boolean;
   createdAt: string;
 }
+
+export interface RoomInfo {
+  id: string;
+  nameVi: string;
+  nameEn: string;
+  floorVi: string;
+  floorEn: string;
+  defaultClassVi: string;
+  defaultClassEn: string;
+  homeroomTeacher: string;
+}
+
+export const INITIAL_ROOMS: RoomInfo[] = [
+  { id: '504', nameVi: 'Phòng 504', nameEn: 'Room 504', floorVi: 'Tầng 5', floorEn: 'Floor 5', defaultClassVi: 'Lớp 11-TN', defaultClassEn: 'Grade 11-TN', homeroomTeacher: 'Cô Tiềng' },
+  { id: '4012', nameVi: 'Phòng 4012', nameEn: 'Room 4012', floorVi: 'Tầng 4', floorEn: 'Floor 4', defaultClassVi: 'Lớp 10-TN', defaultClassEn: 'Grade 10-TN', homeroomTeacher: 'Cô Đặng' },
+  { id: '307', nameVi: 'Phòng 307', nameEn: 'Room 307', floorVi: 'Tầng 3', floorEn: 'Floor 3', defaultClassVi: 'Lớp 10-TN & NT', defaultClassEn: 'Grade 10-TN & NT', homeroomTeacher: 'Cô Đặng' },
+  { id: '4010', nameVi: 'Phòng 4010', nameEn: 'Room 4010', floorVi: 'Tầng 4', floorEn: 'Floor 4', defaultClassVi: 'Lớp 8', defaultClassEn: 'Grade 8', homeroomTeacher: 'Cô Thuận' },
+  { id: '4011', nameVi: 'Phòng 4011', nameEn: 'Room 4011', floorVi: 'Tầng 4', floorEn: 'Floor 4', defaultClassVi: 'Lớp 9', defaultClassEn: 'Grade 9', homeroomTeacher: 'Thầy Quân' },
+  { id: '503', nameVi: 'Phòng 503', nameEn: 'Room 503', floorVi: 'Tầng 5', floorEn: 'Floor 5', defaultClassVi: 'Lớp 12-TN', defaultClassEn: 'Grade 12-TN', homeroomTeacher: 'Thầy Kiên' },
+  { id: '502', nameVi: 'Phòng 502', nameEn: 'Room 502', floorVi: 'Tầng 5', floorEn: 'Floor 5', defaultClassVi: 'Lớp 7', defaultClassEn: 'Grade 7', homeroomTeacher: 'Cô Thảo' },
+  { id: '501', nameVi: 'Phòng 501', nameEn: 'Room 501', floorVi: 'Tầng 5', floorEn: 'Floor 5', defaultClassVi: 'Lớp 6', defaultClassEn: 'Grade 6', homeroomTeacher: 'Cô Uyển Nhi' },
+];
 
 export const INITIAL_CLASSES: ClassInfo[] = [
   { id: '6', nameVi: 'Lớp 6', nameEn: 'Grade 6', level: 'middle', room: '501', homeroomTeacher: 'Cô Uyển Nhi' },

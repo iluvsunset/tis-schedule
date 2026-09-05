@@ -1,10 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Printer, Maximize2 } from 'lucide-react';
 import { Language, ScheduleData, WeekTabInfo } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
-import { RecessIcon, LunchIcon } from './CustomSubjectIcons';
 import { WeekSelectorButton } from './WeekSelectorButton';
 import { springCard, gestureTokens, radarBeaconVariants } from '../utils/motionTokens';
 
@@ -80,24 +78,23 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
               />
             )}
 
-            {/* Full-Screen Minimal Mode Toggle Button (Icon Only) */}
+            {/* Full-Screen Minimal Mode Toggle Button (Zero Icons) */}
             {onToggleMinimalMode && (
               <motion.button 
                 whileTap={gestureTokens.button.whileTap}
                 onClick={onToggleMinimalMode}
-                className="no-print p-1.5 rounded-xl border transition flex items-center justify-center cursor-pointer shadow-2xs bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700"
+                className="no-print px-3 py-1.5 rounded-xl border border-white/10 text-xs font-mono uppercase text-white/60 hover:text-white transition cursor-pointer"
                 title={language === 'vi' ? "Chế độ xem tối giản (Phím F)" : "Full-screen minimal (F)"}
               >
-                <Maximize2 className="w-3.5 h-3.5" />
+                Focus
               </motion.button>
             )}
 
             <motion.button 
               whileTap={gestureTokens.button.whileTap}
               onClick={() => window.print()}
-              className="no-print px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
+              className="no-print px-3 py-1.5 rounded-xl border border-white/10 text-xs font-mono uppercase text-white/60 hover:text-white transition cursor-pointer"
             >
-              <Printer className="w-3.5 h-3.5" />
               <span>{language === 'vi' ? 'In Lịch' : 'Print'}</span>
             </motion.button>
           </div>
@@ -109,19 +106,19 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
         <table className="w-full min-w-[700px] border-collapse text-xs">
         <thead>
           <tr className="text-left bg-slate-50/90 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700">
-            <th className="p-1.5 font-bold text-slate-600 dark:text-slate-300 rounded-l-xl w-20 text-center">
+            <th className="p-1.5 font-bold text-slate-600 dark:text-slate-300 rounded-l-xl w-20 text-center font-mono">
               {language === 'vi' ? 'Tiết / Giờ' : 'Period'}
             </th>
             {days.map((d) => {
               const isToday = getDateStatus(d.date, vnTime.dateStr) === 'today';
               return (
                 <th key={d.dayKey} className={`p-1.5 font-bold ${isToday ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-t-xl' : 'text-slate-700 dark:text-slate-300'}`}>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 font-mono">
                     <span>{language === 'vi' ? d.dayNameVi : d.dayNameEn}</span>
                     <span className="text-[10px] font-normal text-slate-400">({d.date.slice(0, 5)})</span>
                     {isToday && (
-                      <span className="ml-1 px-1.5 py-0.2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded text-[9px] font-bold shadow-2xs">
-                        Hôm nay
+                      <span className="ml-1 px-1.5 py-0.2 bg-[#c5a869] text-black rounded text-[9px] font-bold">
+                        Today
                       </span>
                     )}
                   </div>
@@ -138,11 +135,8 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                   <td className="p-1 font-mono text-[10px] text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
                     11:30 - 13:30
                   </td>
-                  <td colSpan={days.length} className="p-1 text-center text-[11px] tracking-wide">
-                    <div className="flex items-center justify-center gap-1.5">
-                      <LunchIcon className="w-3.5 h-3.5" />
-                      <span>{language === 'vi' ? 'NGHỈ TRƯA & DÙNG BỮA' : 'LUNCH BREAK & REST'}</span>
-                    </div>
+                  <td colSpan={days.length} className="p-1 text-center text-[11px] tracking-wide font-mono">
+                    <span className="text-[#c5a869]">{language === 'vi' ? 'NGHỈ TRƯA & DÙNG BỮA' : 'LUNCH BREAK & REST'}</span>
                   </td>
                 </tr>
               );
@@ -150,15 +144,12 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
 
             if (row.isBreak) {
               return (
-                <tr key={rIdx} className="bg-slate-50/40 dark:bg-slate-900/20 text-slate-500 dark:text-slate-400">
+                <tr key={rIdx} className="bg-slate-50/40 dark:bg-slate-900/20 text-slate-500 dark:text-slate-400 font-mono">
                   <td className="p-1 font-mono text-[10px] text-center whitespace-nowrap">
                     {row.time.split(' - ')[0]}
                   </td>
-                  <td colSpan={days.length} className="p-1 text-center text-[10px] italic text-slate-400 dark:text-slate-400">
-                    <div className="flex items-center justify-center gap-1.5">
-                      <RecessIcon className="w-3.5 h-3.5" />
-                      <span>{language === 'vi' ? 'Ra chơi giải lao' : 'Recess'}</span>
-                    </div>
+                  <td colSpan={days.length} className="p-1 text-center text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                    <span>{language === 'vi' ? 'Ra chơi giải lao' : 'Recess Interval'}</span>
                   </td>
                 </tr>
               );

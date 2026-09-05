@@ -117,7 +117,7 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                     <span>{language === 'vi' ? d.dayNameVi : d.dayNameEn}</span>
                     <span className="text-[10px] font-normal text-slate-400">({d.date.slice(0, 5)})</span>
                     {isToday && (
-                      <span className="ml-1 px-1.5 py-0.2 bg-[#c5a869] text-black rounded text-[9px] font-bold">
+                      <span className="ml-1 px-1.5 py-0.2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 rounded text-[9px] font-bold">
                         Today
                       </span>
                     )}
@@ -136,7 +136,7 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                     11:30 - 13:30
                   </td>
                   <td colSpan={days.length} className="p-1 text-center text-[11px] tracking-wide font-mono">
-                    <span className="text-[#c5a869]">{language === 'vi' ? 'NGHỈ TRƯA & DÙNG BỮA' : 'LUNCH BREAK & REST'}</span>
+                    <span className="text-amber-600 dark:text-amber-400">{language === 'vi' ? 'NGHỈ TRƯA & DÙNG BỮA' : 'LUNCH BREAK & REST'}</span>
                   </td>
                 </tr>
               );

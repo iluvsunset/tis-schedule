@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, WeekTabInfo, INITIAL_ROOMS, INITIAL_CLASSES, RoomInfo } from './types/schedule';
 import { getFallbackRoomSchedule } from './data/scheduleData';
-import { fetchLiveRoomSchedule, getAllSheetTabs } from './services/googleSheetService';
+import { fetchLiveRoomSchedule, fetchLiveSchedule, getAllSheetTabs } from './services/googleSheetService';
 import { Navbar } from './components/Navbar';
 import { MinimalHeaderCard } from './components/MinimalHeaderCard';
 import { TimelineView } from './components/TimelineView';
@@ -26,8 +26,8 @@ const DAY_OF_WEEK_MAP: Record<number, DayKey> = {
   6: 'sat',
 };
 
-// Legacy class ID to primary room mapping for backward compatibility
-const CLASS_TO_ROOM_MAP: Record<string, string> = {
+// Bidirectional mappings between Class ID and primary Room ID
+export const CLASS_TO_ROOM_MAP: Record<string, string> = {
   '6': '501',
   '7': '502',
   '8': '4010',
@@ -38,84 +38,159 @@ const CLASS_TO_ROOM_MAP: Record<string, string> = {
   '12-tn': '503'
 };
 
-function parsePath(pathname: string): { lang?: Language; roomId?: string; classId?: string; isLive?: boolean } {
+export const ROOM_TO_CLASS_MAP: Record<string, string> = {
+  '501': '6',
+  '502': '7',
+  '4010': '8',
+  '4011': '9',
+  '4012': '10-tn',
+  '307': '10-nt',
+  '504': '11-tn',
+  '503': '12-tn'
+};
+
+export function isKnownRoom(roomId: string): boolean {
+  const clean = roomId.trim().toLowerCase().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
+  return Boolean(ROOM_TO_CLASS_MAP[clean] || INITIAL_ROOMS.some(r => r.id.toLowerCase() === clean));
+}
+
+export function isKnownClass(classId: string): boolean {
+  const clean = classId.trim().toLowerCase();
+  return Boolean(CLASS_TO_ROOM_MAP[clean] || INITIAL_CLASSES.some(c => c.id.toLowerCase() === clean));
+}
+
+export interface ParsedRoute {
+  lang: Language;
+  viewType: 'room' | 'class';
+  roomId: string;
+  classId: string;
+  isLive: boolean;
+  isValid: boolean;
+}
+
+export function parsePath(pathname: string): ParsedRoute {
   const clean = pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
-  if (!clean) return {};
+  if (!clean) {
+    return {
+      lang: 'vi',
+      viewType: 'class',
+      roomId: '504',
+      classId: '11-tn',
+      isLive: false,
+      isValid: true
+    };
+  }
+
   const segments = clean.split('/').filter(Boolean);
-
-  let lang: Language | undefined;
-  let roomId: string | undefined;
-  let classId: string | undefined;
-  let isLive = false;
-
+  let lang: Language = 'vi';
   let idx = 0;
+
   if (segments[idx] === 'vi' || segments[idx] === 'en') {
     lang = segments[idx] as Language;
     idx++;
   }
 
-  if (segments[idx] === 'room' && segments[idx + 1]) {
-    roomId = segments[idx + 1];
-    idx += 2;
-  } else if (segments[idx] === 'class' && segments[idx + 1]) {
-    classId = segments[idx + 1];
-    roomId = CLASS_TO_ROOM_MAP[classId] || classId;
-    idx += 2;
-  } else if (segments[idx] && CLASS_TO_ROOM_MAP[segments[idx]]) {
-    classId = segments[idx];
-    roomId = CLASS_TO_ROOM_MAP[segments[idx]];
-    idx++;
-  } else if (segments[idx] && /^\d+/.test(segments[idx])) {
-    roomId = segments[idx];
-    idx++;
+  const remaining = segments.slice(idx);
+
+  // 1. Explicit Room Route: /room/:roomId or /room/:roomId/live
+  if (remaining[0] === 'room' && remaining[1]) {
+    const rawRoom = remaining[1].replace(/^p\.?\s*/i, '');
+    const valid = isKnownRoom(rawRoom);
+    return {
+      lang,
+      viewType: 'room',
+      roomId: rawRoom,
+      classId: ROOM_TO_CLASS_MAP[rawRoom] || '11-tn',
+      isLive: true,
+      isValid: valid
+    };
   }
 
-  if (segments[idx] === 'live' || segments[idx] === 'focus') {
-    isLive = true;
+  // 2. Explicit Class Route: /class/:classId
+  if (remaining[0] === 'class' && remaining[1]) {
+    const cId = remaining[1];
+    const valid = isKnownClass(cId);
+    return {
+      lang,
+      viewType: 'class',
+      roomId: CLASS_TO_ROOM_MAP[cId] || '504',
+      classId: cId,
+      isLive: false,
+      isValid: valid
+    };
   }
 
-  return { lang, roomId, classId, isLive };
+  // 3. Single Segment after lang: e.g. /vi/11-tn or /vi/504
+  if (remaining[0]) {
+    const seg = remaining[0];
+    if (isKnownClass(seg)) {
+      return {
+        lang,
+        viewType: 'class',
+        roomId: CLASS_TO_ROOM_MAP[seg] || '504',
+        classId: seg,
+        isLive: false,
+        isValid: true
+      };
+    }
+    if (isKnownRoom(seg)) {
+      return {
+        lang,
+        viewType: 'room',
+        roomId: seg,
+        classId: ROOM_TO_CLASS_MAP[seg] || '11-tn',
+        isLive: true,
+        isValid: true
+      };
+    }
+    // Unrecognized ID: treat as room number to check (will show 404 Room Not Found if invalid)
+    return {
+      lang,
+      viewType: 'room',
+      roomId: seg,
+      classId: '11-tn',
+      isLive: true,
+      isValid: false
+    };
+  }
+
+  return {
+    lang,
+    viewType: 'class',
+    roomId: '504',
+    classId: '11-tn',
+    isLive: false,
+    isValid: true
+  };
 }
 
 export const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Universal Room State (from URL or localStorage)
-  const [selectedRoomId, setSelectedRoomId] = useState<string>(() => {
-    const route = parsePath(window.location.pathname);
-    return route.roomId || localStorage.getItem('tis_selected_room') || '504';
-  });
+  const initialRoute = parsePath(window.location.pathname);
 
-  const [selectedClassId, setSelectedClassId] = useState<string>(() => {
-    const route = parsePath(window.location.pathname);
-    return route.classId || localStorage.getItem('tis_selected_class') || '11-tn';
-  });
-
-  // Screen Mode: 'schedule' (full timetable) vs 'live-focus' (1 starting subject display)
-  const [screenMode, setScreenMode] = useState<'schedule' | 'live-focus'>(() => {
-    const route = parsePath(window.location.pathname);
-    if (route.isLive) return 'live-focus';
-    return (localStorage.getItem('tis_screen_mode') as 'schedule' | 'live-focus') || 'schedule';
-  });
+  // View Type: 'room' (single live subject only) vs 'class' (full timetable schedule like normal)
+  const [viewType, setViewType] = useState<'room' | 'class'>(initialRoute.viewType);
+  const [selectedRoomId, setSelectedRoomId] = useState<string>(initialRoute.roomId);
+  const [selectedClassId, setSelectedClassId] = useState<string>(initialRoute.classId);
+  const [language, setLanguage] = useState<Language>(initialRoute.lang);
 
   const [scheduleData, setScheduleData] = useState<ScheduleData | null>(() => {
     try {
       const route = parsePath(window.location.pathname);
-      const targetRoom = route.roomId || localStorage.getItem('tis_selected_room') || '504';
-      const cached = localStorage.getItem(`tis_room_cache_${targetRoom}`);
+      if (!route.isValid) {
+        return null;
+      }
+      const target = route.viewType === 'room' ? route.roomId : (CLASS_TO_ROOM_MAP[route.classId] || route.roomId);
+      const cached = localStorage.getItem(`tis_room_cache_${target}`);
       if (cached) {
         return JSON.parse(cached);
       }
-      return getFallbackRoomSchedule(targetRoom);
+      return getFallbackRoomSchedule(target);
     } catch (e) {
       return getFallbackRoomSchedule('504');
     }
-  });
-
-  const [language, setLanguage] = useState<Language>(() => {
-    const route = parsePath(window.location.pathname);
-    return route.lang || (localStorage.getItem('tis_language') as Language) || 'vi';
   });
 
   const [theme, setTheme] = useState<ThemeKey>(() => {
@@ -145,8 +220,8 @@ export const App: React.FC = () => {
 
   const [isRoomModalOpen, setIsRoomModalOpen] = useState<boolean>(() => {
     const route = parsePath(window.location.pathname);
-    if (route.roomId) return false;
-    return !localStorage.getItem('tis_selected_room');
+    if (route.roomId || route.classId) return false;
+    return !localStorage.getItem('tis_selected_room') && !localStorage.getItem('tis_selected_class');
   });
 
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
@@ -174,7 +249,7 @@ export const App: React.FC = () => {
     setShowIntroVideo(false);
   };
 
-  // 1. Initialize day, load weeks & fetch room schedule on startup immediately
+  // 1. Initialize day, load weeks & sync live schedule
   useEffect(() => {
     const currentVn = getVietnamTime();
     setVnTime(currentVn);
@@ -190,101 +265,123 @@ export const App: React.FC = () => {
       setSelectedDay(DAY_OF_WEEK_MAP[currentVn.dayOfWeek] || 'mon');
     }
 
-    if (!selectedRoomId) return;
-
-    // Discover all available week tabs & fetch room schedule immediately
+    // Discover all available week tabs & fetch schedule
     getAllSheetTabs().then((tabs) => {
       setAvailableWeeks(tabs);
       const latestGid = tabs[tabs.length - 1]?.gid || '676068602';
       setSelectedWeekGid(latestGid);
       
-      // Fetch live room schedule for selected room
-      fetchLiveRoomSchedule(latestGid, selectedRoomId).then((freshData) => {
-        if (freshData) {
-          try {
-            localStorage.setItem(`tis_room_cache_${selectedRoomId}`, JSON.stringify(freshData));
-          } catch (e) {}
-          setScheduleData(freshData);
-        } else {
-          const fallback = getFallbackRoomSchedule(selectedRoomId);
-          setScheduleData(fallback);
-        }
-      }).catch((e) => {
-        console.warn('Initial live room sync fallback:', e);
-        const fallback = getFallbackRoomSchedule(selectedRoomId);
-        setScheduleData(fallback);
-      });
+      if (viewType === 'room') {
+        if (!isKnownRoom(selectedRoomId)) return;
+        fetchLiveRoomSchedule(latestGid, selectedRoomId).then((freshData) => {
+          if (freshData) {
+            try {
+              localStorage.setItem(`tis_room_cache_${selectedRoomId}`, JSON.stringify(freshData));
+            } catch (e) {}
+            setScheduleData(freshData);
+          }
+        }).catch((e) => console.warn('Initial live room sync fallback:', e));
+      } else {
+        if (!isKnownClass(selectedClassId)) return;
+        fetchLiveSchedule(latestGid, selectedClassId).then((freshData) => {
+          if (freshData) {
+            try {
+              localStorage.setItem(`tis_room_cache_${selectedRoomId}`, JSON.stringify(freshData));
+            } catch (e) {}
+            setScheduleData(freshData);
+          }
+        }).catch((e) => console.warn('Initial live class sync fallback:', e));
+      }
     }).catch((e) => console.warn('Tabs fetch fallback:', e));
-  }, [selectedRoomId]);
+  }, [selectedRoomId, selectedClassId, viewType]);
 
   // Synchronize route changes from browser navigation / back / forward / deep links
   useEffect(() => {
     const route = parsePath(location.pathname);
 
-    if (route.lang && route.lang !== language) {
+    if (route.lang !== language) {
       setLanguage(route.lang);
       localStorage.setItem('tis_language', route.lang);
     }
 
-    if (route.roomId && route.roomId !== selectedRoomId) {
+    if (route.viewType !== viewType) {
+      setViewType(route.viewType);
+    }
+
+    if (route.roomId !== selectedRoomId) {
       setSelectedRoomId(route.roomId);
       localStorage.setItem('tis_selected_room', route.roomId);
       setIsRoomModalOpen(false);
     }
 
-    if (route.classId && route.classId !== selectedClassId) {
+    if (route.classId !== selectedClassId) {
       setSelectedClassId(route.classId);
       localStorage.setItem('tis_selected_class', route.classId);
     }
 
-    if (route.isLive !== (screenMode === 'live-focus')) {
-      setScreenMode(route.isLive ? 'live-focus' : 'schedule');
+    // Synchronously resolve fallback schedule data to avoid 404 flash
+    if (route.isValid) {
+      const target = route.viewType === 'room' ? route.roomId : (CLASS_TO_ROOM_MAP[route.classId] || route.roomId);
+      const cached = localStorage.getItem(`tis_room_cache_${target}`);
+      if (cached) {
+        try {
+          setScheduleData(JSON.parse(cached));
+        } catch (e) {
+          setScheduleData(getFallbackRoomSchedule(target));
+        }
+      } else {
+        const fallback = getFallbackRoomSchedule(target);
+        if (fallback) {
+          setScheduleData(fallback);
+        }
+      }
+    } else {
+      setScheduleData(null);
     }
 
     // Normalize URL
-    if (location.pathname === '/') {
-      const room = route.roomId || selectedRoomId || '504';
-      navigate(`/${route.lang || language}/room/${room}`, { replace: true });
+    if (location.pathname === '/' || location.pathname === `/${route.lang}`) {
+      navigate(`/${route.lang}/11-tn`, { replace: true });
     }
-  }, [location.pathname, language, selectedRoomId, selectedClassId, screenMode, navigate]);
+  }, [location.pathname, navigate]);
 
-  // Handle Room Selection
+  // Handle Room Selection: Navigates directly to Room Live View (Single live subject only)
   const handleSelectRoom = (roomId: string) => {
     const cleanId = roomId.trim().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
     setSelectedRoomId(cleanId);
+    setViewType('room');
     localStorage.setItem('tis_selected_room', cleanId);
     setIsRoomModalOpen(false);
 
-    // Immediate optimistic fallback display
-    const fallback = getFallbackRoomSchedule(cleanId);
-    setScheduleData(fallback);
+    const valid = isKnownRoom(cleanId);
+    if (valid) {
+      const fallback = getFallbackRoomSchedule(cleanId);
+      setScheduleData(fallback);
+    } else {
+      setScheduleData(null);
+    }
 
-    const targetUrl = `/${language}/room/${cleanId}${screenMode === 'live-focus' ? '/live' : ''}`;
+    const targetUrl = `/${language}/room/${cleanId}/live`;
     navigate(targetUrl);
 
-    // Background network sync
-    fetchLiveRoomSchedule(selectedWeekGid, cleanId).then((freshData) => {
-      if (freshData) {
-        try {
-          localStorage.setItem(`tis_room_cache_${cleanId}`, JSON.stringify(freshData));
-        } catch (e) {}
-        setScheduleData(freshData);
-      } else {
-        if (!fallback) {
-          setScheduleData(null);
+    if (valid) {
+      fetchLiveRoomSchedule(selectedWeekGid, cleanId).then((freshData) => {
+        if (freshData) {
+          try {
+            localStorage.setItem(`tis_room_cache_${cleanId}`, JSON.stringify(freshData));
+          } catch (e) {}
+          setScheduleData(freshData);
         }
-      }
-    }).catch(err => {
-      console.warn('Room fetch live error:', err);
-      if (!fallback) setScheduleData(null);
-    });
+      }).catch(err => console.warn('Room fetch live error:', err));
+    }
   };
 
-  // Handle Class Selection
+  // Handle Class Selection: Navigates to Class Timetable View (Full schedule as normal)
   const handleSelectClass = (classId: string, mappedRoomId?: string) => {
     const cleanRoom = mappedRoomId || CLASS_TO_ROOM_MAP[classId] || '504';
     setSelectedClassId(classId);
     setSelectedRoomId(cleanRoom);
+    setViewType('class');
     localStorage.setItem('tis_selected_class', classId);
     localStorage.setItem('tis_selected_room', cleanRoom);
     setIsRoomModalOpen(false);
@@ -292,10 +389,10 @@ export const App: React.FC = () => {
     const fallback = getFallbackRoomSchedule(cleanRoom);
     setScheduleData(fallback);
 
-    const targetUrl = `/${language}/room/${cleanRoom}${screenMode === 'live-focus' ? '/live' : ''}`;
+    const targetUrl = `/${language}/${classId}`;
     navigate(targetUrl);
 
-    fetchLiveRoomSchedule(selectedWeekGid, cleanRoom).then((freshData) => {
+    fetchLiveSchedule(selectedWeekGid, classId).then((freshData) => {
       if (freshData) {
         try {
           localStorage.setItem(`tis_room_cache_${cleanRoom}`, JSON.stringify(freshData));
@@ -305,30 +402,30 @@ export const App: React.FC = () => {
     }).catch(err => console.warn('Class fetch live error:', err));
   };
 
-  // Handle Screen Mode Switch
-  const handleScreenModeChange = (mode: 'schedule' | 'live-focus') => {
-    setScreenMode(mode);
-    localStorage.setItem('tis_screen_mode', mode);
-    const targetUrl = `/${language}/room/${selectedRoomId}${mode === 'live-focus' ? '/live' : ''}`;
-    navigate(targetUrl);
-  };
-
   // Handle Language Switch with Route Sync
   const handleLanguageChange = (newLang: Language) => {
     setLanguage(newLang);
     localStorage.setItem('tis_language', newLang);
-    const targetUrl = `/${newLang}/room/${selectedRoomId}${screenMode === 'live-focus' ? '/live' : ''}`;
-    navigate(targetUrl);
+    if (viewType === 'room') {
+      navigate(`/${newLang}/room/${selectedRoomId}/live`);
+    } else {
+      navigate(`/${newLang}/${selectedClassId}`);
+    }
   };
 
   // Handle Week Switch
   const handleSelectWeek = async (gid: string) => {
     setSelectedWeekGid(gid);
     try {
-      const freshData = await fetchLiveRoomSchedule(gid, selectedRoomId);
-      if (freshData) setScheduleData(freshData);
+      if (viewType === 'room') {
+        const freshData = await fetchLiveRoomSchedule(gid, selectedRoomId);
+        if (freshData) setScheduleData(freshData);
+      } else {
+        const freshData = await fetchLiveSchedule(gid, selectedClassId);
+        if (freshData) setScheduleData(freshData);
+      }
     } catch (e) {
-      console.warn('Week switch room fetch fallback:', e);
+      console.warn('Week switch fetch fallback:', e);
     }
   };
 
@@ -456,8 +553,7 @@ export const App: React.FC = () => {
             scheduleData={scheduleData}
             isMinimalMode={isMinimalMode}
             onToggleMinimalMode={handleToggleMinimalMode}
-            screenMode={screenMode}
-            onScreenModeChange={handleScreenModeChange}
+            viewType={viewType}
           />
         )}
 
@@ -509,9 +605,10 @@ export const App: React.FC = () => {
                   </button>
                 </div>
               </motion.div>
-            ) : screenMode === 'live-focus' ? (
+            ) : viewType === 'room' ? (
+              /* Dedicated Room Live View: ONLY single live subject, no calendar for whole day */
               <motion.div
-                key={`live-focus-${selectedRoomId}-${selectedDay}`}
+                key={`room-live-${selectedRoomId}-${selectedDay}`}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
@@ -524,12 +621,12 @@ export const App: React.FC = () => {
                   vnTime={vnTime}
                   selectedDay={selectedDay}
                   onOpenRoomSelector={() => setIsRoomModalOpen(true)}
-                  onSwitchToTableView={() => handleScreenModeChange('schedule')}
                 />
               </motion.div>
             ) : viewMode === 'timeline' ? (
+              /* Class View: Full Timetable Schedule like normal in the old code */
               <motion.div
-                key={`timeline-${selectedDay}-${selectedWeekGid}-${selectedRoomId}`}
+                key={`class-timeline-${selectedDay}-${selectedWeekGid}-${selectedClassId}`}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
@@ -549,12 +646,12 @@ export const App: React.FC = () => {
                   isMinimalMode={isMinimalMode}
                   onToggleMinimalMode={handleToggleMinimalMode}
                   onOpenRoomSelector={() => setIsRoomModalOpen(true)}
-                  onSwitchToLiveFocus={() => handleScreenModeChange('live-focus')}
                 />
               </motion.div>
             ) : (
+              /* Class View: Full Week Grid Matrix */
               <motion.div
-                key={`matrix-${selectedWeekGid}-${selectedRoomId}`}
+                key={`class-matrix-${selectedWeekGid}-${selectedClassId}`}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}

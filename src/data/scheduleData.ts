@@ -871,6 +871,18 @@ export const SUBJECT_METADATA: Record<SubjectType, {
 
 export function getFallbackRoomSchedule(roomId: string = '504'): ScheduleData | null {
   const cleanId = roomId.trim().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
+  const classToRoomFallback: Record<string, string> = {
+    '6': '501',
+    '7': '502',
+    '8': '4010',
+    '9': '4011',
+    '10-tn': '4012',
+    '10-nt': '307',
+    '11-tn': '504',
+    '12-tn': '503'
+  };
+
+  const resolvedRoomId = classToRoomFallback[cleanId.toLowerCase()] || cleanId;
   const roomMeta: Record<string, { floorVi: string; floorEn: string; classVi: string; classEn: string; teacher: string }> = {
     '504': { floorVi: 'Tầng 5', floorEn: 'Floor 5', classVi: 'Lớp 11-TN', classEn: 'Grade 11-TN', teacher: 'Cô Tiềng' },
     '4012': { floorVi: 'Tầng 4', floorEn: 'Floor 4', classVi: 'Lớp 10-TN', classEn: 'Grade 10-TN', teacher: 'Cô Đặng' },
@@ -882,7 +894,7 @@ export function getFallbackRoomSchedule(roomId: string = '504'): ScheduleData | 
     '501': { floorVi: 'Tầng 5', floorEn: 'Floor 5', classVi: 'Lớp 6', classEn: 'Grade 6', teacher: 'Cô Uyển Nhi' },
   };
 
-  const meta = roomMeta[cleanId];
+  const meta = roomMeta[resolvedRoomId];
   if (!meta) {
     // Room is not in the recognized roster; do not generate fake schedule
     return null;

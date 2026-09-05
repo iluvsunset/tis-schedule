@@ -633,7 +633,8 @@ export async function fetchLiveRoomSchedule(
 
   const cacheKey = `room-${activeGid}-${cleanTarget}`;
   if (scheduleCache.has(cacheKey)) {
-    return scheduleCache.get(cacheKey)!;
+    const cached = scheduleCache.get(cacheKey);
+    if (cached) return cached;
   }
   if (inFlightSchedules.has(cacheKey)) {
     return inFlightSchedules.get(cacheKey)!;
@@ -647,12 +648,16 @@ export async function fetchLiveRoomSchedule(
 
       const csvText = await res.text();
       const parsed = parseSheetCSVForRoom(csvText, cleanTarget);
-      if (!parsed) {
-        // Room not found in live sheet
-        return null;
+      if (parsed) {
+        scheduleCache.set(cacheKey, parsed);
+        return parsed;
       }
-      scheduleCache.set(cacheKey, parsed);
-      return parsed;
+      const fallback = getFallbackRoomSchedule(cleanTarget);
+      if (fallback) {
+        scheduleCache.set(cacheKey, fallback);
+        return fallback;
+      }
+      return null;
     } catch (e) {
       console.warn(`Falling back to static schedule for room ${cleanTarget}:`, e);
       return getFallbackRoomSchedule(cleanTarget);

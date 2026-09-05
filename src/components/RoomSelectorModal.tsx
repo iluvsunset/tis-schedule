@@ -29,21 +29,20 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
   onLanguageChange,
   allowClose = true
 }) => {
-  const [typedRoom, setTypedRoom] = useState(selectedRoomId || '');
+  const [typedRoom, setTypedRoom] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto focus input whenever modal opens and select text for fast typing
+  // Auto focus input whenever modal opens, keeping it blank without auto typing
   useEffect(() => {
     if (isOpen) {
-      setTypedRoom(selectedRoomId || '');
+      setTypedRoom('');
       setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.focus();
-          inputRef.current.select();
         }
       }, 50);
     }
-  }, [isOpen, selectedRoomId]);
+  }, [isOpen]);
 
   const cleanTypedId = useMemo(() => {
     return typedRoom.trim().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
@@ -171,12 +170,9 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
               {/* LEFT PANEL: Room Number Type-In (Centered Box) */}
               <div className="p-6 sm:p-8 flex flex-col justify-between space-y-6">
                 <div>
-                  <div className="space-y-1 mb-6 text-center sm:text-left">
-                    <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-slate-400 dark:text-slate-400 font-bold">
-                      {language === 'vi' ? 'GÕ SỐ PHÒNG TRÊN BÀN PHÍM' : 'TYPE ROOM NUMBER ON KEYBOARD'}
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {language === 'vi' ? 'Nhập mã phòng để tra cứu lịch phòng học trực tiếp' : 'Enter room number to view timetable'}
+                  <div className="mb-5 text-center sm:text-left">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                      {language === 'vi' ? 'Nhập mã phòng để tra cứu lịch phòng học trực tiếp' : 'Enter room number to view live room schedule'}
                     </p>
                   </div>
 

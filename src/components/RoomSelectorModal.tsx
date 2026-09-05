@@ -77,12 +77,6 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
     }
   };
 
-  const handlePickRoomChip = (roomId: string) => {
-    setTypedRoom(roomId);
-    onSelectRoom(roomId);
-    onClose();
-  };
-
   const handlePickClass = (c: ClassInfo) => {
     if (onSelectClass) {
       onSelectClass(c.id, c.room);
@@ -168,7 +162,7 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-100 dark:divide-slate-800/80 overflow-y-auto">
               
               {/* LEFT PANEL: Room Number Type-In (Centered Box) */}
-              <div className="p-6 sm:p-8 flex flex-col justify-between space-y-6">
+              <div className="p-6 sm:p-8 flex flex-col justify-center space-y-6">
                 <div>
                   <div className="mb-5 text-center sm:text-left">
                     <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
@@ -196,7 +190,7 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                     </div>
 
                     {/* Room Resolution / Real-time Feedback */}
-                    <div className="min-h-10 flex items-center justify-center text-center px-2">
+                    <div className="min-h-6 flex items-center justify-center text-center px-2">
                       {matchedRoom ? (
                         <div className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-medium">
                           ✓ {language === 'vi' ? matchedRoom.nameVi : matchedRoom.nameEn} · {language === 'vi' ? matchedRoom.defaultClassVi : matchedRoom.defaultClassEn} ({language === 'vi' ? 'Nhấn Enter ↵' : 'Press Enter ↵'})
@@ -207,11 +201,7 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                             ? `Không tìm thấy phòng "${cleanTypedId}". Vui lòng thử lại hoặc chọn theo Lớp học bên phải ➔` 
                             : `Room "${cleanTypedId}" not found. Please try again or select your class on the right ➔`}
                         </div>
-                      ) : (
-                        <div className="text-[11px] font-mono text-slate-400 dark:text-slate-500">
-                          {language === 'vi' ? 'Gợi ý: 504, 4012, 307, 4010, 4011, 503, 502, 501' : 'Examples: 504, 4012, 307, 4010, 4011, 503, 502, 501'}
-                        </div>
-                      )}
+                      ) : null}
                     </div>
 
                     {/* Submit Button */}
@@ -227,32 +217,6 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                           : (language === 'vi' ? 'Nhập số phòng...' : 'Enter room...')}
                     </button>
                   </form>
-                </div>
-
-                {/* Quick Room Suggestions */}
-                <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
-                    {language === 'vi' ? 'HOẶC CHỌN NHANH PHÒNG:' : 'OR QUICK CHOOSE ROOM:'}
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {rooms.map(r => {
-                      const isSelected = r.id === selectedRoomId;
-                      return (
-                        <button
-                          key={r.id}
-                          type="button"
-                          onClick={() => handlePickRoomChip(r.id)}
-                          className={`px-2.5 py-1 rounded-lg text-xs font-mono transition cursor-pointer ${
-                            isSelected
-                              ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold'
-                              : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
-                          }`}
-                        >
-                          P.{r.id}
-                        </button>
-                      );
-                    })}
-                  </div>
                 </div>
               </div>
 

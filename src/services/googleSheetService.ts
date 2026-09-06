@@ -284,16 +284,20 @@ export function getAvailableRoomsFromCSV(rows: string[][]): RoomInfo[] {
       const rawTeacher = (teacherRow[c] || '').trim();
       const homeroomTeacher = rawTeacher.replace(/^[CT]\.\s*/i, (m) => m.toUpperCase().startsWith('C') ? 'Cô ' : 'Thầy ');
       
-      const floorVi = roomId.startsWith('5') ? 'Tầng 5' : roomId.startsWith('4') ? 'Tầng 4' : roomId.startsWith('3') ? 'Tầng 3' : 'Tầng TIS';
-      const floorEn = roomId.startsWith('5') ? 'Floor 5' : roomId.startsWith('4') ? 'Floor 4' : roomId.startsWith('3') ? 'Floor 3' : 'Floor TIS';
+      const isPsychology = roomId.toLowerCase().includes('tâm lý') || roomId.toLowerCase().includes('tam ly');
+      const floorVi = roomId.startsWith('5') ? 'Tầng 5' : roomId.startsWith('4') ? 'Tầng 4' : roomId.startsWith('3') ? 'Tầng 3' : (isPsychology ? 'Tầng 5' : 'Tầng TIS');
+      const floorEn = roomId.startsWith('5') ? 'Floor 5' : roomId.startsWith('4') ? 'Floor 4' : roomId.startsWith('3') ? 'Floor 3' : (isPsychology ? 'Floor 5' : 'Floor TIS');
+
+      const nameVi = isPsychology ? 'P. Tâm lý học đường' : (roomId.toLowerCase().startsWith('phòng') || roomId.toLowerCase().startsWith('p.') ? roomId : `Phòng ${roomId}`);
+      const nameEn = isPsychology ? 'Psychology Room' : `Room ${roomId.replace(/^p\.?\s*/i, '')}`;
 
       const classVi = rawClass.split('\n')[0] || `Lớp ${roomId}`;
       const classEn = rawClass.split('\n')[1] || classVi;
 
       roomsMap.set(roomId, {
         id: roomId,
-        nameVi: `Phòng ${roomId}`,
-        nameEn: `Room ${roomId}`,
+        nameVi,
+        nameEn,
         floorVi,
         floorEn,
         defaultClassVi: classVi,
@@ -317,17 +321,17 @@ export function getAvailableRoomsFromCSV(rows: string[][]): RoomInfo[] {
  */
 export const detectSubjectType = (text: string): SubjectType => {
   const t = text.toLowerCase();
+  if (t.includes('nghỉ lễ') || t.includes('dã ngoại') || t.includes('field trip') || t.includes('khai giảng') || t.includes('good morning') || t.includes('rehearsal') || t.includes('hội đồng')) return 'event';
+  if (t.includes('shl') || t.includes('sinh hoạt') || t.includes('hướng nghiệp') || t.includes('hđtn')) return 'homeroom';
   if (t.includes('toán') || t.includes('math')) return 'math';
   if (t.includes('anh') || t.includes('eng') || t.includes('level')) return 'english';
   if (t.includes('văn') || t.includes('lit')) return 'literature';
   if (t.includes('lý') || t.includes('phy') || t.includes('khtn (lý)')) return 'physics';
   if (t.includes('hóa') || t.includes('chem') || t.includes('khtn (hóa)')) return 'chemistry';
-  if (t.includes('sinh') || t.includes('bio') || t.includes('khtn (sinh)')) return 'biology';
+  if (t.includes('sinh học') || t.includes('bio') || t.includes('khtn (sinh)') || (/\bsinh\b/i.test(t) && !t.includes('sinh hoạt'))) return 'biology';
   if (t.includes('tin') || t.includes('cs') || t.includes('ict') || t.includes('computer')) return 'cs';
   if (t.includes('science') || t.includes('khtn')) return 'science';
   if (t.includes('gdtc') || t.includes('thể chất') || t.includes('pe') || t.includes('bóng')) return 'pe';
-  if (t.includes('shl') || t.includes('sinh hoạt') || t.includes('hướng nghiệp') || t.includes('hđtn')) return 'homeroom';
-  if (t.includes('khai giảng') || t.includes('good morning') || t.includes('rehearsal') || t.includes('nghỉ lễ') || t.includes('hội đồng')) return 'event';
   return 'event';
 };
 
@@ -378,6 +382,16 @@ export const cleanSubjectName = (raw: string): { vi: string; en: string; teacher
       vi: 'Sinh Hoạt Đầu Tuần (Good Morning)',
       en: 'Morning Assembly (Good Morning)',
       teacher: 'Toàn Trường',
+      note: lines.join(' • ')
+    };
+  }
+
+  // Field Trip / Dã Ngoại
+  if (/dã ngoại|field trip/i.test(firstLine)) {
+    return {
+      vi: 'Dã Ngoại Đợt 1 (Field Trip)',
+      en: '1st Field Trip',
+      teacher: 'Toàn Trường (All School)',
       note: lines.join(' • ')
     };
   }
@@ -523,15 +537,23 @@ export function parseSheetCSV(csvText: string, targetClassId: string = '11-tn'):
     const startRow = section.startRow;
     const nextDayStartRow = (d < daySections.length - 1) ? daySections[d + 1].startRow : rows.length;
 
-    // Check if entire day is a national holiday
+    // Check if entire day is a national holiday / field trip
     let dayHolidayText = '';
     for (let r = startRow + 1; r < nextDayStartRow; r++) {
-      const found = rows[r].find(c => /nghỉ lễ/i.test(c || ''));
+      const found = rows[r].find(c => /nghỉ lễ|dã ngoại|field trip/i.test(c || ''));
       if (found) {
         dayHolidayText = found;
         break;
       }
     }
+
+    const formatTime = (t: string) => {
+      const [h, m] = (t || '0:0').split(':').map(Number);
+      return `${String(h || 0).padStart(2, '0')}:${String(m || 0).padStart(2, '0')}`;
+    };
+
+    let activeSpanningEvent: string | null = null;
+    let spanningEventEndTime: string | null = null;
 
     let currentSession: 'morning' | 'afternoon' = 'morning';
     const morningItems: ScheduleItem[] = [];
@@ -562,19 +584,38 @@ export function parseSheetCSV(csvText: string, targetClassId: string = '11-tn'):
 
       if (!timeText) continue;
 
+      const timeParts = timeText.split('-').map(t => t.trim());
+      const startTime = formatTime(timeParts[0]);
+      const endTime = formatTime(timeParts[1]);
+
       let cellValue = (row[gradeCol] || '').trim();
 
-      // If whole day holiday, propagate
+      // If whole day holiday / field trip, propagate
       if (dayHolidayText) {
         cellValue = dayHolidayText;
       } else if (!cellValue) {
         // Check for whole-school event across class columns
         const wholeSchoolEvent = row.slice(firstClassCol).find(c => {
           const u = (c || '').toUpperCase();
-          return u.includes('NGHỈ LỄ') || u.includes('KHAI GIẢNG') || u.includes('REHEARSAL') || u.includes('GOOD MORNING') || u.includes('HỘI ĐỒNG');
+          return u.includes('NGHỈ LỄ') || u.includes('KHAI GIẢNG') || u.includes('REHEARSAL') || u.includes('GOOD MORNING') || u.includes('DÃ NGOẠI') || u.includes('FIELD TRIP') || u.includes('HỘI ĐỒNG');
         });
         if (wholeSchoolEvent) {
           cellValue = wholeSchoolEvent;
+        } else if (activeSpanningEvent && spanningEventEndTime && startTime < spanningEventEndTime) {
+          // Inherit vertically merged spanning event (e.g. Good Morning 07:40 - 09:00 covering Period 2)
+          cellValue = activeSpanningEvent;
+        }
+      }
+
+      // Track spanning multi-period event
+      if (cellValue) {
+        const spanMatch = cellValue.match(/(\d{1,2}:\d{2})\s*[-–—]\s*(\d{1,2}:\d{2})/);
+        if (spanMatch) {
+          activeSpanningEvent = cellValue;
+          spanningEventEndTime = formatTime(spanMatch[2]);
+        } else if (!cellValue.toUpperCase().includes('GOOD MORNING')) {
+          activeSpanningEvent = null;
+          spanningEventEndTime = null;
         }
       }
 
@@ -582,14 +623,6 @@ export function parseSheetCSV(csvText: string, targetClassId: string = '11-tn'):
         (currentSession === 'morning' 
           ? morningItems.filter(i => i.period !== 'recess').length + 1 
           : afternoonItems.filter(i => i.period !== 'recess').length + 1);
-
-      const timeParts = timeText.split('-').map(t => t.trim());
-      const formatTime = (t: string) => {
-        const [h, m] = t.split(':').map(Number);
-        return `${String(h || 0).padStart(2, '0')}:${String(m || 0).padStart(2, '0')}`;
-      };
-      const startTime = formatTime(timeParts[0]);
-      const endTime = formatTime(timeParts[1]);
 
       const cleaned = cleanSubjectName(cellValue);
       const subType = detectSubjectType(cleaned.vi + ' ' + cleaned.note);
@@ -722,14 +755,39 @@ export async function fetchLiveSchedule(
 }
 
 /**
+ * Normalizes room identifiers for flexible comparison (ignoring diacritics, prefixes, symbols)
+ */
+export function normalizeRoomId(roomId: string): string {
+  return (roomId || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/^phòng\s*/i, '')
+    .replace(/^room\s*/i, '')
+    .replace(/^p\.?\s*/i, '')
+    .replace(/[^a-z0-9]/g, '');
+}
+
+/**
  * Parses raw CSV content dynamically for any specified Room
  */
 export function parseSheetCSVForRoom(csvText: string, targetRoomId: string = '504'): ScheduleData | null {
-  const cleanTarget = targetRoomId.trim().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
+  const normTarget = normalizeRoomId(targetRoomId);
   const rows = parseCSVTokens(csvText);
   const availableRooms = getAvailableRoomsFromCSV(rows);
-  const matchedRoom = availableRooms.find(r => r.id.toLowerCase() === cleanTarget.toLowerCase())
-    || INITIAL_ROOMS.find(r => r.id.toLowerCase() === cleanTarget.toLowerCase());
+
+  const isRoomMatch = (candidateId: string) => {
+    const norm = normalizeRoomId(candidateId);
+    if (!norm || !normTarget) return false;
+    if (norm === normTarget) return true;
+    // Psychology room aliases
+    if ((normTarget === 'tamly' || normTarget === 'tl') && norm.includes('tamly')) return true;
+    if ((norm === 'tamly' || norm === 'tl') && normTarget.includes('tamly')) return true;
+    return (normTarget.length >= 3 && norm.includes(normTarget)) || (norm.length >= 3 && normTarget.includes(norm));
+  };
+
+  const matchedRoom = availableRooms.find(r => isRoomMatch(r.id))
+    || INITIAL_ROOMS.find(r => isRoomMatch(r.id));
 
   // Strict check: if room is not found, return null
   if (!matchedRoom) {
@@ -737,8 +795,12 @@ export function parseSheetCSVForRoom(csvText: string, targetRoomId: string = '50
   }
 
   const availableClasses = getAvailableClassesFromCSV(rows);
-  const matchedClass = availableClasses.find(c => (c.room || '').toLowerCase() === matchedRoom.id.toLowerCase())
-    || availableClasses[0];
+  const matchedClass = availableClasses.find(c => {
+    if (!c.room) return false;
+    const cNorm = normalizeRoomId(c.room);
+    const mNorm = normalizeRoomId(matchedRoom.id);
+    return cNorm === mNorm || (cNorm.length >= 3 && mNorm.includes(cNorm)) || (mNorm.length >= 3 && cNorm.includes(mNorm));
+  }) || availableClasses[0];
 
   // Base schedule for the primary class in this room
   const baseSchedule = parseSheetCSV(csvText, matchedClass ? matchedClass.id : '11-tn');
@@ -788,7 +850,7 @@ export async function fetchLiveRoomSchedule(
   targetRoomId: string = '504',
   sheetId: string = DEFAULT_CONFIG.sheetId
 ): Promise<ScheduleData | null> {
-  const cleanTarget = targetRoomId.trim().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
+  const normTarget = normalizeRoomId(targetRoomId);
   let activeGid = gid;
   if (!activeGid) {
     const latest = await getLatestSheetTab(sheetId);
@@ -799,7 +861,7 @@ export async function fetchLiveRoomSchedule(
     activeGid = allTabs[allTabs.length - 1]?.gid || '1209587897';
   }
 
-  const cacheKey = `room-${activeGid}-${cleanTarget}`;
+  const cacheKey = `room-${activeGid}-${normTarget}`;
   if (scheduleCache.has(cacheKey)) {
     const cached = scheduleCache.get(cacheKey);
     if (cached) return cached;
@@ -815,20 +877,20 @@ export async function fetchLiveRoomSchedule(
       if (!res.ok) throw new Error(`Failed to fetch CSV: ${res.statusText}`);
 
       const csvText = await res.text();
-      const parsed = parseSheetCSVForRoom(csvText, cleanTarget);
+      const parsed = parseSheetCSVForRoom(csvText, targetRoomId);
       if (parsed) {
         scheduleCache.set(cacheKey, parsed);
         return parsed;
       }
-      const fallback = getFallbackRoomSchedule(cleanTarget);
+      const fallback = getFallbackRoomSchedule(targetRoomId) || getFallbackRoomSchedule(normTarget);
       if (fallback) {
         scheduleCache.set(cacheKey, fallback);
         return fallback;
       }
       return null;
     } catch (e) {
-      console.warn(`Falling back to static schedule for room ${cleanTarget}:`, e);
-      return getFallbackRoomSchedule(cleanTarget);
+      console.warn(`Falling back to static schedule for room ${targetRoomId}:`, e);
+      return getFallbackRoomSchedule(targetRoomId) || getFallbackRoomSchedule(normTarget);
     } finally {
       inFlightSchedules.delete(cacheKey);
     }

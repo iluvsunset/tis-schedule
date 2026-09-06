@@ -50,7 +50,22 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
 
   const matchedRoom = useMemo(() => {
     if (!cleanTypedId) return null;
-    return rooms.find(r => r.id.toLowerCase() === cleanTypedId.toLowerCase()) || null;
+    const cleanLower = cleanTypedId.toLowerCase();
+    const cleanNoDiacritics = cleanLower.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return rooms.find(r => {
+      const rIdClean = r.id.toLowerCase().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
+      const rNameClean = r.nameVi.toLowerCase().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
+      const rNameEn = r.nameEn.toLowerCase();
+      const rNoDiacritics = rNameClean.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+      return rIdClean === cleanLower ||
+             rNameClean === cleanLower ||
+             rNameEn === cleanLower ||
+             rNoDiacritics === cleanNoDiacritics ||
+             rNoDiacritics.includes(cleanNoDiacritics) ||
+             (cleanNoDiacritics === 'tl' && rNoDiacritics.includes('tam ly')) ||
+             (cleanNoDiacritics === 'tam ly' && rNoDiacritics.includes('tam ly'));
+    }) || null;
   }, [rooms, cleanTypedId]);
 
   // Is typed room valid or invalid?
@@ -176,11 +191,11 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                       <input
                         ref={inputRef}
                         type="text"
-                        inputMode="numeric"
+                        inputMode="text"
                         value={typedRoom}
                         onChange={(e) => setTypedRoom(e.target.value)}
-                        placeholder="4012"
-                        className={`w-full text-center py-4 px-6 text-3xl sm:text-4xl font-mono font-bold tracking-widest text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/90 border-2 rounded-[22px] outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-inner ${
+                        placeholder={language === 'vi' ? "504, 4012, Tâm lý..." : "504, 4012, Psychology..."}
+                        className={`w-full text-center py-4 px-6 text-2xl sm:text-3xl font-mono font-bold tracking-wider text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/90 border-2 rounded-[22px] outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-inner ${
                           isTypedInvalid
                             ? 'border-rose-400 dark:border-rose-500/80 ring-2 ring-rose-400/20'
                             : 'border-slate-300 dark:border-slate-700/90 focus:border-slate-900 dark:focus:border-slate-300'
@@ -258,12 +273,12 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                                 <span className="font-bold text-xs sm:text-sm">
                                   {language === 'vi' ? c.nameVi : c.nameEn}
                                 </span>
-                                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded shrink-0 max-w-[120px] truncate ${
                                   isCurrent
                                     ? 'bg-white/20 text-white dark:bg-slate-900/20 dark:text-slate-900 font-bold'
                                     : 'bg-slate-200/70 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                                 }`}>
-                                  P.{c.room}
+                                  {c.room.startsWith('P.') || c.room.startsWith('Phòng') ? c.room : `P.${c.room}`}
                                 </span>
                               </div>
                               <span className={`text-[11px] truncate mt-1 ${isCurrent ? 'text-white/70 dark:text-slate-900/70' : 'text-slate-500 dark:text-slate-400'}`}>
@@ -298,12 +313,12 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                                 <span className="font-bold text-xs sm:text-sm">
                                   {language === 'vi' ? c.nameVi : c.nameEn}
                                 </span>
-                                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded shrink-0 max-w-[120px] truncate ${
                                   isCurrent
                                     ? 'bg-white/20 text-white dark:bg-slate-900/20 dark:text-slate-900 font-bold'
                                     : 'bg-slate-200/70 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                                 }`}>
-                                  P.{c.room}
+                                  {c.room.startsWith('P.') || c.room.startsWith('Phòng') ? c.room : `P.${c.room}`}
                                 </span>
                               </div>
                               <span className={`text-[11px] truncate mt-1 ${isCurrent ? 'text-white/70 dark:text-slate-900/70' : 'text-slate-500 dark:text-slate-400'}`}>

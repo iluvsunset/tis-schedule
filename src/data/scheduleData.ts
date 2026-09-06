@@ -877,16 +877,25 @@ export function getFallbackRoomSchedule(roomId: string = '504'): ScheduleData | 
     '8': '4010',
     '9': '4011',
     '10-tn': '4012',
+    '10.1-tn': '4012',
     '10-nt': '307',
+    '10.2-nt': '307',
     '11-tn': '504',
+    '11.1-tn': '504',
+    '11.2-xh': 'P. Tâm lý học đường',
+    '11.2-tn': 'P. Tâm lý học đường',
     '12-tn': '503'
   };
 
   const resolvedRoomId = classToRoomFallback[cleanId.toLowerCase()] || cleanId;
   const roomMeta: Record<string, { floorVi: string; floorEn: string; classVi: string; classEn: string; teacher: string }> = {
-    '504': { floorVi: 'Tầng 5', floorEn: 'Floor 5', classVi: 'Lớp 11-TN', classEn: 'Grade 11-TN', teacher: 'Cô Tiềng' },
-    '4012': { floorVi: 'Tầng 4', floorEn: 'Floor 4', classVi: 'Lớp 10-TN', classEn: 'Grade 10-TN', teacher: 'Cô Đặng' },
-    '307': { floorVi: 'Tầng 3', floorEn: 'Floor 3', classVi: 'Lớp 10-TN & NT', classEn: 'Grade 10-TN & NT', teacher: 'Cô Đặng' },
+    '504': { floorVi: 'Tầng 5', floorEn: 'Floor 5', classVi: 'Lớp 11.1-TN', classEn: 'Grade 11.1-TN', teacher: 'Cô Tiềng' },
+    'P. Tâm lý học đường': { floorVi: 'Tầng 5', floorEn: 'Floor 5', classVi: 'Lớp 11.2-TN & XH', classEn: 'Grade 11.2-TN & XH', teacher: 'Cô Tiềng' },
+    'p. tâm lý học đường': { floorVi: 'Tầng 5', floorEn: 'Floor 5', classVi: 'Lớp 11.2-TN & XH', classEn: 'Grade 11.2-TN & XH', teacher: 'Cô Tiềng' },
+    'tâm lý học đường': { floorVi: 'Tầng 5', floorEn: 'Floor 5', classVi: 'Lớp 11.2-TN & XH', classEn: 'Grade 11.2-TN & XH', teacher: 'Cô Tiềng' },
+    'tam-ly': { floorVi: 'Tầng 5', floorEn: 'Floor 5', classVi: 'Lớp 11.2-TN & XH', classEn: 'Grade 11.2-TN & XH', teacher: 'Cô Tiềng' },
+    '4012': { floorVi: 'Tầng 4', floorEn: 'Floor 4', classVi: 'Lớp 10.1-TN', classEn: 'Grade 10.1-TN', teacher: 'Cô Đặng' },
+    '307': { floorVi: 'Tầng 3', floorEn: 'Floor 3', classVi: 'Lớp 10.2-TN & NT', classEn: 'Grade 10.2-TN & NT', teacher: 'Cô Đặng' },
     '4010': { floorVi: 'Tầng 4', floorEn: 'Floor 4', classVi: 'Lớp 8', classEn: 'Grade 8', teacher: 'Cô Thuận' },
     '4011': { floorVi: 'Tầng 4', floorEn: 'Floor 4', classVi: 'Lớp 9', classEn: 'Grade 9', teacher: 'Thầy Quân' },
     '503': { floorVi: 'Tầng 5', floorEn: 'Floor 5', classVi: 'Lớp 12-TN', classEn: 'Grade 12-TN', teacher: 'Thầy Kiên' },
@@ -900,12 +909,17 @@ export function getFallbackRoomSchedule(roomId: string = '504'): ScheduleData | 
     return null;
   }
 
+  const isPsychology = cleanId.toLowerCase().includes('tâm lý') || cleanId.toLowerCase().includes('tam ly') || cleanId.toLowerCase() === 'tam-ly';
+  const displayRoomId = isPsychology ? 'P. Tâm lý học đường' : cleanId;
+  const roomNameVi = isPsychology ? 'P. Tâm lý học đường' : `Phòng ${cleanId}`;
+  const roomNameEn = isPsychology ? 'School Psychology Office' : `Room ${cleanId}`;
+
   return {
     ...SCHEDULE_DATA,
-    roomId: cleanId,
-    room: cleanId,
-    roomNameVi: `Phòng ${cleanId}`,
-    roomNameEn: `Room ${cleanId}`,
+    roomId: displayRoomId,
+    room: displayRoomId,
+    roomNameVi,
+    roomNameEn,
     floorVi: meta.floorVi,
     floorEn: meta.floorEn,
     gradeTitleVi: meta.classVi,

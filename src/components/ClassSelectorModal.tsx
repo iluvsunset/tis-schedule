@@ -124,6 +124,14 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
 
   const questionText = language === 'vi' ? 'Bạn học ở lớp nào?' : 'Which class are you in?';
 
+  const formatRoomLabel = (room: string) => {
+    if (!room) return '';
+    if (/^p\./i.test(room) || /^phòng/i.test(room)) {
+      return language === 'vi' ? room : room.replace(/^p\.\s*/i, 'Room ').replace(/^phòng\s*/i, 'Room ');
+    }
+    return `${language === 'vi' ? 'Phòng' : 'Room'} ${room}`;
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -215,7 +223,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                     </span>
                     {selectedClass && (
                       <span className="text-xs text-slate-400 dark:text-slate-500 truncate">
-                        {language === 'vi' ? 'Phòng' : 'Room'} {selectedClass.room} • {selectedClass.homeroomTeacher}
+                        {formatRoomLabel(selectedClass.room)} • {selectedClass.homeroomTeacher}
                       </span>
                     )}
                   </div>
@@ -283,12 +291,12 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                              {language === 'vi' ? 'Phòng' : 'Room'} {c.room}
+                          <div className="flex items-center gap-2 shrink-0 ml-2">
+                            <span className="text-xs font-mono text-slate-500 dark:text-slate-400 text-right max-w-[130px] truncate">
+                              {formatRoomLabel(c.room)}
                             </span>
                             {isSelected && (
-                              <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/15 dark:bg-amber-400/10">
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/15 dark:bg-amber-400/10 shrink-0">
                                 {language === 'vi' ? 'Đang chọn' : 'Selected'}
                               </span>
                             )}
@@ -330,12 +338,12 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                              {language === 'vi' ? 'Phòng' : 'Room'} {c.room}
+                          <div className="flex items-center gap-2 shrink-0 ml-2">
+                            <span className="text-xs font-mono text-slate-500 dark:text-slate-400 text-right max-w-[130px] truncate">
+                              {formatRoomLabel(c.room)}
                             </span>
                             {isSelected && (
-                              <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/15 dark:bg-amber-400/10">
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/15 dark:bg-amber-400/10 shrink-0">
                                 {language === 'vi' ? 'Đang chọn' : 'Selected'}
                               </span>
                             )}

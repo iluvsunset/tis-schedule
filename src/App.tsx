@@ -38,7 +38,8 @@ export const CLASS_TO_ROOM_MAP: Record<string, string> = {
   '10.2-nt': '307',
   '11-tn': '504',
   '11.1-tn': '504',
-  '11.2-xh': '504',
+  '11.2-xh': 'P. Tâm lý học đường',
+  '11.2-tn': 'P. Tâm lý học đường',
   '12-tn': '503'
 };
 
@@ -47,15 +48,27 @@ export const ROOM_TO_CLASS_MAP: Record<string, string> = {
   '502': '7',
   '4010': '8',
   '4011': '9',
-  '4012': '10-tn',
-  '307': '10-nt',
-  '504': '11-tn',
+  '4012': '10.1-tn',
+  '307': '10.2-nt',
+  '504': '11.1-tn',
+  'p. tâm lý học đường': '11.2-xh',
+  'tâm lý học đường': '11.2-xh',
+  'tam-ly': '11.2-xh',
+  'tl': '11.2-xh',
   '503': '12-tn'
 };
 
 export function isKnownRoom(roomId: string): boolean {
   const clean = roomId.trim().toLowerCase().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
-  return Boolean(ROOM_TO_CLASS_MAP[clean] || INITIAL_ROOMS.some(r => r.id.toLowerCase() === clean));
+  const raw = roomId.trim().toLowerCase();
+  return Boolean(
+    ROOM_TO_CLASS_MAP[clean] || 
+    ROOM_TO_CLASS_MAP[raw] || 
+    INITIAL_ROOMS.some(r => {
+      const rClean = r.id.toLowerCase().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
+      return r.id.toLowerCase() === raw || rClean === clean || r.nameVi.toLowerCase() === raw || r.nameEn.toLowerCase() === raw;
+    })
+  );
 }
 
 export function isKnownClass(classId: string): boolean {

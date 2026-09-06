@@ -122,9 +122,10 @@ export interface RoomInfo {
 }
 
 export const INITIAL_ROOMS: RoomInfo[] = [
-  { id: '504', nameVi: 'Phòng 504', nameEn: 'Room 504', floorVi: 'Tầng 5', floorEn: 'Floor 5', defaultClassVi: 'Lớp 11-TN', defaultClassEn: 'Grade 11-TN', homeroomTeacher: 'Cô Tiềng' },
-  { id: '4012', nameVi: 'Phòng 4012', nameEn: 'Room 4012', floorVi: 'Tầng 4', floorEn: 'Floor 4', defaultClassVi: 'Lớp 10-TN', defaultClassEn: 'Grade 10-TN', homeroomTeacher: 'Cô Đặng' },
-  { id: '307', nameVi: 'Phòng 307', nameEn: 'Room 307', floorVi: 'Tầng 3', floorEn: 'Floor 3', defaultClassVi: 'Lớp 10-TN & NT', defaultClassEn: 'Grade 10-TN & NT', homeroomTeacher: 'Cô Đặng' },
+  { id: '504', nameVi: 'Phòng 504', nameEn: 'Room 504', floorVi: 'Tầng 5', floorEn: 'Floor 5', defaultClassVi: 'Lớp 11.1-TN', defaultClassEn: 'Grade 11.1-TN', homeroomTeacher: 'Cô Tiềng' },
+  { id: 'P. Tâm lý học đường', nameVi: 'P. Tâm lý học đường', nameEn: 'Psychology Room', floorVi: 'Tầng 5', floorEn: 'Floor 5', defaultClassVi: 'Lớp 11.2-TN & XH', defaultClassEn: 'Grade 11.2-TN & XH', homeroomTeacher: 'Cô Tiềng' },
+  { id: '4012', nameVi: 'Phòng 4012', nameEn: 'Room 4012', floorVi: 'Tầng 4', floorEn: 'Floor 4', defaultClassVi: 'Lớp 10.1-TN', defaultClassEn: 'Grade 10.1-TN', homeroomTeacher: 'Cô Đặng' },
+  { id: '307', nameVi: 'Phòng 307', nameEn: 'Room 307', floorVi: 'Tầng 3', floorEn: 'Floor 3', defaultClassVi: 'Lớp 10.2-TN & NT', defaultClassEn: 'Grade 10.2-TN & NT', homeroomTeacher: 'Cô Đặng' },
   { id: '4010', nameVi: 'Phòng 4010', nameEn: 'Room 4010', floorVi: 'Tầng 4', floorEn: 'Floor 4', defaultClassVi: 'Lớp 8', defaultClassEn: 'Grade 8', homeroomTeacher: 'Cô Thuận' },
   { id: '4011', nameVi: 'Phòng 4011', nameEn: 'Room 4011', floorVi: 'Tầng 4', floorEn: 'Floor 4', defaultClassVi: 'Lớp 9', defaultClassEn: 'Grade 9', homeroomTeacher: 'Thầy Quân' },
   { id: '503', nameVi: 'Phòng 503', nameEn: 'Room 503', floorVi: 'Tầng 5', floorEn: 'Floor 5', defaultClassVi: 'Lớp 12-TN', defaultClassEn: 'Grade 12-TN', homeroomTeacher: 'Thầy Kiên' },
@@ -137,8 +138,9 @@ export const INITIAL_CLASSES: ClassInfo[] = [
   { id: '7', nameVi: 'Lớp 7', nameEn: 'Grade 7', level: 'middle', room: '502', homeroomTeacher: 'Cô Thảo' },
   { id: '8', nameVi: 'Lớp 8', nameEn: 'Grade 8', level: 'middle', room: '4010', homeroomTeacher: 'Cô Thuận' },
   { id: '9', nameVi: 'Lớp 9', nameEn: 'Grade 9', level: 'middle', room: '4011', homeroomTeacher: 'Thầy Quân' },
-  { id: '10-tn', nameVi: 'Lớp 10-TN', nameEn: 'Grade 10-TN', level: 'high', room: '4012', homeroomTeacher: 'Cô Đặng' },
-  { id: '10-nt', nameVi: 'Lớp 10-TN & NT', nameEn: 'Grade 10-TN & NT', level: 'high', room: '307', homeroomTeacher: 'Cô Đặng' },
-  { id: '11-tn', nameVi: 'Lớp 11-TN', nameEn: 'Grade 11-TN', level: 'high', room: '504', homeroomTeacher: 'Cô Tiềng' },
+  { id: '10.1-tn', nameVi: 'Lớp 10.1-TN', nameEn: 'Grade 10.1-TN', level: 'high', room: '4012', homeroomTeacher: 'Cô Đặng' },
+  { id: '10.2-nt', nameVi: 'Lớp 10.2-TN & NT', nameEn: 'Grade 10.2-TN & NT', level: 'high', room: '307', homeroomTeacher: 'Cô Đặng' },
+  { id: '11.1-tn', nameVi: 'Lớp 11.1-TN', nameEn: 'Grade 11.1-TN', level: 'high', room: '504', homeroomTeacher: 'Cô Tiềng' },
+  { id: '11.2-xh', nameVi: 'Lớp 11.2-TN & XH', nameEn: 'Grade 11.2-TN & XH', level: 'high', room: 'P. Tâm lý học đường', homeroomTeacher: 'Cô Tiềng' },
   { id: '12-tn', nameVi: 'Lớp 12-TN', nameEn: 'Grade 12-TN', level: 'high', room: '503', homeroomTeacher: 'Thầy Kiên' }
 ];

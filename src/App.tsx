@@ -33,8 +33,12 @@ export const CLASS_TO_ROOM_MAP: Record<string, string> = {
   '8': '4010',
   '9': '4011',
   '10-tn': '4012',
+  '10.1-tn': '4012',
   '10-nt': '307',
+  '10.2-nt': '307',
   '11-tn': '504',
+  '11.1-tn': '504',
+  '11.2-xh': '504',
   '12-tn': '503'
 };
 
@@ -56,7 +60,14 @@ export function isKnownRoom(roomId: string): boolean {
 
 export function isKnownClass(classId: string): boolean {
   const clean = classId.trim().toLowerCase();
-  return Boolean(CLASS_TO_ROOM_MAP[clean] || INITIAL_CLASSES.some(c => c.id.toLowerCase() === clean));
+  return Boolean(
+    CLASS_TO_ROOM_MAP[clean] || 
+    INITIAL_CLASSES.some(c => c.id.toLowerCase() === clean) ||
+    clean.startsWith('10') ||
+    clean.startsWith('11') ||
+    clean.startsWith('12') ||
+    clean === '6' || clean === '7' || clean === '8' || clean === '9'
+  );
 }
 
 export interface ParsedRoute {
@@ -265,11 +276,13 @@ export const App: React.FC = () => {
       setSelectedDay(DAY_OF_WEEK_MAP[currentVn.dayOfWeek] || 'mon');
     }
 
-    // Discover all available week tabs & fetch schedule
     getAllSheetTabs().then((tabs) => {
       setAvailableWeeks(tabs);
-      const latestGid = tabs[tabs.length - 1]?.gid || '676068602';
-      setSelectedWeekGid(latestGid);
+      const latestTab = tabs.find(t => t.isLatest) || tabs[tabs.length - 1];
+      const latestGid = latestTab?.gid;
+      if (latestGid) {
+        setSelectedWeekGid(latestGid);
+      }
       
       if (viewType === 'room') {
         if (!isKnownRoom(selectedRoomId)) return;

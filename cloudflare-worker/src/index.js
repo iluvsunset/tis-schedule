@@ -47,15 +47,21 @@ export default {
     if (url.pathname === "/api/status" || url.pathname === "/status") {
       const lastHash = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_sheet_hash") : "KV_NOT_BOUND";
       const lastSync = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_sync_time") : "N/A";
-      const lastTab = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_active_tab") : "Tuần 5/8";
+      const lastTab = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_active_tab") : "Tuần 6";
       return new Response(JSON.stringify({ status: "running", lastSync, lastHash, lastTab }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
 
-    // 3. Serve Frontend Web App Assets (HTML, JS, CSS, PWA)
+    // 3. Serve Frontend Web App Assets (HTML, JS, CSS, PWA) with SPA fallback
     if (env.ASSETS) {
-      return env.ASSETS.fetch(request);
+      const response = await env.ASSETS.fetch(request);
+      if (response.status === 404 && request.method === "GET") {
+        const url = new URL(request.url);
+        url.pathname = "/index.html";
+        return env.ASSETS.fetch(new Request(url.toString(), request));
+      }
+      return response;
     }
 
     return new Response("TIS Schedule Active", { status: 200 });
@@ -70,7 +76,7 @@ async function getLatestSheetGid() {
     const res = await fetch(`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/htmlview`, {
       headers: { "User-Agent": "TIS-Schedule-Sync-Bot/1.0" }
     });
-    if (!res.ok) return { gid: "676068602", name: "Tuần 5/8" };
+    if (!res.ok) return { gid: "1209587897", name: "Tuần 6" };
     
     const html = await res.text();
     const regex = /items\.push\(\{[^}]*name:\s*"([^"]+)"[^}]*gid:\s*"([0-9]+)"/g;
@@ -85,7 +91,7 @@ async function getLatestSheetGid() {
   } catch (e) {
     console.warn("Could not auto-detect sheet tab:", e);
   }
-  return { gid: "676068602", name: "Tuần 5/8" };
+  return { gid: "1209587897", name: "Tuần 6" };
 }
 
 /**

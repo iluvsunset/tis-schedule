@@ -80,9 +80,19 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [vnTime, setVnTime] = useState<VietnamTimeInfo>(getVietnamTime());
   
-  // Cinematic Intro Video Loader: client-only overlay to keep SSR hydration 100% matched
-  const [isClient, setIsClient] = useState(false);
-  const [showIntroVideo, setShowIntroVideo] = useState<boolean>(false);
+  // Cinematic Intro Video Loader: Prioritize loading the video first before any components
+  const [showIntroVideo, setShowIntroVideo] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      if (sessionStorage.getItem('tis_intro_seen') === 'true') return false;
+      if (typeof navigator !== 'undefined' && !navigator.onLine) return false;
+      const conn = (navigator as any)?.connection;
+      if (conn && (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g')) {
+        return false;
+      }
+    } catch (e) {}
+    return true;
+  });
   const [isRoomModalOpen, setIsRoomModalOpen] = useState<boolean>(false);
 
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
@@ -108,13 +118,9 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
     setShowIntroVideo(false);
   };
 
-  // Safe client-side mount initialization: load saved preferences without breaking SSR hydration
+  // Safe client-side mount initialization: load saved preferences
   useEffect(() => {
-    setIsClient(true);
     try {
-      if (sessionStorage.getItem('tis_intro_seen') !== 'true') {
-        setShowIntroVideo(true);
-      }
       if (localStorage.getItem('tis_minimal_mode') === 'true') {
         setIsMinimalMode(true);
       }
@@ -388,13 +394,13 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMinimalMode, selectedDay]);
 
+  // Priority load the video intro first before any components
+  if (showIntroVideo) {
+    return <IntroVideoLoader onComplete={handleIntroComplete} />;
+  }
+
   return (
     <div className={`min-h-[100dvh] bg-[var(--bg)] relative text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'}`}>
-      
-      {/* Cinematic Intro Video Overlay */}
-      {isClient && showIntroVideo && (
-        <IntroVideoLoader onComplete={handleIntroComplete} />
-      )}
       
       {/* Non-intrusive First-Time Notification Permission Prompt */}
       <NotificationPermissionModal language={language} />

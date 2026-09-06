@@ -126,10 +126,12 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
 
   const formatRoomLabel = (room: string) => {
     if (!room) return '';
-    if (/^p\./i.test(room) || /^phòng/i.test(room)) {
-      return language === 'vi' ? room : room.replace(/^p\.\s*/i, 'Room ').replace(/^phòng\s*/i, 'Room ');
+    const clean = room.replace(/^phòng\s*/i, '').replace(/^p\.?\s*/i, '').trim();
+    const cleanLower = clean.toLowerCase();
+    if (cleanLower.includes('tâm lý') || cleanLower.includes('tam ly') || cleanLower === 'tl') {
+      return language === 'vi' ? 'Phòng Tâm lý' : 'Psychology Room';
     }
-    return `${language === 'vi' ? 'Phòng' : 'Room'} ${room}`;
+    return `${language === 'vi' ? 'Phòng' : 'Room'} ${clean}`;
   };
 
   if (!isOpen) return null;
@@ -141,18 +143,18 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
-        className="fixed inset-0 z-[150] w-screen h-[100dvh] max-h-[100dvh] bg-[#f2f2f7] dark:bg-black sm:dark:bg-[#09090b] text-slate-900 dark:text-white flex flex-col justify-between p-5 sm:p-8 overflow-hidden select-none font-sans transition-colors duration-300 overscroll-none touch-none"
+        className="fixed inset-0 z-[150] w-screen h-[100dvh] max-h-[100dvh] bg-slate-100/90 dark:bg-[#090b10]/95 backdrop-blur-2xl text-slate-900 dark:text-slate-100 flex flex-col justify-between p-5 sm:p-8 overflow-hidden select-none font-sans transition-colors duration-300 overscroll-none touch-none"
       >
         {/* Minimalist Top Bar (Zero Icons) */}
         <header className="w-full max-w-md mx-auto flex items-center justify-between shrink-0">
-          <span className="text-[11px] font-mono tracking-widest uppercase text-slate-400 dark:text-slate-500">
+          <span className="text-[11px] font-mono tracking-widest uppercase text-slate-400 dark:text-slate-500 font-semibold">
             TIS SCHEDULE
           </span>
 
           <div className="flex items-center gap-2">
             {/* Apple-Style Minimalist Language Switcher Pill */}
             {onLanguageChange && (
-              <div className="flex items-center p-0.5 rounded-full bg-black/5 dark:bg-white/[0.06] border border-black/10 dark:border-white/[0.08] text-[11px] font-mono">
+              <div className="flex items-center p-0.5 rounded-full bg-slate-200/60 dark:bg-white/[0.06] border border-slate-300/60 dark:border-white/[0.08] text-[11px] font-mono">
                 <button
                   type="button"
                   onClick={() => onLanguageChange('vi')}
@@ -181,7 +183,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
             {allowClose && (
               <button
                 onClick={onClose}
-                className="px-3 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-black/5 hover:bg-black/10 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] border border-black/10 dark:border-white/[0.08] transition cursor-pointer"
+                className="px-3 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-200/60 hover:bg-slate-300/60 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] border border-slate-300/60 dark:border-white/[0.08] transition cursor-pointer"
               >
                 <span>{language === 'vi' ? 'Đóng' : 'Close'}</span>
               </button>
@@ -213,7 +215,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setIsExpanded(true)}
-                  className="w-full max-w-sm px-5 py-3.5 rounded-2xl bg-white dark:bg-white/[0.06] text-slate-900 dark:text-white border border-black/[0.06] dark:border-white/[0.08] shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-between"
+                  className="w-full max-w-sm px-5 py-3.5 rounded-2xl bg-white/90 dark:bg-[#11141e]/90 text-slate-900 dark:text-white border border-slate-200/90 dark:border-white/[0.08] shadow-sm hover:shadow-md backdrop-blur-xl transition-all cursor-pointer flex items-center justify-between"
                 >
                   <div className="flex flex-col text-left truncate mr-2">
                     <span className="text-[15px] font-medium text-slate-900 dark:text-white truncate">
@@ -222,13 +224,13 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                         : (language === 'vi' ? 'Chọn lớp học' : 'Select your class')}
                     </span>
                     {selectedClass && (
-                      <span className="text-xs text-slate-400 dark:text-slate-500 truncate">
+                      <span className="text-xs text-slate-500 dark:text-slate-400 truncate">
                         {formatRoomLabel(selectedClass.room)} • {selectedClass.homeroomTeacher}
                       </span>
                     )}
                   </div>
 
-                  <span className="shrink-0 px-3 py-1 rounded-xl text-xs font-semibold bg-black/5 dark:bg-white/10 text-slate-700 dark:text-slate-300">
+                  <span className="shrink-0 px-3 py-1 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300">
                     {language === 'vi' ? 'Chọn lớp' : 'Choose'}
                   </span>
                 </motion.button>
@@ -240,26 +242,26 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="w-full rounded-2xl bg-white/95 dark:bg-[#13151d] border border-black/10 dark:border-white/10 shadow-2xl backdrop-blur-2xl overflow-hidden flex flex-col"
+                  className="w-full rounded-2xl bg-white/95 dark:bg-[#12141c]/95 border border-slate-200/90 dark:border-white/10 shadow-2xl backdrop-blur-2xl overflow-hidden flex flex-col"
                 >
                   {/* Fixed Header with Collapse Button (Never scrolls or overlaps!) */}
-                  <div className="px-4 py-3 bg-slate-100/90 dark:bg-[#1a1c26] border-b border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between shrink-0 z-20">
-                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <div className="px-4 py-3 bg-slate-50/90 dark:bg-[#171a24]/90 border-b border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between shrink-0 z-20">
+                    <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       {language === 'vi' ? 'Danh sách lớp học' : 'All Classes'}
                     </span>
                     <button
                       type="button"
                       onClick={() => setIsExpanded(false)}
-                      className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white px-2.5 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition cursor-pointer"
+                      className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white px-2.5 py-1 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/10 transition cursor-pointer"
                     >
                       {language === 'vi' ? 'Thu gọn' : 'Minimize'}
                     </button>
                   </div>
 
                   {/* Scrollable Container (Strictly class items) */}
-                  <div className="w-full max-h-[50vh] sm:max-h-[60vh] overflow-y-auto overscroll-contain touch-pan-y divide-y divide-black/[0.05] dark:divide-white/[0.06]">
+                  <div className="w-full max-h-[50vh] sm:max-h-[60vh] overflow-y-auto overscroll-contain touch-pan-y divide-y divide-slate-100 dark:divide-white/[0.06] no-scrollbar">
                     {/* THPT Group Header */}
-                    <div className="px-4 py-2 bg-slate-50/95 dark:bg-[#161822]/95 backdrop-blur-md sticky top-0 z-10 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-black/[0.04] dark:border-white/[0.04]">
+                    <div className="px-4 py-2 bg-slate-100/90 dark:bg-[#151722]/95 backdrop-blur-md sticky top-0 z-10 text-[10px] font-mono font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-200/60 dark:border-white/[0.04]">
                       {language === 'vi' ? 'Khối THPT' : 'High School'}
                     </div>
 
@@ -306,7 +308,7 @@ export const ClassSelectorModal: React.FC<ClassSelectorModalProps> = ({
                     })}
 
                     {/* THCS Group Header */}
-                    <div className="px-4 py-2 bg-slate-50/95 dark:bg-[#161822]/95 backdrop-blur-md sticky top-0 z-10 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-black/[0.04] dark:border-white/[0.04]">
+                    <div className="px-4 py-2 bg-slate-100/90 dark:bg-[#151722]/95 backdrop-blur-md sticky top-0 z-10 text-[10px] font-mono font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-200/60 dark:border-white/[0.04]">
                       {language === 'vi' ? 'Khối THCS' : 'Middle School'}
                     </div>
 

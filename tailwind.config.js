@@ -18,10 +18,29 @@ export default {
         '4k': '2560px',
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-        display: ['"Quicksand"', 'sans-serif'],
+        sans: ['Montserrat', '"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Montserrat', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       colors: {
+        tis: {
+          navy: '#00008A',
+          'navy-dark': '#000055',
+          'navy-subtle': '#070b24',
+          'navy-card': '#0b1236',
+          orange: '#ee5421',
+          'orange-hover': '#d84413',
+          'orange-light': '#ff6b3d',
+          'soft-blue': '#f4f7ff',
+        },
+        od: {
+          bg: 'var(--bg)',
+          surface: 'var(--surface)',
+          border: 'var(--border)',
+          accent: 'var(--accent)',
+          fg: 'var(--fg)',
+          muted: 'var(--fg-muted)',
+        },
         theme: {
           pink: {
             50: '#fff1f2',
@@ -59,12 +78,12 @@ export default {
         }
       },
       boxShadow: {
+        'xs': 'var(--shadow-xs)',
+        'sm': 'var(--shadow-sm)',
+        'md': 'var(--shadow-md)',
+        'lg': 'var(--shadow-lg)',
         'soft': '0 4px 20px -2px rgba(182, 190, 204, 0.25)',
         'soft-lg': '0 10px 30px -4px rgba(182, 190, 204, 0.35)',
-        'cute-pink': '0 8px 24px -4px rgba(251, 113, 133, 0.25)',
-        'cute-purple': '0 8px 24px -4px rgba(167, 139, 250, 0.25)',
-        'cute-mint': '0 8px 24px -4px rgba(74, 222, 128, 0.25)',
-        'cute-peach': '0 8px 24px -4px rgba(251, 146, 60, 0.25)',
       }
     },
   },

@@ -99,7 +99,7 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.98 }}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      className="glass-card border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-xl mb-2.5 sm:mb-4 sticky top-0 z-30 pt-[max(0.25rem,env(safe-area-inset-top,0px))] w-full"
+      className="od-glass rounded-2xl sm:rounded-3xl p-3 sm:p-5 mb-2.5 sm:mb-4 sticky top-0 z-30 pt-[max(0.25rem,env(safe-area-inset-top,0px))] w-full border border-slate-200/80 dark:border-white/[0.08]"
     >
       {/* DESKTOP LAYOUT (>= md screens) */}
       <div className="hidden md:flex md:flex-row md:items-center md:justify-between gap-4">
@@ -107,10 +107,10 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
         <div className="flex items-center gap-4">
           <div className="flex flex-col">
             <div className="flex items-baseline gap-1">
-              <span className="text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 dark:text-white">
+              <span className="text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 dark:text-white tabular-nums">
                 {vnTime.timeStr}
               </span>
-              <span className="text-sm font-mono font-bold text-amber-500 dark:text-amber-400">
+              <span className="text-sm font-mono font-bold text-[var(--accent)] tabular-nums">
                 :{String(vnTime.seconds).padStart(2, '0')}
               </span>
             </div>
@@ -121,7 +121,7 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
                 {displayDayName} • {formatScheduleDate(currentDayData.date)}
               </span>
               {isSelectedToday && (
-                <span className="px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-md shadow-2xs">
+                <span className="px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider bg-[var(--fg)] text-[var(--bg)] rounded-md shadow-xs">
                   {language === 'vi' ? 'Hôm nay' : 'Today'}
                 </span>
               )}
@@ -135,7 +135,7 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
 
         {/* Center: Day Switcher */}
         <div className="flex items-center justify-center">
-          <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80">
+          <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-100/80 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/[0.06] shadow-xs">
             {days.map((d) => {
               const isSelected = viewMode === 'timeline' && selectedDay === d.dayKey;
               const label = language === 'vi' ? dayLabelsVi[d.dayKey] : dayLabelsEn[d.dayKey];
@@ -148,9 +148,9 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
                     onSelectDay(d.dayKey);
                     onViewModeChange('timeline');
                   }}
-                  className={`relative px-3.5 py-1.5 rounded-xl text-xs font-black transition-colors cursor-pointer flex items-center justify-center z-10 ${
+                  className={`relative px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center z-10 ${
                     isSelected 
-                      ? 'text-white dark:text-slate-900' 
+                      ? 'text-white dark:text-slate-950 font-black' 
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                   }`}
                 >
@@ -158,7 +158,7 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
                     <motion.div
                       layoutId="minimal-active-tab-desktop"
                       className="absolute inset-0 bg-slate-900 dark:bg-white rounded-xl shadow-sm z-[-1]"
-                      transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                      transition={{ type: "spring", stiffness: 480, damping: 34 }}
                     />
                   )}
                   <span>{label}</span>
@@ -265,7 +265,7 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
         </div>
 
         {/* Tier 3: Full-Width Day Switcher Tabs */}
-        <div className="grid grid-cols-6 gap-1 p-1 rounded-xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 w-full">
+        <div className="grid grid-cols-6 gap-1 p-1 rounded-2xl bg-slate-100/80 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/[0.06] w-full shadow-xs">
           {days.map((d) => {
             const isSelected = viewMode === 'timeline' && selectedDay === d.dayKey;
             const label = language === 'vi' ? dayLabelsVi[d.dayKey] : dayLabelsEn[d.dayKey];
@@ -278,17 +278,17 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
                   onSelectDay(d.dayKey);
                   onViewModeChange('timeline');
                 }}
-                className={`relative py-1.5 rounded-lg text-xs font-black transition-colors cursor-pointer flex items-center justify-center z-10 ${
+                className={`relative py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center z-10 ${
                   isSelected 
-                    ? 'text-white dark:text-slate-900' 
+                    ? 'text-white dark:text-slate-950 font-black' 
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                 }`}
               >
                 {isSelected && (
                   <motion.div
                     layoutId="minimal-active-tab-mobile"
-                    className="absolute inset-0 bg-slate-900 dark:bg-white rounded-lg shadow-sm z-[-1]"
-                    transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                    className="absolute inset-0 bg-slate-900 dark:bg-white rounded-xl shadow-sm z-[-1]"
+                    transition={{ type: "spring", stiffness: 480, damping: 34 }}
                   />
                 )}
                 <span>{label}</span>

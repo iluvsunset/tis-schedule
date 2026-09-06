@@ -112,21 +112,21 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        className="w-fit min-w-[300px] max-w-[92vw] sm:max-w-xl md:max-w-2xl mx-auto rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#151720] px-6 py-8 sm:px-12 sm:py-10 text-center overflow-hidden shadow-2xl space-y-4 sm:space-y-5 flex flex-col items-center justify-center"
+        className="w-fit min-w-[300px] max-w-[92vw] sm:max-w-xl md:max-w-2xl mx-auto rounded-3xl od-glass px-6 py-8 sm:px-12 sm:py-10 text-center overflow-hidden shadow-2xl space-y-4 sm:space-y-5 flex flex-col items-center justify-center border border-slate-200/80 dark:border-white/[0.08]"
       >
         {/* Status Pill */}
         <div className="inline-flex items-center">
           {liveState.status === 'live' ? (
-            <span className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-400/10 px-4 py-1.5 rounded-full border border-emerald-500/20 text-xs font-mono font-bold tracking-wider uppercase shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+            <span className="flex items-center gap-2 text-sky-700 dark:text-sky-300 bg-sky-500/10 dark:bg-sky-400/10 px-4 py-1.5 rounded-full border border-sky-500/20 text-xs font-mono font-bold tracking-wider uppercase shadow-xs tabular-nums">
+              <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
               {liveState.badgeText}
             </span>
           ) : liveState.status === 'starting-soon' ? (
-            <span className="flex items-center gap-2 text-amber-600 dark:text-amber-400 bg-amber-500/10 dark:bg-amber-400/10 px-4 py-1.5 rounded-full border border-amber-500/20 text-xs font-mono font-bold tracking-wider uppercase shadow-xs">
+            <span className="flex items-center gap-2 text-amber-700 dark:text-amber-300 bg-amber-500/10 dark:bg-amber-400/10 px-4 py-1.5 rounded-full border border-amber-500/20 text-xs font-mono font-bold tracking-wider uppercase shadow-xs tabular-nums">
               {liveState.badgeText}
             </span>
           ) : (
-            <span className="text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-4 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase border border-slate-200/60 dark:border-slate-700/60 shadow-xs">
+            <span className="text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.05] px-4 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase border border-slate-200/60 dark:border-white/[0.08] shadow-xs">
               {liveState.badgeText}
             </span>
           )}
@@ -136,7 +136,7 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
         {subject ? (
           <div className="space-y-3 sm:space-y-4 max-w-2xl mx-auto w-full pt-1">
             {typeof subject.period === 'number' && (
-              <span className="text-xs uppercase font-mono text-slate-400 dark:text-slate-500 tracking-widest block font-bold">
+              <span className="text-xs uppercase font-mono text-slate-400 dark:text-slate-500 tracking-widest block font-bold tabular-nums">
                 {language === 'vi' ? `Tiết ${subject.period}` : `Period ${subject.period}`} · {subject.time}
               </span>
             )}
@@ -145,8 +145,8 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
               {subjectName}
             </h1>
 
-            <div className="pt-1 text-base sm:text-lg text-slate-600 dark:text-slate-400 font-medium flex items-center justify-center gap-2 flex-wrap">
-              <span className="text-slate-900 dark:text-slate-100 font-bold">{className}</span>
+            <div className="pt-1 text-base sm:text-lg text-slate-600 dark:text-slate-300 font-medium flex items-center justify-center gap-2 flex-wrap">
+              <span className="text-slate-900 dark:text-white font-bold">{className}</span>
               <span className="text-slate-300 dark:text-slate-600">·</span>
               <span>{teacher}</span>
             </div>
@@ -160,15 +160,15 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
             {/* Real-time Hairline Progress Track (for live subject) */}
             {liveState.status === 'live' && (
               <div className="max-w-md mx-auto mt-6 space-y-2">
-                <div className="h-[2px] w-full bg-slate-100 dark:bg-slate-800 overflow-hidden rounded-full">
+                <div className="h-[2.5px] w-full bg-slate-100 dark:bg-white/[0.08] overflow-hidden rounded-full">
                   <motion.div 
-                    className="h-full bg-slate-900 dark:bg-white"
+                    className="h-full bg-[var(--accent)]"
                     initial={{ width: 0 }}
                     animate={{ width: `${liveState.progressPercent}%` }}
                     transition={{ duration: 0.8, ease: 'easeOut' }}
                   />
                 </div>
-                <div className="flex justify-between text-[11px] font-mono text-slate-400 dark:text-slate-500">
+                <div className="flex justify-between text-[11px] font-mono text-slate-400 dark:text-slate-500 tabular-nums">
                   <span>{subject.startTime}</span>
                   <span className="font-semibold text-slate-700 dark:text-slate-300">{subject.endTime}</span>
                 </div>

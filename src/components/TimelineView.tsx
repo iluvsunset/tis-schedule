@@ -157,22 +157,22 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   return (
     <div className="space-y-4 select-none relative z-20">
       
-      {/* Top Header Bar (Zero Icons, Original Color Palette) */}
+      {/* Top Header Bar (OpenDesign Glass Pill Bar) */}
       {!isMinimalMode && (
         <motion.div 
           key={`header-${selectedDay}`}
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className="glass-card rounded-2xl px-4 py-2.5 shadow-2xs flex items-center justify-between gap-3 border border-slate-200/80 dark:border-slate-800 relative z-40"
+          className="od-glass rounded-2xl px-4 py-2.5 flex items-center justify-between gap-3 border border-slate-200/80 dark:border-white/[0.08] relative z-40"
         >
           {/* Day & Room Info */}
           <div className="flex items-center gap-2 flex-wrap min-w-0">
-            <h2 className="text-sm sm:text-base font-display font-extrabold text-slate-900 dark:text-slate-100 truncate">
+            <h2 className="text-sm sm:text-base font-display font-extrabold text-slate-900 dark:text-white tracking-tight truncate">
               {dayTitle}
             </h2>
             {isToday && (
-              <span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-md shadow-2xs">
+              <span className="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider bg-[var(--fg)] text-[var(--bg)] rounded-md shadow-xs">
                 {language === 'vi' ? 'Hôm Nay' : 'Today'}
               </span>
             )}
@@ -185,13 +185,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             </button>
           </div>
 
-          {/* Controls: Live Room Toggle & Week Selector (Zero Icons) */}
+          {/* Controls: Live Room Toggle & Week Selector */}
           <div className="flex items-center gap-2 shrink-0">
             {onSwitchToLiveFocus && (
               <button
                 type="button"
                 onClick={onSwitchToLiveFocus}
-                className="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-mono font-bold text-slate-800 dark:text-slate-200 transition cursor-pointer"
+                className="px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white dark:hover:bg-white/[0.1] text-xs font-mono font-bold text-slate-800 dark:text-slate-200 transition cursor-pointer shadow-xs"
                 title={language === 'vi' ? 'Màn hình hiển thị 1 môn đang bắt đầu' : 'Single starting subject display'}
               >
                 {language === 'vi' ? 'Phòng Trực Tiếp' : 'Live Room'}
@@ -211,7 +211,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
               <button
                 type="button"
                 onClick={onToggleMinimalMode}
-                className="hidden sm:flex px-2.5 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-xs font-mono uppercase bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
+                className="hidden sm:flex px-2.5 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 text-xs font-mono uppercase bg-white/70 dark:bg-white/[0.05] text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-white/[0.1] transition cursor-pointer shadow-xs"
                 title="Full-screen minimal focus (F)"
               >
                 Focus
@@ -284,29 +284,29 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
           {/* Afternoon Session Column */}
           <div className="space-y-2.5 sm:space-y-3">
             
-            {/* Lunch Break Bar (Zero Icons, Original Amber Palette) */}
+            {/* Lunch Break Bar (OpenDesign Tactile Lunch Strip) */}
             <motion.div 
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`p-2.5 sm:p-3 rounded-2xl border transition-all flex items-center justify-between text-xs ${
+              className={`p-2.5 sm:p-3 rounded-2xl border transition-all flex items-center justify-between text-xs select-none ${
                 lunchStatus.isCurrent
                   ? 'bg-amber-500/15 border-amber-500/40 ring-1 ring-amber-400/40 text-amber-900 dark:text-amber-200 shadow-sm font-bold'
                   : lunchStatus.isPast
-                    ? 'bg-slate-100/50 dark:bg-slate-800/30 border-slate-200/50 dark:border-slate-800/50 text-slate-400 dark:text-slate-500 line-through'
-                    : 'bg-amber-500/10 dark:bg-amber-500/10 border-amber-500/20 text-amber-900 dark:text-amber-300'
+                    ? 'bg-slate-100/50 dark:bg-white/[0.02] border-slate-200/50 dark:border-white/[0.05] text-slate-400 dark:text-slate-500 line-through'
+                    : 'bg-amber-500/10 dark:bg-amber-400/10 border-amber-500/20 text-amber-900 dark:text-amber-300'
               }`}
             >
               <div className="flex items-center gap-2">
-                <span className="font-bold text-xs">
+                <span className="font-bold text-xs tracking-tight">
                   {language === 'vi' ? dayData.lunch.titleVi : dayData.lunch.titleEn}
                 </span>
                 {lunchStatus.isCurrent && (
-                  <span className="px-1.5 py-0.5 rounded-md bg-amber-500 text-slate-950 font-black text-[9px] uppercase">
+                  <span className="px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[9px] uppercase tabular-nums">
                     {lunchStatus.remainingMinutes}p
                   </span>
                 )}
               </div>
-              <span className="font-mono text-xs font-semibold">{dayData.lunch.time}</span>
+              <span className="font-mono text-xs font-semibold tabular-nums">{dayData.lunch.time}</span>
             </motion.div>
 
             <div className="flex items-center justify-between px-1 pt-1">
@@ -316,7 +316,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             </div>
 
             {afternoonItems.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500 glass-card rounded-2xl">
+              <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500 od-glass rounded-2xl">
                 {language === 'vi' ? 'Không có tiết học buổi chiều' : 'No afternoon classes'}
               </div>
             ) : (

@@ -188,11 +188,16 @@ export function parsePath(pathname: string): ParsedRoute {
   };
 }
 
-export const App: React.FC = () => {
+export interface AppProps {
+  initialUrl?: string;
+}
+
+export const App: React.FC<AppProps> = ({ initialUrl }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const initialRoute = parsePath(window.location.pathname);
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : (initialUrl || location?.pathname || '/');
+  const initialRoute = parsePath(currentPath);
 
   // View Type: 'room' (single live subject only) vs 'class' (full timetable schedule like normal)
   const [viewType, setViewType] = useState<'room' | 'class'>(initialRoute.viewType);
@@ -202,12 +207,14 @@ export const App: React.FC = () => {
 
   const [scheduleData, setScheduleData] = useState<ScheduleData | null>(() => {
     try {
-      const route = parsePath(window.location.pathname);
+      const route = parsePath(currentPath);
       if (!route.isValid) {
         return null;
       }
       const target = route.viewType === 'room' ? route.roomId : (CLASS_TO_ROOM_MAP[route.classId] || route.roomId);
-      const cached = localStorage.getItem(`tis_room_cache_${target}`);
+      const cached = typeof window !== 'undefined' && typeof localStorage !== 'undefined' 
+        ? localStorage.getItem(`tis_room_cache_${target}`) 
+        : null;
       if (cached) {
         return JSON.parse(cached);
       }
@@ -218,7 +225,10 @@ export const App: React.FC = () => {
   });
 
   const [theme, setTheme] = useState<ThemeKey>(() => {
-    return (localStorage.getItem('tis_theme_pref') as ThemeKey) || 'system';
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      return (localStorage.getItem('tis_theme_pref') as ThemeKey) || 'system';
+    }
+    return 'system';
   });
 
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
@@ -229,8 +239,9 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [vnTime, setVnTime] = useState<VietnamTimeInfo>(getVietnamTime());
   
-  // Cinematic Intro Video Loader
+  // Cinematic Intro Video Loader: skip during SSR so full schedule markup renders immediately
   const [showIntroVideo, setShowIntroVideo] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
     try {
       if (sessionStorage.getItem('tis_intro_seen') === 'true') return false;
       if (typeof navigator !== 'undefined' && !navigator.onLine) return false;
@@ -243,6 +254,7 @@ export const App: React.FC = () => {
   });
 
   const [isRoomModalOpen, setIsRoomModalOpen] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
     const route = parsePath(window.location.pathname);
     if (route.roomId || route.classId) return false;
     return !localStorage.getItem('tis_selected_room') && !localStorage.getItem('tis_selected_class');
@@ -255,7 +267,10 @@ export const App: React.FC = () => {
 
   // Full-Screen Minimal Focus Mode State
   const [isMinimalMode, setIsMinimalMode] = useState<boolean>(() => {
-    return localStorage.getItem('tis_minimal_mode') === 'true';
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      return localStorage.getItem('tis_minimal_mode') === 'true';
+    }
+    return false;
   });
 
   const handleToggleMinimalMode = () => {
@@ -529,19 +544,19 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className={`min-h-[100dvh] bg-transparent relative text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'}`}>
+    <div className={`min-h-[100dvh] bg-[var(--bg)] relative text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'}`}>
       
       {/* Non-intrusive First-Time Notification Permission Prompt */}
       <NotificationPermissionModal language={language} />
 
-      {/* Subtle Studio Ambient Lighting (Hardware-Accelerated & 60fps) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 no-print">
-        <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full bg-slate-300/20 dark:bg-slate-800/20 blur-3xl transform-gpu pointer-events-none" />
-        <div className="absolute top-1/3 -right-32 w-80 h-80 rounded-full bg-slate-400/15 dark:bg-slate-800/15 blur-3xl transform-gpu pointer-events-none" />
+      {/* OpenDesign Atmospheric Depth (Subtle, non-distracting) */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 no-print">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[300px] rounded-full bg-sky-500/[0.03] dark:bg-sky-400/[0.03] blur-3xl transform-gpu pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[300px] rounded-full bg-slate-400/[0.04] dark:bg-slate-700/[0.05] blur-3xl transform-gpu pointer-events-none" />
       </div>
 
       {/* Main Responsive Container */}
-      <div className={`relative z-10 w-full ${isMinimalMode ? 'max-w-full sm:max-w-[98%] xl:max-w-6xl 2xl:max-w-7xl md:my-auto justify-start md:justify-center' : 'max-w-[98%] sm:max-w-[95%] lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1550px]'} mx-auto px-2 sm:px-4 lg:px-6 pt-1 sm:pt-3 pb-6 sm:pb-10 flex-1 flex flex-col transition-all duration-300`}>
+      <div className={`relative z-10 w-full ${isMinimalMode ? 'max-w-full sm:max-w-[98%] xl:max-w-6xl 2xl:max-w-7xl md:my-auto justify-start md:justify-center' : 'max-w-[98%] sm:max-w-[95%] lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1550px]'} mx-auto px-2.5 sm:px-4 lg:px-6 pt-1 sm:pt-3 pb-6 sm:pb-10 flex-1 flex flex-col transition-all duration-300`}>
         
         {/* Top Header Card */}
         {isMinimalMode ? (
@@ -730,7 +745,7 @@ export const App: React.FC = () => {
           onSelectClass={handleSelectClass}
           language={language}
           onLanguageChange={handleLanguageChange}
-          allowClose={Boolean(localStorage.getItem('tis_selected_room')) && scheduleData !== null}
+          allowClose={Boolean(typeof window !== 'undefined' && typeof localStorage !== 'undefined' && localStorage.getItem('tis_selected_room')) && scheduleData !== null}
         />
 
         {/* Teacher Roster Modal */}

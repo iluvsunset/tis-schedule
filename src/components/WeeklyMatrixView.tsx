@@ -4,7 +4,7 @@ import { Language, ScheduleData, WeekTabInfo } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { WeekSelectorButton } from './WeekSelectorButton';
-import { springCard, gestureTokens, radarBeaconVariants } from '../utils/motionTokens';
+import { springCard, gestureTokens } from '../utils/motionTokens';
 
 interface WeeklyMatrixViewProps {
   language: Language;
@@ -53,13 +53,13 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.99 }}
       transition={springCard}
-      className="glass-card rounded-2xl p-2.5 sm:p-3.5 shadow-soft border border-slate-200/80 dark:border-slate-800 relative z-20"
+      className="od-glass rounded-2xl p-2.5 sm:p-3.5 shadow-sm border border-slate-200/80 dark:border-white/[0.08] relative z-20"
     >
       {/* Top Header Bar (Only in Standard Mode) */}
       {!isMinimalMode && (
         <div className="flex items-center justify-between mb-2.5 relative z-40">
           <div className="flex items-center gap-2">
-            <h2 className="text-xs sm:text-sm font-display font-bold text-slate-900 dark:text-slate-100">
+            <h2 className="text-xs sm:text-sm font-display font-bold text-slate-900 dark:text-white tracking-tight">
               {language === 'vi' 
                 ? `Thời Khóa Biểu Tuần • ${currentSchedule.gradeTitleVi || 'Lớp 11-TN'}` 
                 : `Full Weekly Matrix • ${currentSchedule.gradeTitleEn || 'Grade 11-TN'}`}
@@ -78,12 +78,12 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
               />
             )}
 
-            {/* Full-Screen Minimal Mode Toggle Button (Zero Icons) */}
+            {/* Full-Screen Minimal Mode Toggle Button */}
             {onToggleMinimalMode && (
               <motion.button 
                 whileTap={gestureTokens.button.whileTap}
                 onClick={onToggleMinimalMode}
-                className="no-print px-3 py-1.5 rounded-xl border border-white/10 text-xs font-mono uppercase text-white/60 hover:text-white transition cursor-pointer"
+                className="no-print px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white dark:hover:bg-white/[0.1] text-xs font-mono uppercase text-slate-700 dark:text-slate-200 transition cursor-pointer shadow-xs"
                 title={language === 'vi' ? "Chế độ xem tối giản (Phím F)" : "Full-screen minimal (F)"}
               >
                 Focus
@@ -93,7 +93,7 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
             <motion.button 
               whileTap={gestureTokens.button.whileTap}
               onClick={() => window.print()}
-              className="no-print px-3 py-1.5 rounded-xl border border-white/10 text-xs font-mono uppercase text-white/60 hover:text-white transition cursor-pointer"
+              className="no-print px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white dark:hover:bg-white/[0.1] text-xs font-mono uppercase text-slate-700 dark:text-slate-200 transition cursor-pointer shadow-xs"
             >
               <span>{language === 'vi' ? 'In Lịch' : 'Print'}</span>
             </motion.button>
@@ -105,19 +105,19 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
       <div className="overflow-x-auto">
         <table className="w-full min-w-[700px] border-collapse text-xs">
         <thead>
-          <tr className="text-left bg-slate-50/90 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700">
-            <th className="p-1.5 font-bold text-slate-600 dark:text-slate-300 rounded-l-xl w-20 text-center font-mono">
+          <tr className="text-left bg-slate-100/70 dark:bg-white/[0.04] border-b border-slate-200/80 dark:border-white/[0.08]">
+            <th className="p-2 font-bold text-slate-600 dark:text-slate-300 rounded-l-xl w-20 text-center font-mono tabular-nums">
               {language === 'vi' ? 'Tiết / Giờ' : 'Period'}
             </th>
             {days.map((d) => {
               const isToday = getDateStatus(d.date, vnTime.dateStr) === 'today';
               return (
-                <th key={d.dayKey} className={`p-1.5 font-bold ${isToday ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-t-xl' : 'text-slate-700 dark:text-slate-300'}`}>
+                <th key={d.dayKey} className={`p-2 font-bold ${isToday ? 'bg-slate-200/70 dark:bg-white/[0.08] text-slate-900 dark:text-white rounded-t-xl' : 'text-slate-700 dark:text-slate-300'}`}>
                   <div className="flex items-center gap-1 font-mono">
                     <span>{language === 'vi' ? d.dayNameVi : d.dayNameEn}</span>
-                    <span className="text-[10px] font-normal text-slate-400">({d.date.slice(0, 5)})</span>
+                    <span className="text-[10px] font-normal text-slate-400 tabular-nums">({d.date.slice(0, 5)})</span>
                     {isToday && (
-                      <span className="ml-1 px-1.5 py-0.2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 rounded text-[9px] font-bold">
+                      <span className="ml-1 px-1.5 py-0.2 bg-[var(--fg)] text-[var(--bg)] rounded text-[9px] font-black uppercase">
                         Today
                       </span>
                     )}
@@ -211,32 +211,24 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                     <td key={day.dayKey} className={`p-1 align-top ${isToday ? 'bg-slate-50/30 dark:bg-slate-800/20' : ''}`}>
                       <motion.div 
                         whileTap={gestureTokens.subtle.whileTap}
-                        className={`p-1.5 rounded-xl transition-all relative ${
+                        className={`p-2 rounded-xl transition-all relative ${
                           isCurrent 
-                            ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-2 border-slate-700 shadow-sm ring-2 ring-emerald-400/40' 
+                            ? 'bg-[var(--surface-solid)] border-2 border-[var(--border-active)] shadow-md ring-1 ring-sky-500/30 dark:ring-sky-400/30' 
                             : isPast 
-                              ? 'bg-white/60 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80' 
-                              : 'bg-white/90 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800'
+                              ? 'bg-white/40 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/[0.05]' 
+                              : 'od-glass hover:border-slate-300 dark:hover:border-white/20'
                         } ${opacityClass}`}
                       >
                         {isCurrent && (
-                          <div className="text-[9px] font-black uppercase text-emerald-400 tracking-wider mb-0.5 flex items-center gap-1">
-                            <span className="relative flex h-2 w-2 items-center justify-center">
-                              <motion.span 
-                                variants={radarBeaconVariants}
-                                initial="initial"
-                                animate="animate"
-                                className="absolute -inset-0.5 rounded-full bg-emerald-400/50"
-                              />
-                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
-                            </span>
-                            <span>Đang học</span>
+                          <div className="text-[9px] font-black uppercase text-sky-600 dark:text-sky-400 tracking-wider mb-1 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse shrink-0" />
+                            <span>{language === 'vi' ? 'Đang học' : 'Live'}</span>
                           </div>
                         )}
-                        <div className={`font-display font-bold text-xs leading-tight truncate ${isCurrent ? 'text-white font-black' : isPast ? 'text-slate-500 dark:text-slate-400 line-through decoration-slate-400 dark:decoration-slate-500' : 'text-slate-900 dark:text-slate-100'}`}>
+                        <div className={`font-display font-bold text-xs leading-tight tracking-tight truncate ${isCurrent ? 'text-slate-900 dark:text-white font-black' : isPast ? 'text-slate-400 dark:text-slate-500 line-through decoration-slate-400 dark:decoration-slate-500' : 'text-slate-900 dark:text-slate-100'}`}>
                           {subjectName}
                         </div>
-                        <div className={`text-[10px] font-semibold truncate ${isCurrent ? 'text-slate-300' : isPast ? 'text-slate-400 dark:text-slate-500' : 'text-slate-500 dark:text-slate-400'}`}>
+                        <div className={`text-[10px] font-medium truncate mt-0.5 ${isCurrent ? 'text-slate-700 dark:text-slate-300 font-semibold' : 'text-slate-400 dark:text-slate-500'}`}>
                           {item.teacher || ''}
                         </div>
                       </motion.div>

@@ -84,7 +84,7 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
 
             {/* Teacher Cards Grid (Scrollable with iOS touch support) */}
             <div 
-              className="p-5 sm:p-6 pt-4 overflow-y-auto overscroll-contain flex-1 touch-pan-y"
+              className="p-5 sm:p-6 pt-4 overflow-y-auto overscroll-contain flex-1 touch-pan-y no-scrollbar"
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
               <motion.div 

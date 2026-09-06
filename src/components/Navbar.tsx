@@ -171,7 +171,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-50 no-print pt-[max(0.25rem,env(safe-area-inset-top,0px))] pb-2 sm:pb-3">
-      <div className="glass-card border rounded-2xl sm:rounded-3xl p-2.5 sm:p-3 shadow-xs flex flex-col gap-2 sm:gap-2.5">
+      <div className="od-glass rounded-2xl sm:rounded-3xl p-2.5 sm:p-3 flex flex-col gap-2 sm:gap-2.5">
         
         {/* Top Row: Left Brand/Class Info & Right Quick Action Buttons */}
         <div className="flex items-center justify-between gap-2 w-full">
@@ -180,10 +180,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
             {/* TIS Logo Button */}
             <motion.button 
-              whileTap={{ scale: 0.95 }}
+              whileTap={{ scale: 0.94 }}
               onClick={onOpenClassModal}
               title={language === 'vi' ? "Đổi lớp học" : "Change class"}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white dark:bg-slate-800 p-0.5 shadow-2xs border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white dark:bg-white/[0.05] p-1 shadow-xs border border-slate-200/80 dark:border-white/10 flex items-center justify-center shrink-0 overflow-hidden cursor-pointer transition hover:border-slate-300 dark:hover:border-white/20"
             >
               {!logoError ? (
                 <img 
@@ -197,7 +197,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </motion.button>
 
-            {/* Interactive Room Number Switcher (Aman / Hotel Hoa Nắng Style) */}
+            {/* Interactive Room Number Switcher */}
             <div className="min-w-0">
               <motion.button
                 whileTap={{ scale: 0.98 }}
@@ -205,10 +205,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="flex items-center gap-1.5 cursor-pointer group text-left max-w-full"
                 title={language === 'vi' ? "Nhấn để nhập hoặc đổi số phòng học" : "Click to enter or change room number"}
               >
-                <h1 className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none truncate group-hover:text-blue-500 transition-colors">
+                <h1 className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none truncate group-hover:text-[var(--accent)] transition-colors">
                   {language === 'vi' ? (scheduleData?.roomNameVi || `Phòng ${currentRoom}`) : (scheduleData?.roomNameEn || `Room ${currentRoom}`)}
                 </h1>
-                <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-medium bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 group-hover:border-slate-400 transition-colors shrink-0">
+                <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-medium bg-slate-100 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 text-slate-600 dark:text-white/70 group-hover:border-slate-400 dark:group-hover:border-white/30 transition-colors shrink-0">
                   {currentClassName}
                 </span>
                 <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-white transition hidden xs:inline">
@@ -221,7 +221,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-slate-300 dark:text-slate-700 hidden xs:inline">•</span>
                 <span className="font-mono text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 tabular-nums shrink-0">
                   {vnTime.timeStr}
-                  <span className="text-blue-500 hidden xs:inline">:{String(vnTime.seconds).padStart(2, '0')}</span>
+                  <span className="text-[var(--accent)] hidden xs:inline">:{String(vnTime.seconds).padStart(2, '0')}</span>
                 </span>
               </div>
             </div>
@@ -451,10 +451,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Bottom Row: Smooth Day & Week Tabs (Only in Class View) */}
+        {/* Bottom Row: OpenDesign Floating Day & Week Capsule */}
         {viewType === 'class' && (
           <div className="w-full overflow-x-auto no-scrollbar scroll-smooth">
-            <div className="flex items-center gap-0.5 sm:gap-1 p-1 rounded-xl sm:rounded-2xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 w-full justify-between sm:justify-start sm:w-auto">
+            <div className="flex items-center gap-0.5 sm:gap-1 p-1 rounded-2xl bg-slate-100/80 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/[0.06] w-full justify-between sm:justify-start sm:w-auto shadow-xs">
               {days.map((d) => {
                 const isSelected = viewMode === 'timeline' && selectedDay === d.dayKey;
                 const label = language === 'vi' ? dayLabelsVi[d.dayKey] : dayLabelsEn[d.dayKey];
@@ -464,26 +464,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                 return (
                   <motion.button
                     key={d.dayKey}
-                    whileTap={{ scale: 0.95 }}
+                    whileTap={{ scale: 0.94 }}
                     onClick={() => {
                       onSelectDay(d.dayKey);
                       onViewModeChange('timeline');
                     }}
-                    className={`relative flex-1 sm:flex-initial px-2 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1 whitespace-nowrap z-10 shrink-0 ${
+                    className={`relative flex-1 sm:flex-initial px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1 whitespace-nowrap z-10 shrink-0 ${
                       isSelected 
-                        ? 'text-white dark:text-slate-900' 
+                        ? 'text-white dark:text-slate-950 font-black' 
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                     }`}
                   >
                     {isSelected && (
                       <motion.div
                         layoutId="active-nav-tab"
-                        className="absolute inset-0 bg-slate-900 dark:bg-white rounded-lg shadow-sm z-[-1]"
-                        transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                        className="absolute inset-0 bg-slate-900 dark:bg-white rounded-xl shadow-sm z-[-1]"
+                        transition={{ type: "spring", stiffness: 480, damping: 34 }}
                       />
                     )}
                     <span>{label}</span>
-                    <span className={`text-[10px] font-medium hidden sm:inline ${isSelected ? 'opacity-85' : 'text-slate-400 dark:text-slate-500'}`}>
+                    <span className={`text-[10px] font-mono tabular-nums hidden sm:inline ${isSelected ? 'opacity-90' : 'text-slate-400 dark:text-slate-500'}`}>
                       {dateStr}
                     </span>
                   </motion.button>
@@ -492,19 +492,19 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {/* Full Week Tab */}
               <motion.button
-                whileTap={{ scale: 0.95 }}
+                whileTap={{ scale: 0.94 }}
                 onClick={() => onViewModeChange('grid')}
-                className={`relative flex-1 sm:flex-initial px-2 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer whitespace-nowrap border-l border-slate-200 dark:border-slate-700 ml-0.5 pl-2 sm:pl-3 z-10 shrink-0 ${
+                className={`relative flex-1 sm:flex-initial px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer whitespace-nowrap border-l border-slate-200/80 dark:border-white/10 ml-0.5 pl-2 sm:pl-3 z-10 shrink-0 ${
                   viewMode === 'grid' 
-                    ? 'text-white dark:text-slate-900' 
+                    ? 'text-white dark:text-slate-950 font-black' 
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                 }`}
               >
                 {viewMode === 'grid' && (
                   <motion.div
                     layoutId="active-nav-tab"
-                    className="absolute inset-0 bg-slate-900 dark:bg-white rounded-lg shadow-sm z-[-1]"
-                    transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                    className="absolute inset-0 bg-slate-900 dark:bg-white rounded-xl shadow-sm z-[-1]"
+                    transition={{ type: "spring", stiffness: 480, damping: 34 }}
                   />
                 )}
                 <span>{language === 'vi' ? 'Tuần' : 'Week'}</span>

@@ -43,7 +43,7 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({
     }
   }, [isCurrent, item.startTime, item.endTime, remainingMinutes]);
 
-  // Recess / Break Card (Zero Icons, Original Slate Palette)
+  // Recess / Break Card (OpenDesign Tactile Break Strip)
   if (isBreak) {
     return (
       <motion.div 
@@ -54,18 +54,21 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({
         whileTap={{ scale: 0.99, transition: springTactile }}
         className={`py-2.5 px-4 rounded-xl border border-dashed text-xs sm:text-sm flex items-center justify-between transition-all cursor-default select-none ${
           isCurrent 
-            ? 'bg-slate-100 dark:bg-slate-800 border-slate-900 dark:border-white shadow-2xs text-slate-900 dark:text-white font-medium' 
+            ? 'bg-amber-500/10 dark:bg-amber-400/10 border-amber-500/50 text-amber-900 dark:text-amber-200 font-semibold shadow-xs' 
             : isPast 
-              ? 'bg-slate-50/50 dark:bg-slate-900/30 border-slate-200/60 dark:border-slate-800/60 text-slate-400 dark:text-slate-500 opacity-60' 
-              : 'bg-white/60 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300'
+              ? 'bg-slate-50/40 dark:bg-white/[0.02] border-slate-200/50 dark:border-white/[0.05] text-slate-400 dark:text-slate-500 opacity-60' 
+              : 'bg-white/40 dark:bg-white/[0.03] border-slate-200/80 dark:border-white/[0.08] text-slate-600 dark:text-slate-300'
         }`}
       >
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-xs sm:text-sm">
+          {isCurrent && (
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
+          )}
+          <span className="font-semibold text-xs sm:text-sm tracking-tight">
             {subjectName}
           </span>
           {isCurrent ? (
-            <span className="text-[10px] sm:text-xs font-mono font-medium text-slate-600 dark:text-slate-300 bg-slate-200/70 dark:bg-white/10 px-2 py-0.5 rounded-md">
+            <span className="text-[10px] sm:text-xs font-mono font-medium text-amber-700 dark:text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-md tabular-nums">
               {language === 'vi' ? `${remainingMinutes}p` : `${remainingMinutes}m`}
             </span>
           ) : (
@@ -74,12 +77,19 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({
             </span>
           )}
         </div>
-        <span className={`font-mono text-xs sm:text-sm tabular-nums ${isPast ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-600 dark:text-slate-300'}`}>
+        <span className={`font-mono text-xs sm:text-sm tabular-nums tracking-tight ${isPast ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-600 dark:text-slate-300'}`}>
           {item.time}
         </span>
       </motion.div>
     );
   }
+
+  const formatRoomBadge = (r?: string) => {
+    if (!r) return '';
+    const clean = r.trim();
+    if (clean.toLowerCase().startsWith('phòng') || clean.toLowerCase().startsWith('p.')) return clean;
+    return `P.${clean}`;
+  };
 
   return (
     <motion.div 
@@ -88,20 +98,20 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({
       initial={variants ? undefined : { opacity: 0, y: 10 }}
       animate={variants ? undefined : { opacity: 1, y: 0 }}
       transition={variants ? undefined : { ...springCard, delay: index * 0.04 }}
-      whileTap={{ scale: 0.98, transition: springTactile }}
-      className={`rounded-2xl p-3.5 sm:p-4.5 border transition-all duration-200 relative overflow-hidden flex items-center justify-between gap-3 sm:gap-4 group cursor-pointer select-none ${
+      whileTap={{ scale: 0.985, transition: springTactile }}
+      className={`rounded-2xl p-3.5 sm:p-4 border transition-all duration-150 relative overflow-hidden flex items-center justify-between gap-3 sm:gap-4 group cursor-pointer select-none ${
         isCurrent 
-          ? 'bg-white dark:bg-[#151720] border-slate-900 dark:border-white shadow-sm ring-1 ring-slate-900/10 dark:ring-white/10' 
+          ? 'bg-[var(--surface-solid)] border-[var(--border-active)] shadow-md ring-1 ring-sky-500/30 dark:ring-sky-400/30' 
           : isPast 
-            ? 'bg-white/60 dark:bg-slate-900/40 border-slate-200/60 dark:border-slate-800/60 opacity-60 hover:opacity-90' 
-            : 'bg-white/95 dark:bg-slate-900/90 backdrop-blur-md border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs'
+            ? 'bg-white/40 dark:bg-white/[0.02] border-slate-200/50 dark:border-white/[0.05] opacity-60 hover:opacity-90' 
+            : 'od-glass hover:border-slate-300 dark:hover:border-white/20'
       }`}
     >
-      {/* Real-time Hairline Progress Track (Clean 1.5px flush at bottom) */}
+      {/* Real-time Hairline Progress Track (Clean 2px flush at bottom) */}
       {isCurrent && (
-        <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-slate-100 dark:bg-slate-800/80 overflow-hidden">
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-100 dark:bg-slate-800/80 overflow-hidden">
           <motion.div 
-            className="h-full bg-slate-900 dark:bg-white"
+            className="h-full bg-[var(--accent)]"
             initial={{ width: 0 }}
             animate={{ width: `${progressPercent}%` }}
             transition={springProgress}
@@ -109,15 +119,15 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({
         </div>
       )}
 
-      {/* Left: Period Badge, Subject & Teacher (Zero Icons) */}
+      {/* Left: Period Badge, Subject & Teacher */}
       <div className="flex items-center gap-3 sm:gap-3.5 min-w-0 flex-1 relative z-10">
         
         {/* Clean Typographic Period Badge */}
         <div 
-          className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-mono font-bold shrink-0 transition-colors ${
+          className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-mono font-bold shrink-0 transition-colors shadow-2xs tabular-nums ${
             isCurrent 
-              ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' 
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+              ? 'bg-[var(--fg)] text-[var(--bg)] font-black' 
+              : 'bg-slate-100 dark:bg-white/[0.06] text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-white/[0.06]'
           }`}
         >
           {typeof item.period === 'number' ? `T${item.period}` : 'T'}
@@ -125,9 +135,14 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            {/* Live pulsating dot for active period */}
+            {isCurrent && (
+              <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse shrink-0" />
+            )}
+
             {/* Subject Title */}
             <h4 
-              className={`font-display font-bold text-sm sm:text-base leading-tight truncate ${
+              className={`font-display font-bold text-sm sm:text-base leading-tight tracking-tight truncate ${
                 isCurrent 
                   ? 'text-slate-900 dark:text-white font-extrabold' 
                   : isPast
@@ -140,14 +155,14 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({
 
             {/* In Progress Time Pill */}
             {isCurrent && (
-              <span className="text-[10px] sm:text-xs font-mono font-medium text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/[0.06] shrink-0">
-                {language === 'vi' ? `${remainingMinutes}p` : `${remainingMinutes}m`}
+              <span className="text-[10px] sm:text-xs font-mono font-medium text-sky-700 dark:text-sky-300 bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded-full shrink-0 tabular-nums">
+                {language === 'vi' ? `Còn ${remainingMinutes}p` : `${remainingMinutes}m left`}
               </span>
             )}
 
-            {/* Concluded Text Label (Zero Icons) */}
+            {/* Concluded Text Label */}
             {isPast && (
-              <span className="text-[10px] sm:text-xs font-medium text-slate-400 dark:text-slate-500 shrink-0">
+              <span className="text-[10px] sm:text-xs font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 shrink-0">
                 {language === 'vi' ? 'Đã xong' : 'Done'}
               </span>
             )}
@@ -156,12 +171,12 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({
           {/* Class, Teacher & Note */}
           <div className="text-xs sm:text-sm font-medium truncate mt-1 flex items-center gap-2">
             {className && (
-              <span className="text-slate-700 dark:text-slate-200 font-semibold">
+              <span className="text-slate-700 dark:text-slate-200 font-semibold tracking-tight">
                 {className}
               </span>
             )}
             {className && <span className="text-slate-300 dark:text-slate-600">•</span>}
-            <span className={isCurrent ? 'text-slate-600 dark:text-slate-300 font-semibold' : 'text-slate-500 dark:text-slate-400'}>
+            <span className={isCurrent ? 'text-slate-700 dark:text-slate-200 font-semibold' : 'text-slate-500 dark:text-slate-400'}>
               {item.teacher || (language === 'vi' ? 'Chưa phân công' : 'TBA')}
             </span>
             {item.note && (
@@ -171,21 +186,21 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({
         </div>
       </div>
 
-      {/* Right: Time & Room (Zero Icons) */}
+      {/* Right: Time & Room */}
       <div className="text-right shrink-0 relative z-10">
         <div 
           className={`text-xs sm:text-sm font-mono font-medium px-2.5 py-1 rounded-xl border tabular-nums transition-colors shadow-2xs ${
             isCurrent 
-              ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white font-semibold' 
+              ? 'bg-[var(--fg)] text-[var(--bg)] border-[var(--fg)] font-bold' 
               : isPast
-                ? 'bg-slate-100/60 dark:bg-slate-800/40 text-slate-400 dark:text-slate-500 border-slate-200/60 dark:border-slate-800/60 line-through decoration-slate-400 dark:decoration-slate-600'
-                : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-slate-200/80 dark:border-slate-700/80'
+                ? 'bg-slate-100/60 dark:bg-white/[0.03] text-slate-400 dark:text-slate-500 border-slate-200/50 dark:border-white/[0.05] line-through'
+                : 'bg-slate-50 dark:bg-white/[0.04] text-slate-700 dark:text-slate-300 border-slate-200/80 dark:border-white/[0.08]'
           }`}
         >
           {item.time}
         </div>
-        <div className="text-xs text-slate-400 dark:text-slate-500 font-medium mt-1">
-          {item.room ? `P.${item.room}` : ''}
+        <div className="text-xs text-slate-400 dark:text-slate-500 font-medium mt-1 truncate max-w-[120px]">
+          {formatRoomBadge(item.room)}
         </div>
       </div>
 

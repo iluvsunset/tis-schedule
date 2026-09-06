@@ -106,11 +106,11 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
         {/* Left: Clock & Date */}
         <div className="flex items-center gap-4">
           <div className="flex flex-col">
-            <div className="flex items-baseline gap-1">
-              <span className="text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 dark:text-white tabular-nums">
+            <div className="flex items-baseline gap-1" suppressHydrationWarning>
+              <span className="text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 dark:text-white tabular-nums" suppressHydrationWarning>
                 {vnTime.timeStr}
               </span>
-              <span className="text-sm font-mono font-bold text-[var(--accent)] tabular-nums">
+              <span className="text-sm font-mono font-bold text-[var(--accent)] tabular-nums" suppressHydrationWarning>
                 :{String(vnTime.seconds).padStart(2, '0')}
               </span>
             </div>
@@ -207,11 +207,11 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
         {/* Tier 1: Clock (Left) + Quick Actions (Right) */}
         <div className="flex items-center justify-between gap-2">
           {/* Digital Clock */}
-          <div className="flex items-baseline gap-1">
-            <span className="text-2xl xs:text-3xl font-display font-black tracking-tight text-slate-900 dark:text-white">
+          <div className="flex items-baseline gap-1" suppressHydrationWarning>
+            <span className="text-2xl xs:text-3xl font-display font-black tracking-tight text-slate-900 dark:text-white" suppressHydrationWarning>
               {vnTime.timeStr}
             </span>
-            <span className="text-xs font-mono font-bold text-amber-500 dark:text-amber-400">
+            <span className="text-xs font-mono font-bold text-amber-500 dark:text-amber-400" suppressHydrationWarning>
               :{String(vnTime.seconds).padStart(2, '0')}
             </span>
           </div>

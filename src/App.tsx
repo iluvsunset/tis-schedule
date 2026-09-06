@@ -26,167 +26,23 @@ const DAY_OF_WEEK_MAP: Record<number, DayKey> = {
   6: 'sat',
 };
 
-// Bidirectional mappings between Class ID and primary Room ID
-export const CLASS_TO_ROOM_MAP: Record<string, string> = {
-  '6': '501',
-  '7': '502',
-  '8': '4010',
-  '9': '4011',
-  '10-tn': '4012',
-  '10.1-tn': '4012',
-  '10-nt': '307',
-  '10.2-nt': '307',
-  '11-tn': '504',
-  '11.1-tn': '504',
-  '11.2-xh': 'P. Tâm lý học đường',
-  '11.2-tn': 'P. Tâm lý học đường',
-  '12-tn': '503'
+import {
+  CLASS_TO_ROOM_MAP,
+  ROOM_TO_CLASS_MAP,
+  isKnownRoom,
+  isKnownClass,
+  ParsedRoute,
+  parsePath
+} from './utils/routeUtils';
+
+export {
+  CLASS_TO_ROOM_MAP,
+  ROOM_TO_CLASS_MAP,
+  isKnownRoom,
+  isKnownClass,
+  type ParsedRoute,
+  parsePath
 };
-
-export const ROOM_TO_CLASS_MAP: Record<string, string> = {
-  '501': '6',
-  '502': '7',
-  '4010': '8',
-  '4011': '9',
-  '4012': '10.1-tn',
-  '307': '10.2-nt',
-  '504': '11.1-tn',
-  'p. tâm lý học đường': '11.2-xh',
-  'tâm lý học đường': '11.2-xh',
-  'tam-ly': '11.2-xh',
-  'tl': '11.2-xh',
-  '503': '12-tn'
-};
-
-export function isKnownRoom(roomId: string): boolean {
-  const clean = roomId.trim().toLowerCase().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
-  const raw = roomId.trim().toLowerCase();
-  return Boolean(
-    ROOM_TO_CLASS_MAP[clean] || 
-    ROOM_TO_CLASS_MAP[raw] || 
-    INITIAL_ROOMS.some(r => {
-      const rClean = r.id.toLowerCase().replace(/^room\s*/i, '').replace(/^p\.?\s*/i, '');
-      return r.id.toLowerCase() === raw || rClean === clean || r.nameVi.toLowerCase() === raw || r.nameEn.toLowerCase() === raw;
-    })
-  );
-}
-
-export function isKnownClass(classId: string): boolean {
-  const clean = classId.trim().toLowerCase();
-  return Boolean(
-    CLASS_TO_ROOM_MAP[clean] || 
-    INITIAL_CLASSES.some(c => c.id.toLowerCase() === clean) ||
-    clean.startsWith('10') ||
-    clean.startsWith('11') ||
-    clean.startsWith('12') ||
-    clean === '6' || clean === '7' || clean === '8' || clean === '9'
-  );
-}
-
-export interface ParsedRoute {
-  lang: Language;
-  viewType: 'room' | 'class';
-  roomId: string;
-  classId: string;
-  isLive: boolean;
-  isValid: boolean;
-}
-
-export function parsePath(pathname: string): ParsedRoute {
-  const clean = pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
-  if (!clean) {
-    return {
-      lang: 'vi',
-      viewType: 'class',
-      roomId: '504',
-      classId: '11-tn',
-      isLive: false,
-      isValid: true
-    };
-  }
-
-  const segments = clean.split('/').filter(Boolean);
-  let lang: Language = 'vi';
-  let idx = 0;
-
-  if (segments[idx] === 'vi' || segments[idx] === 'en') {
-    lang = segments[idx] as Language;
-    idx++;
-  }
-
-  const remaining = segments.slice(idx);
-
-  // 1. Explicit Room Route: /room/:roomId or /room/:roomId/live
-  if (remaining[0] === 'room' && remaining[1]) {
-    const rawRoom = remaining[1].replace(/^p\.?\s*/i, '');
-    const valid = isKnownRoom(rawRoom);
-    return {
-      lang,
-      viewType: 'room',
-      roomId: rawRoom,
-      classId: ROOM_TO_CLASS_MAP[rawRoom] || '11-tn',
-      isLive: true,
-      isValid: valid
-    };
-  }
-
-  // 2. Explicit Class Route: /class/:classId
-  if (remaining[0] === 'class' && remaining[1]) {
-    const cId = remaining[1];
-    const valid = isKnownClass(cId);
-    return {
-      lang,
-      viewType: 'class',
-      roomId: CLASS_TO_ROOM_MAP[cId] || '504',
-      classId: cId,
-      isLive: false,
-      isValid: valid
-    };
-  }
-
-  // 3. Single Segment after lang: e.g. /vi/11-tn or /vi/504
-  if (remaining[0]) {
-    const seg = remaining[0];
-    if (isKnownClass(seg)) {
-      return {
-        lang,
-        viewType: 'class',
-        roomId: CLASS_TO_ROOM_MAP[seg] || '504',
-        classId: seg,
-        isLive: false,
-        isValid: true
-      };
-    }
-    if (isKnownRoom(seg)) {
-      return {
-        lang,
-        viewType: 'room',
-        roomId: seg,
-        classId: ROOM_TO_CLASS_MAP[seg] || '11-tn',
-        isLive: true,
-        isValid: true
-      };
-    }
-    // Unrecognized ID: treat as room number to check (will show 404 Room Not Found if invalid)
-    return {
-      lang,
-      viewType: 'room',
-      roomId: seg,
-      classId: '11-tn',
-      isLive: true,
-      isValid: false
-    };
-  }
-
-  return {
-    lang,
-    viewType: 'class',
-    roomId: '504',
-    classId: '11-tn',
-    isLive: false,
-    isValid: true
-  };
-}
 
 export interface AppProps {
   initialUrl?: string;
@@ -212,53 +68,22 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
         return null;
       }
       const target = route.viewType === 'room' ? route.roomId : (CLASS_TO_ROOM_MAP[route.classId] || route.roomId);
-      const cached = typeof window !== 'undefined' && typeof localStorage !== 'undefined' 
-        ? localStorage.getItem(`tis_room_cache_${target}`) 
-        : null;
-      if (cached) {
-        return JSON.parse(cached);
-      }
       return getFallbackRoomSchedule(target);
     } catch (e) {
       return getFallbackRoomSchedule('504');
     }
   });
 
-  const [theme, setTheme] = useState<ThemeKey>(() => {
-    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      return (localStorage.getItem('tis_theme_pref') as ThemeKey) || 'system';
-    }
-    return 'system';
-  });
-
+  const [theme, setTheme] = useState<ThemeKey>('system');
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
-  const [selectedDay, setSelectedDay] = useState<DayKey>(() => {
-    const currentVn = getVietnamTime();
-    return DAY_OF_WEEK_MAP[currentVn.dayOfWeek] || 'mon';
-  });
+  const [selectedDay, setSelectedDay] = useState<DayKey>('mon');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [vnTime, setVnTime] = useState<VietnamTimeInfo>(getVietnamTime());
   
-  // Cinematic Intro Video Loader: skip during SSR so full schedule markup renders immediately
-  const [showIntroVideo, setShowIntroVideo] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    try {
-      if (sessionStorage.getItem('tis_intro_seen') === 'true') return false;
-      if (typeof navigator !== 'undefined' && !navigator.onLine) return false;
-      const conn = (navigator as any)?.connection;
-      if (conn && (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g')) {
-        return false;
-      }
-    } catch (e) {}
-    return true;
-  });
-
-  const [isRoomModalOpen, setIsRoomModalOpen] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    const route = parsePath(window.location.pathname);
-    if (route.roomId || route.classId) return false;
-    return !localStorage.getItem('tis_selected_room') && !localStorage.getItem('tis_selected_class');
-  });
+  // Cinematic Intro Video Loader: client-only overlay to keep SSR hydration 100% matched
+  const [isClient, setIsClient] = useState(false);
+  const [showIntroVideo, setShowIntroVideo] = useState<boolean>(false);
+  const [isRoomModalOpen, setIsRoomModalOpen] = useState<boolean>(false);
 
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
   const [availableWeeks, setAvailableWeeks] = useState<WeekTabInfo[]>([]);
@@ -266,12 +91,7 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
   const [rooms] = useState<RoomInfo[]>(INITIAL_ROOMS);
 
   // Full-Screen Minimal Focus Mode State
-  const [isMinimalMode, setIsMinimalMode] = useState<boolean>(() => {
-    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      return localStorage.getItem('tis_minimal_mode') === 'true';
-    }
-    return false;
-  });
+  const [isMinimalMode, setIsMinimalMode] = useState<boolean>(false);
 
   const handleToggleMinimalMode = () => {
     setIsMinimalMode(prev => {
@@ -287,6 +107,36 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
     } catch (e) {}
     setShowIntroVideo(false);
   };
+
+  // Safe client-side mount initialization: load saved preferences without breaking SSR hydration
+  useEffect(() => {
+    setIsClient(true);
+    try {
+      if (sessionStorage.getItem('tis_intro_seen') !== 'true') {
+        setShowIntroVideo(true);
+      }
+      if (localStorage.getItem('tis_minimal_mode') === 'true') {
+        setIsMinimalMode(true);
+      }
+      const savedTheme = localStorage.getItem('tis_theme_pref') as ThemeKey;
+      if (savedTheme && ['system', 'light', 'dark'].includes(savedTheme)) {
+        setTheme(savedTheme);
+      }
+      const route = parsePath(window.location.pathname);
+      if (!route.roomId && !route.classId) {
+        if (!localStorage.getItem('tis_selected_room') && !localStorage.getItem('tis_selected_class')) {
+          setIsRoomModalOpen(true);
+        }
+      }
+      if (route.isValid) {
+        const target = route.viewType === 'room' ? route.roomId : (CLASS_TO_ROOM_MAP[route.classId] || route.roomId);
+        const cached = localStorage.getItem(`tis_room_cache_${target}`);
+        if (cached) {
+          setScheduleData(JSON.parse(cached));
+        }
+      }
+    } catch (e) {}
+  }, []);
 
   // 1. Initialize day, load weeks & sync live schedule
   useEffect(() => {
@@ -538,13 +388,13 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMinimalMode, selectedDay]);
 
-  // Priority load the video intro first before everything
-  if (showIntroVideo) {
-    return <IntroVideoLoader onComplete={handleIntroComplete} />;
-  }
-
   return (
     <div className={`min-h-[100dvh] bg-[var(--bg)] relative text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'}`}>
+      
+      {/* Cinematic Intro Video Overlay */}
+      {isClient && showIntroVideo && (
+        <IntroVideoLoader onComplete={handleIntroComplete} />
+      )}
       
       {/* Non-intrusive First-Time Notification Permission Prompt */}
       <NotificationPermissionModal language={language} />
@@ -649,7 +499,7 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
             ) : viewType === 'room' ? (
               /* Dedicated Room Live View: ONLY single live subject, no calendar for whole day */
               <motion.div
-                key={`room-live-${selectedRoomId}-${selectedDay}`}
+                key={`room-live-${selectedRoomId}`}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
@@ -667,7 +517,7 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
             ) : viewMode === 'timeline' ? (
               /* Class View: Full Timetable Schedule like normal in the old code */
               <motion.div
-                key={`class-timeline-${selectedDay}-${selectedWeekGid}-${selectedClassId}`}
+                key={`class-timeline-${selectedClassId}`}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
@@ -692,7 +542,7 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
             ) : (
               /* Class View: Full Week Grid Matrix */
               <motion.div
-                key={`class-matrix-${selectedWeekGid}-${selectedClassId}`}
+                key={`class-matrix-${selectedClassId}`}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}

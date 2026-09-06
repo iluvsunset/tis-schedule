@@ -73,10 +73,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
-  const [notifActive, setNotifActive] = useState(isNotificationEnabled());
+  const [notifActive, setNotifActive] = useState(false);
   const [testCountdown, setTestCountdown] = useState<number | null>(null);
   const countdownIntervalRef = useRef<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setNotifActive(isNotificationEnabled());
+  }, []);
 
   const days = (scheduleData || SCHEDULE_DATA).weekSchedule;
   const matchedClass = INITIAL_CLASSES.find(c => c.id === scheduleData?.classId) || 
@@ -219,9 +223,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">
                 <span className="truncate hidden xs:inline">{language === 'vi' ? 'GV' : 'HR'}: {currentTeacher}</span>
                 <span className="text-slate-300 dark:text-slate-700 hidden xs:inline">•</span>
-                <span className="font-mono text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 tabular-nums shrink-0">
+                <span className="font-mono text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 tabular-nums shrink-0" suppressHydrationWarning>
                   {vnTime.timeStr}
-                  <span className="text-[var(--accent)] hidden xs:inline">:{String(vnTime.seconds).padStart(2, '0')}</span>
+                  <span className="text-[var(--accent)] hidden xs:inline" suppressHydrationWarning>:{String(vnTime.seconds).padStart(2, '0')}</span>
                 </span>
               </div>
             </div>

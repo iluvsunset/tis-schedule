@@ -140,19 +140,25 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
 
     window.startLoop = startTest;
     window.stopLoop = stopTest;
+    window.startloop = startTest;
+    window.stoploop = stopTest;
     window.lockScreensaver = startTest;
     window.unlockScreensaver = stopTest;
+    window.lockscreensaver = startTest;
+    window.unlockscreensaver = stopTest;
     window.screensaver = {
       start: startTest,
       stop: stopTest,
       lock: startTest,
       unlock: stopTest,
+      startloop: startTest,
+      stoploop: stopTest,
       isLocked: () => isScreensaverLockedRef.current,
     };
 
     if (import.meta.env.DEV) {
       console.log(
-        '%c💡 [Screensaver Dev Helper] Test mode available!\nType startLoop() to lock the screensaver loop indefinitely.\nType stopLoop() to stop.',
+        '%c💡 [Screensaver Dev Helper] Test mode available!\nType startLoop() or startloop() to lock the screensaver loop indefinitely.\nType stopLoop() or stoploop() to stop.',
         'color: #ee5421; font-weight: 600;'
       );
     }
@@ -160,8 +166,12 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
     return () => {
       delete window.startLoop;
       delete window.stopLoop;
+      delete window.startloop;
+      delete window.stoploop;
       delete window.lockScreensaver;
       delete window.unlockScreensaver;
+      delete window.lockscreensaver;
+      delete window.unlockscreensaver;
       delete window.screensaver;
     };
   }, []);

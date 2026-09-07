@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, WeekTabInfo, INITIAL_ROOMS, INITIAL_CLASSES, RoomInfo } from './types/schedule';
@@ -12,6 +12,7 @@ import { TeacherModal } from './components/TeacherModal';
 import { RoomSelectorModal } from './components/RoomSelectorModal';
 import { SingleSubjectFocusScreen } from './components/SingleSubjectFocusScreen';
 import { IntroVideoLoader } from './components/IntroVideoLoader';
+import { ScreensaverVideoLoop } from './components/ScreensaverVideoLoop';
 import { NotificationPermissionModal } from './components/NotificationPermissionModal';
 import { getVietnamTime, VietnamTimeInfo, getDateStatus } from './utils/vietnamTime';
 import { checkAndTriggerEveningReminder } from './utils/notificationService';
@@ -102,6 +103,104 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
 
   // Full-Screen Minimal Focus Mode State
   const [isMinimalMode, setIsMinimalMode] = useState<boolean>(false);
+
+  // 10s Inactivity Ambient Screensaver State & Dev Console Test Mode
+  const [isScreensaverActive, setIsScreensaverActive] = useState<boolean>(false);
+  const [isScreensaverLocked, setIsScreensaverLocked] = useState<boolean>(false);
+  const isScreensaverLockedRef = useRef<boolean>(false);
+
+  // Dev Console Test Helper: Allows user to lock the loop so it cannot be stopped except via console command
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const startTest = () => {
+      setShowIntroVideo(false);
+      isScreensaverLockedRef.current = true;
+      setIsScreensaverLocked(true);
+      setIsScreensaverActive(true);
+      if (import.meta.env.DEV) {
+        console.log(
+          '%c[Screensaver Test Mode] 🔒 Video loop & clock are locked!\nNormal mouse, keyboard, click, and touch activities will NOT stop it.\n\n👉 To exit test mode, run in console: stopLoop() or screensaver.stop()',
+          'color: #ee5421; font-weight: bold; font-size: 13px;'
+        );
+      }
+    };
+
+    const stopTest = () => {
+      isScreensaverLockedRef.current = false;
+      setIsScreensaverLocked(false);
+      setIsScreensaverActive(false);
+      if (import.meta.env.DEV) {
+        console.log(
+          '%c[Screensaver Test Mode] 🔓 Video loop unlocked and dismissed.\nNormal 10s idle behavior is restored.',
+          'color: #22c55e; font-weight: bold; font-size: 13px;'
+        );
+      }
+    };
+
+    window.startLoop = startTest;
+    window.stopLoop = stopTest;
+    window.lockScreensaver = startTest;
+    window.unlockScreensaver = stopTest;
+    window.screensaver = {
+      start: startTest,
+      stop: stopTest,
+      lock: startTest,
+      unlock: stopTest,
+      isLocked: () => isScreensaverLockedRef.current,
+    };
+
+    if (import.meta.env.DEV) {
+      console.log(
+        '%c💡 [Screensaver Dev Helper] Test mode available!\nType startLoop() to lock the screensaver loop indefinitely.\nType stopLoop() to stop.',
+        'color: #ee5421; font-weight: 600;'
+      );
+    }
+
+    return () => {
+      delete window.startLoop;
+      delete window.stopLoop;
+      delete window.lockScreensaver;
+      delete window.unlockScreensaver;
+      delete window.screensaver;
+    };
+  }, []);
+
+  // 10s Inactivity Screensaver: Activates looping video with ambient time clock until user keyboard/mouse activity
+  useEffect(() => {
+    // If the initial intro video is actively playing on startup, wait until it finishes
+    if (showIntroVideo) return;
+
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const startIdleTimer = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        setIsScreensaverActive(true);
+      }, 10000);
+    };
+
+    const handleUserActivity = () => {
+      // In dev test lock mode, do not dismiss on activity
+      if (isScreensaverLockedRef.current) return;
+      setIsScreensaverActive(false);
+      startIdleTimer();
+    };
+
+    const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'wheel', 'scroll'];
+    events.forEach((evt) => {
+      window.addEventListener(evt, handleUserActivity, { passive: true });
+    });
+
+    startIdleTimer();
+
+    return () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      events.forEach((evt) => {
+        window.removeEventListener(evt, handleUserActivity);
+      });
+    };
+  }, [showIntroVideo]);
 
   const handleToggleMinimalMode = () => {
     setIsMinimalMode(prev => {
@@ -612,6 +711,23 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
         />
 
       </div>
+
+      {/* 10s Inactivity Ambient Screensaver with Looping Video & Live Clock */}
+      <AnimatePresence>
+        {isScreensaverActive && (
+          <ScreensaverVideoLoop
+            vnTime={vnTime}
+            language={language}
+            scheduleData={scheduleData}
+            onDismiss={() => {
+              if (!isScreensaverLockedRef.current) {
+                setIsScreensaverActive(false);
+              }
+            }}
+            locked={isScreensaverLocked}
+          />
+        )}
+      </AnimatePresence>
 
     </div>
   );

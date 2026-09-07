@@ -283,20 +283,9 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
           <div className="w-full rounded-3xl bg-slate-900/80 hover:bg-slate-900/90 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-4 sm:p-5 transition-all text-white flex flex-col gap-3">
             {/* Status & Time Header */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span
-                  className={`w-2 h-2 rounded-full shrink-0 ${
-                    lessonInfo.status === 'live'
-                      ? 'bg-emerald-400 animate-pulse'
-                      : lessonInfo.status === 'starting-soon'
-                      ? 'bg-amber-400 animate-pulse'
-                      : 'bg-[#ee5421]'
-                  }`}
-                />
-                <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-white/90">
-                  {lessonInfo.badgeText}
-                </span>
-              </div>
+              <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-white/90">
+                {lessonInfo.badgeText}
+              </span>
               <span className="text-[11px] font-mono text-white/50">
                 {lessonInfo.current.time}
               </span>

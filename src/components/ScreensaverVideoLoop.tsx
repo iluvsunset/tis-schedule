@@ -85,8 +85,8 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
     const timer = setTimeout(() => {
       const handleActivity = (e: Event) => {
         // Allow clicking interactive controls without dismissing
-        const target = e.target as HTMLElement | null;
-        if (target?.closest('button')) return;
+        const target = e.target;
+        if (target instanceof Element && target.closest('button')) return;
         onDismiss();
       };
 

@@ -219,8 +219,8 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
         locked ? 'cursor-default' : 'cursor-pointer'
       }`}
     >
-      {/* Background Looping School Video - Perfectly Centered & Never Clipped */}
-      <div className="absolute inset-0 flex items-center justify-center overflow-hidden z-0 pointer-events-none bg-white p-4 sm:p-8">
+      {/* Background Looping School Video - Identical to IntroVideoLoader presentation */}
+      <div className="absolute inset-0 flex items-center justify-center overflow-hidden z-0 pointer-events-none bg-white">
         <video
           ref={videoRef}
           autoPlay
@@ -229,7 +229,7 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
           playsInline
           preload="auto"
           poster="/tis-intro-poster.webp"
-          className="w-full h-full max-w-[320px] xs:max-w-[360px] sm:max-w-[520px] md:max-w-[620px] object-contain transition-transform duration-500 transform-gpu"
+          className="w-full h-full object-contain scale-[2.2] sm:scale-[1.6] md:scale-[1.2] lg:scale-100 transition-transform duration-500 transform-gpu"
         >
           <source src={videoSource} type="video/mp4" />
         </video>

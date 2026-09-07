@@ -588,6 +588,14 @@ export function parseSheetCSV(csvText: string, targetClassId: string = '11-tn'):
       const startTime = formatTime(timeParts[0]);
       const endTime = formatTime(timeParts[1]);
 
+      // School day strictly starts at 07:40 and ends at 16:05 (4:05 PM)
+      if (currentSession === 'morning' && endTime <= '07:40') {
+        continue;
+      }
+      if (currentSession === 'afternoon' && startTime >= '16:05') {
+        continue;
+      }
+
       let cellValue = (row[gradeCol] || '').trim();
 
       // If whole day holiday / field trip, propagate
@@ -653,7 +661,7 @@ export function parseSheetCSV(csvText: string, targetClassId: string = '11-tn'):
             teacher: '',
             type: 'break',
             room: '',
-            note: '20 phút giải lao'
+            note: '15 phút giải lao'
           });
         }
       } else {

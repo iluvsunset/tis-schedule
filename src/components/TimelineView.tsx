@@ -140,8 +140,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
   // Lunch status calculation
   const lunchStatus = (() => {
-    const startMin = 11 * 60 + 30;
-    const endMin = 13 * 60 + 30;
+    const [lsh, lsm] = (dayData.lunch?.startTime || '11:30').split(':').map(Number);
+    const [leh, lem] = (dayData.lunch?.endTime || '13:30').split(':').map(Number);
+    const startMin = (lsh || 11) * 60 + (lsm || 30);
+    const endMin = (leh || 13) * 60 + (lem || 30);
     const currentMin = vnTime.totalMinutes;
 
     if (isToday) {
@@ -248,7 +250,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
           <div className="space-y-2.5 sm:space-y-3">
             <div className="flex items-center justify-between px-1">
               <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 tracking-tight">
-                {language === 'vi' ? 'Buổi Sáng (08:00 – 11:30)' : 'Morning Session (08:00 – 11:30)'}
+                {language === 'vi' ? 'Buổi Sáng (07:40 – 11:30)' : 'Morning Session (07:40 – 11:30)'}
               </h3>
             </div>
 

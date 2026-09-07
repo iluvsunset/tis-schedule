@@ -131,8 +131,8 @@ export function getTomorrowScheduleSummary(language: Language = 'vi'): { title: 
     : `🔔 Tomorrow's Schedule • 11-TN`;
 
   const body = language === 'vi'
-    ? `Sáng (08:00): ${morningSubjects || 'Nghỉ'}\nChiều (13:30): ${afternoonSubjects || 'Nghỉ'}\nPhòng: 504`
-    : `Morning (08:00): ${morningSubjects || 'Off'}\nAfternoon (13:30): ${afternoonSubjects || 'Off'}\nRoom: 504`;
+    ? `Sáng (07:40): ${morningSubjects || 'Nghỉ'}\nChiều (13:30): ${afternoonSubjects || 'Nghỉ'}\nPhòng: 504`
+    : `Morning (07:40): ${morningSubjects || 'Off'}\nAfternoon (13:30): ${afternoonSubjects || 'Off'}\nRoom: 504`;
 
   return { title, body, dayName, morning: morningSubjects, afternoon: afternoonSubjects };
 }

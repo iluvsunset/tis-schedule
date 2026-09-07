@@ -39,8 +39,8 @@ export interface WeekTabInfo {
 export interface ScheduleItem {
   period: number | 'recess';
   time: string;
-  startTime: string; // "08:00"
-  endTime: string;   // "08:45"
+  startTime: string; // "07:40"
+  endTime: string;   // "08:25"
   subjectVi: string;
   subjectEn: string;
   teacher: string;

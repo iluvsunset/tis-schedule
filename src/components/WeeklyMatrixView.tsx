@@ -32,11 +32,12 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
   onToggleMinimalMode
 }) => {
   const periodsConfig = [
-    { labelVi: "S1", labelEn: "M1", time: "08:00 - 08:45", startTime: "08:00", endTime: "08:45", isMorning: true, period: 1 },
-    { labelVi: "S2", labelEn: "M2", time: "08:50 - 09:35", startTime: "08:50", endTime: "09:35", isMorning: true, period: 2 },
-    { labelVi: "Chơi", labelEn: "Rec", time: "09:35 - 09:55", startTime: "09:35", endTime: "09:55", isBreak: true },
-    { labelVi: "S3", labelEn: "M3", time: "09:55 - 10:40", startTime: "09:55", endTime: "10:40", isMorning: true, period: 3 },
-    { labelVi: "S4", labelEn: "M4", time: "10:45 - 11:30", startTime: "10:45", endTime: "11:30", isMorning: true, period: 4 },
+    { labelVi: "S1", labelEn: "M1", time: "07:40 - 08:25", startTime: "07:40", endTime: "08:25", isMorning: true, period: 1 },
+    { labelVi: "S2", labelEn: "M2", time: "08:30 - 09:15", startTime: "08:30", endTime: "09:15", isMorning: true, period: 2 },
+    { labelVi: "Chơi", labelEn: "Rec", time: "09:15 - 09:30", startTime: "09:15", endTime: "09:30", isBreak: true },
+    { labelVi: "S3", labelEn: "M3", time: "09:30 - 10:15", startTime: "09:30", endTime: "10:15", isMorning: true, period: 3 },
+    { labelVi: "S4", labelEn: "M4", time: "10:20 - 11:05", startTime: "10:20", endTime: "11:05", isMorning: true, period: 4 },
+    { labelVi: "S5", labelEn: "M5", time: "11:10 - 11:55", startTime: "11:10", endTime: "11:55", isMorning: true, period: 5 },
     { labelVi: "Trưa", labelEn: "Lunch", time: "11:30 - 13:30", startTime: "11:30", endTime: "13:30", isLunch: true },
     { labelVi: "C1", labelEn: "A1", time: "13:30 - 14:15", startTime: "13:30", endTime: "14:15", isMorning: false, period: 1 },
     { labelVi: "C2", labelEn: "A2", time: "14:20 - 15:05", startTime: "14:20", endTime: "15:05", isMorning: false, period: 2 },

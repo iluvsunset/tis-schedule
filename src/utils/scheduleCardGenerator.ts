@@ -178,7 +178,7 @@ export async function generateScheduleCardDataUrl(language: Language = 'vi'): Pr
   // Morning Column
   drawSessionBox(
     language === 'vi' ? 'BUỔI SÁNG' : 'MORNING',
-    '08:00 - 11:30',
+    '07:40 - 11:30',
     dayData.morning,
     50,
     155,

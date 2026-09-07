@@ -246,7 +246,7 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
         <button
           type="button"
           onClick={toggleFullscreen}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/70 hover:bg-slate-900/90 active:scale-95 backdrop-blur-xl border border-white/15 shadow-md text-xs font-medium text-white/90 transition-all cursor-pointer pointer-events-auto"
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/25 hover:bg-slate-950/40 active:scale-95 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-md text-xs font-medium text-white/90 transition-all cursor-pointer pointer-events-auto"
           title="Toggle Fullscreen (F)"
         >
           {isFullscreen ? (
@@ -260,7 +260,7 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
         </button>
 
         {/* Class / Room Pill */}
-        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/70 backdrop-blur-xl border border-white/15 shadow-md text-xs font-semibold text-white/90 pointer-events-auto">
+        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-950/25 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-md text-xs font-semibold text-white/90 pointer-events-auto">
           <span>{gradeName}</span>
           {roomName && (
             <>
@@ -271,26 +271,26 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
         </div>
       </motion.div>
 
-      {/* Bottom-Left Ambient Digital Clock Card */}
+      {/* Ambient Digital Clock Card: On Top for Smaller Devices, Bottom-Left for Desktop */}
       <motion.div
-        initial={{ opacity: 0, x: -25, y: 15 }}
-        animate={{ opacity: 1, x: 0, y: 0 }}
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.45, ease: 'easeOut' }}
-        className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 z-20 pointer-events-auto"
+        className="absolute top-16 left-4 right-4 sm:top-auto sm:bottom-8 sm:left-8 sm:right-auto z-20 pointer-events-auto"
       >
-        <div className="px-6 py-3.5 sm:px-7 sm:py-4 rounded-3xl bg-slate-900/80 hover:bg-slate-900/90 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.22)] flex flex-col items-start text-left transition-all">
+        <div className="w-full sm:w-auto px-4 py-2 sm:px-7 sm:py-4 rounded-2xl sm:rounded-3xl bg-slate-950/25 hover:bg-slate-950/35 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 hover:border-white/30 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_12px_40px_rgba(0,0,0,0.35)] flex items-center justify-between sm:flex-col sm:items-start text-left transition-all">
           {/* Digital Time with Accented Seconds */}
           <div className="flex items-baseline justify-start gap-1 text-white drop-shadow-md">
-            <span className="text-4xl sm:text-5xl font-black font-display tracking-tight tabular-nums select-none">
+            <span className="text-xl sm:text-4xl md:text-5xl font-black font-display tracking-tight tabular-nums select-none">
               {vnTime.timeStr}
             </span>
-            <span className="text-xl sm:text-2xl font-mono font-bold text-[#ee5421] tabular-nums select-none">
+            <span className="text-sm sm:text-xl md:text-2xl font-mono font-bold text-[#ee5421] tabular-nums select-none">
               :{String(vnTime.seconds).padStart(2, '0')}
             </span>
           </div>
 
           {/* Full Date & Day Name */}
-          <div className="mt-1 text-xs font-semibold text-slate-300 tracking-wide flex items-center justify-start gap-2">
+          <div className="text-[11px] sm:text-xs font-semibold text-slate-300 tracking-wide flex items-center justify-start gap-1.5 sm:gap-2 sm:mt-1">
             <span>{language === 'vi' ? vnTime.dayNameVi : vnTime.dayNameEn}</span>
             <span className="text-white/40">•</span>
             <span className="font-mono text-white/90">{vnTime.dateStr}</span>
@@ -298,55 +298,55 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
         </div>
       </motion.div>
 
-      {/* Right Column Floating Lesson Schedule Panel */}
+      {/* Floating Lesson Schedule Panel: Bottom for Smaller Devices, Bottom-Right for Desktop */}
       {lessonInfo && lessonInfo.current && (
         <motion.div
-          initial={{ opacity: 0, x: 25, y: 15 }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.45, ease: 'easeOut' }}
-          className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 z-20 flex flex-col items-end pointer-events-auto max-w-[320px] sm:max-w-[360px] md:max-w-[380px] w-full"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.45, ease: 'easeOut' }}
+          className="absolute bottom-4 left-4 right-4 sm:bottom-8 sm:right-8 sm:left-auto sm:max-w-[360px] md:max-w-[380px] w-auto sm:w-full z-20 flex flex-col items-end pointer-events-auto"
         >
-          <div className="w-full rounded-3xl bg-slate-900/80 hover:bg-slate-900/90 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-4 sm:p-5 transition-all text-white flex flex-col gap-3">
+          <div className="w-full rounded-2xl sm:rounded-3xl bg-slate-950/25 hover:bg-slate-950/35 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 hover:border-white/30 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_12px_40px_rgba(0,0,0,0.35)] p-3 sm:p-5 transition-all text-white flex flex-col gap-2 sm:gap-3">
             {/* Status & Time Header */}
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-white/90">
+              <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-white/90">
                 {lessonInfo.badgeText}
               </span>
-              <span className="text-[11px] font-mono text-white/50">
+              <span className="text-[10px] sm:text-[11px] font-mono text-white/60">
                 {lessonInfo.current.time}
               </span>
             </div>
 
             {/* Starting / Active Lesson Hero Card */}
-            <div className="flex flex-col gap-1.5 p-3 rounded-2xl bg-white/[0.06] border border-white/10 shadow-inner">
+            <div className="flex flex-col gap-1 sm:gap-1.5 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 shadow-inner backdrop-blur-md">
               <div className="flex items-center justify-between">
-                <span className="px-2 py-0.5 rounded-md bg-[#ee5421]/25 text-[#ee5421] font-mono text-[11px] font-bold">
+                <span className="px-2 py-0.5 rounded-md bg-[#ee5421]/25 text-[#ee5421] font-mono text-[10px] sm:text-[11px] font-bold">
                   {language === 'vi' ? `Tiết ${lessonInfo.current.period}` : `Period ${lessonInfo.current.period}`}
                 </span>
                 {lessonInfo.current.room && (
-                  <span className="text-[11px] font-mono text-white/80 flex items-center gap-1">
+                  <span className="text-[10px] sm:text-[11px] font-mono text-white/80 flex items-center gap-1">
                     <MapPin className="w-3 h-3 text-[#ee5421]" />
                     {language === 'vi' ? `Phòng ${lessonInfo.current.room}` : `Room ${lessonInfo.current.room}`}
                   </span>
                 )}
               </div>
 
-              <div className="text-base sm:text-lg font-black font-display tracking-tight text-white line-clamp-1">
+              <div className="text-sm sm:text-base md:text-lg font-bold font-display tracking-tight text-white line-clamp-1">
                 {language === 'vi' ? lessonInfo.current.subjectVi : lessonInfo.current.subjectEn}
               </div>
 
-              <div className="text-xs text-white/70 flex items-center justify-between gap-2">
+              <div className="text-[11px] sm:text-xs text-white/70 flex items-center justify-between gap-2">
                 <span className="flex items-center gap-1.5 truncate">
                   <User className="w-3 h-3 text-white/40 shrink-0" />
                   <span className="truncate">{lessonInfo.current.teacher || (language === 'vi' ? 'Chưa phân công' : 'TBD')}</span>
                 </span>
                 {lessonInfo.status === 'live' && lessonInfo.remainingMinutes > 0 && (
-                  <span className="font-mono text-[#ee5421] font-bold text-[11px] shrink-0">
+                  <span className="font-mono text-[#ee5421] font-bold text-[10px] sm:text-[11px] shrink-0">
                     {language === 'vi' ? `còn ${lessonInfo.remainingMinutes}'` : `${lessonInfo.remainingMinutes}m left`}
                   </span>
                 )}
                 {lessonInfo.status === 'starting-soon' && lessonInfo.minutesUntilStart > 0 && (
-                  <span className="font-mono text-amber-400 font-bold text-[11px] shrink-0">
+                  <span className="font-mono text-amber-400 font-bold text-[10px] sm:text-[11px] shrink-0">
                     {language === 'vi' ? `sau ${lessonInfo.minutesUntilStart}'` : `in ${lessonInfo.minutesUntilStart}m`}
                   </span>
                 )}
@@ -363,9 +363,9 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
               )}
             </div>
 
-            {/* List of Coming Up Lessons */}
+            {/* List of Coming Up Lessons (Minimized: Hidden on Smaller Screens, Visible on sm+) */}
             {lessonInfo.upcoming.length > 0 && (
-              <div className="flex flex-col gap-1.5 pt-0.5">
+              <div className="hidden sm:flex flex-col gap-1.5 pt-0.5">
                 <div className="flex items-center justify-between text-[10px] font-mono font-bold tracking-wider uppercase text-white/45 px-0.5">
                   <span>{language === 'vi' ? 'Tiết tiếp theo' : 'Coming Up Next'}</span>
                   <span>{lessonInfo.upcoming.length} {language === 'vi' ? 'tiết' : 'lessons'}</span>
@@ -375,7 +375,7 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
                   {lessonInfo.upcoming.map((item, idx) => (
                     <div
                       key={`${item.period}-${idx}`}
-                      className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 transition-all text-xs"
+                      className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm transition-all text-xs"
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-white/10 text-white/80 shrink-0">

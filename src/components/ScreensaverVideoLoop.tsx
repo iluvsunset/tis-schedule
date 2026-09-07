@@ -271,15 +271,41 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
         </div>
       </motion.div>
 
-      {/* Right Column Floating Command Center: Lesson Panel + Ambient Digital Clock */}
+      {/* Bottom-Left Ambient Digital Clock Card */}
       <motion.div
-        initial={{ opacity: 0, x: 25, y: 15 }}
+        initial={{ opacity: 0, x: -25, y: 15 }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         transition={{ delay: 0.2, duration: 0.45, ease: 'easeOut' }}
-        className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 z-20 flex flex-col items-end gap-3 pointer-events-auto max-w-[320px] sm:max-w-[360px] md:max-w-[380px] w-full"
+        className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 z-20 pointer-events-auto"
       >
-        {/* Floating Lesson Schedule Panel */}
-        {lessonInfo && lessonInfo.current && (
+        <div className="px-6 py-3.5 sm:px-7 sm:py-4 rounded-3xl bg-slate-900/80 hover:bg-slate-900/90 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.22)] flex flex-col items-start text-left transition-all">
+          {/* Digital Time with Accented Seconds */}
+          <div className="flex items-baseline justify-start gap-1 text-white drop-shadow-md">
+            <span className="text-4xl sm:text-5xl font-black font-display tracking-tight tabular-nums select-none">
+              {vnTime.timeStr}
+            </span>
+            <span className="text-xl sm:text-2xl font-mono font-bold text-[#ee5421] tabular-nums select-none">
+              :{String(vnTime.seconds).padStart(2, '0')}
+            </span>
+          </div>
+
+          {/* Full Date & Day Name */}
+          <div className="mt-1 text-xs font-semibold text-slate-300 tracking-wide flex items-center justify-start gap-2">
+            <span>{language === 'vi' ? vnTime.dayNameVi : vnTime.dayNameEn}</span>
+            <span className="text-white/40">•</span>
+            <span className="font-mono text-white/90">{vnTime.dateStr}</span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Right Column Floating Lesson Schedule Panel */}
+      {lessonInfo && lessonInfo.current && (
+        <motion.div
+          initial={{ opacity: 0, x: 25, y: 15 }}
+          animate={{ opacity: 1, x: 0, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.45, ease: 'easeOut' }}
+          className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 z-20 flex flex-col items-end pointer-events-auto max-w-[320px] sm:max-w-[360px] md:max-w-[380px] w-full"
+        >
           <div className="w-full rounded-3xl bg-slate-900/80 hover:bg-slate-900/90 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-4 sm:p-5 transition-all text-white flex flex-col gap-3">
             {/* Status & Time Header */}
             <div className="flex items-center justify-between">
@@ -375,28 +401,8 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
               </div>
             )}
           </div>
-        )}
-
-        {/* Ambient Digital Clock Card */}
-        <div className="w-full px-6 py-3.5 sm:px-7 sm:py-4 rounded-3xl bg-slate-900/80 hover:bg-slate-900/90 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.22)] flex flex-col items-end text-right transition-all">
-          {/* Digital Time with Accented Seconds */}
-          <div className="flex items-baseline justify-end gap-1 text-white drop-shadow-md">
-            <span className="text-4xl sm:text-5xl font-black font-display tracking-tight tabular-nums select-none">
-              {vnTime.timeStr}
-            </span>
-            <span className="text-xl sm:text-2xl font-mono font-bold text-[#ee5421] tabular-nums select-none">
-              :{String(vnTime.seconds).padStart(2, '0')}
-            </span>
-          </div>
-
-          {/* Full Date & Day Name */}
-          <div className="mt-1 text-xs font-semibold text-slate-300 tracking-wide flex items-center justify-end gap-2">
-            <span>{language === 'vi' ? vnTime.dayNameVi : vnTime.dayNameEn}</span>
-            <span className="text-white/40">•</span>
-            <span className="font-mono text-white/90">{vnTime.dateStr}</span>
-          </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      )}
     </motion.div>
   );
 };

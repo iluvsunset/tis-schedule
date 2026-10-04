@@ -49,6 +49,8 @@ interface NavbarProps {
   isMinimalMode?: boolean;
   onToggleMinimalMode?: () => void;
   viewType?: 'room' | 'class';
+  selectedClassId?: string;
+  onSelectClass?: (classId: string, mappedRoomId?: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -69,7 +71,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   scheduleData,
   isMinimalMode,
   onToggleMinimalMode,
-  viewType = 'class'
+  viewType = 'class',
+  selectedClassId,
+  onSelectClass
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
@@ -201,24 +205,46 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </motion.button>
 
-            {/* Interactive Room Number Switcher */}
+            {/* Interactive Room & Grade 11 Class Switcher */}
             <div className="min-w-0">
-              <motion.button
-                whileTap={{ scale: 0.98 }}
-                onClick={onOpenRoomSelector || onOpenClassModal}
-                className="flex items-center gap-1.5 cursor-pointer group text-left max-w-full"
-                title={language === 'vi' ? "Nhấn để nhập hoặc đổi số phòng học" : "Click to enter or change room number"}
-              >
-                <h1 className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none truncate group-hover:text-[var(--accent)] transition-colors">
+              <div className="flex items-center gap-1.5 max-w-full">
+                <button
+                  type="button"
+                  onClick={onOpenRoomSelector || onOpenClassModal}
+                  className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none truncate hover:text-[var(--accent)] transition-colors cursor-pointer"
+                  title={language === 'vi' ? "Nhấn để xem thông tin lớp" : "Click to view class details"}
+                >
                   {language === 'vi' ? (scheduleData?.roomNameVi || `Phòng ${currentRoom}`) : (scheduleData?.roomNameEn || `Room ${currentRoom}`)}
-                </h1>
-                <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-medium bg-slate-100 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 text-slate-600 dark:text-white/70 group-hover:border-slate-400 dark:group-hover:border-white/30 transition-colors shrink-0">
-                  {currentClassName}
-                </span>
-                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-white transition hidden xs:inline">
-                  [{language === 'vi' ? 'Đổi' : 'Change'}]
-                </span>
-              </motion.button>
+                </button>
+
+                {/* Direct 11.1 vs 11.2 Segmented Switcher Pill */}
+                <div className="flex items-center rounded-full bg-slate-100 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 p-0.5 text-[10px] sm:text-[11px] font-mono shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => onSelectClass ? onSelectClass('11.1-tn', '504') : onOpenClassModal?.()}
+                    className={`px-2 py-0.5 rounded-full transition cursor-pointer font-bold ${
+                      (scheduleData?.classId === '11.1-tn' || currentRoom === '504' || selectedClassId === '11.1-tn' || selectedClassId === '11-tn' || (!selectedClassId && !scheduleData?.classId))
+                        ? 'bg-amber-500/20 text-amber-900 dark:text-amber-300 shadow-xs'
+                        : 'text-slate-400 hover:text-slate-800 dark:hover:text-white'
+                    }`}
+                    title="Lớp 11.1-TN · P.504"
+                  >
+                    11.1
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onSelectClass ? onSelectClass('11.2-xh', 'P. Tâm lý học đường') : onOpenClassModal?.()}
+                    className={`px-2 py-0.5 rounded-full transition cursor-pointer font-bold ${
+                      (scheduleData?.classId === '11.2-xh' || currentRoom.includes('Tâm lý') || currentRoom.includes('tam') || selectedClassId === '11.2-xh')
+                        ? 'bg-amber-500/20 text-amber-900 dark:text-amber-300 shadow-xs'
+                        : 'text-slate-400 hover:text-slate-800 dark:hover:text-white'
+                    }`}
+                    title="Lớp 11.2-TN & XH · P. Tâm lý"
+                  >
+                    11.2
+                  </button>
+                </div>
+              </div>
 
               <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">
                 <span className="truncate hidden xs:inline">{language === 'vi' ? 'GV' : 'HR'}: {currentTeacher}</span>

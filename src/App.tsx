@@ -238,11 +238,7 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
         setTheme(savedTheme);
       }
       const route = parsePath(window.location.pathname);
-      if (!route.roomId && !route.classId) {
-        if (!localStorage.getItem('tis_selected_room') && !localStorage.getItem('tis_selected_class')) {
-          setIsRoomModalOpen(true);
-        }
-      }
+
       if (route.isValid) {
         const target = route.viewType === 'room' ? route.roomId : (CLASS_TO_ROOM_MAP[route.classId] || route.roomId);
         const cached = localStorage.getItem(`tis_room_cache_${target}`);
@@ -560,6 +556,8 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
             isMinimalMode={isMinimalMode}
             onToggleMinimalMode={handleToggleMinimalMode}
             viewType={viewType}
+            selectedClassId={selectedClassId}
+            onSelectClass={handleSelectClass}
           />
         )}
 

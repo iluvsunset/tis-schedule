@@ -125,7 +125,7 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
       ? '/tis-promo-remotion-720p.mp4'
       : '/tis-promo-remotion-final-30s.mp4';
 
-  // Play video continuously in a loop with audio support
+  // Play video continuously in a loop with robust autoplay handling
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -144,17 +144,28 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
     video.setAttribute('autoplay', '');
     video.setAttribute('loop', '');
 
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.catch((err) => {
-        console.warn('Screensaver loop video playback notice:', err);
-      });
-    }
+    const tryPlay = () => {
+      if (!video) return;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // If browser blocked unmuted play or was interrupted, force muted and retry
+          video.muted = true;
+          video.play().catch(() => {});
+        });
+      }
+    };
+
+    tryPlay();
+
+    video.addEventListener('canplay', tryPlay);
+    video.addEventListener('loadeddata', tryPlay);
 
     return () => {
-      video.pause();
+      video.removeEventListener('canplay', tryPlay);
+      video.removeEventListener('loadeddata', tryPlay);
     };
-  }, [videoSource]);
+  }, [videoSource, isMuted]);
 
   const gradeName = language === 'vi' 
     ? (scheduleData?.gradeTitleVi || 'Lớp 11-TN') 
@@ -268,12 +279,19 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
       {/* Background: School Video Seamlessly Floating Fullscreen (Responsive layout & low-end device optimization) */}
       <div className="absolute inset-0 flex items-center justify-center overflow-hidden z-0 pointer-events-none bg-white">
         <video
-          ref={videoRef}
+          ref={(el) => {
+            if (el) {
+              el.muted = isMuted;
+              el.defaultMuted = true;
+            }
+            // @ts-ignore
+            videoRef.current = el;
+          }}
           key={videoSource}
           src={videoSource}
           autoPlay
           loop
-          muted={isMuted}
+          muted
           playsInline
           preload="auto"
           poster="/tis-intro-poster.webp"

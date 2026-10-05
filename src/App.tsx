@@ -218,23 +218,14 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
     // If the initial intro video is actively playing on startup, wait until it finishes
     if (showIntroVideo) return;
 
-    // Screensaver is only for desktop kiosk mode (not mobile phones / touch devices)
-    const isMobileDevice = typeof window !== 'undefined' && (
-      window.innerWidth < 768 || 
-      'ontouchstart' in window || 
-      (navigator.maxTouchPoints && navigator.maxTouchPoints > 0)
-    );
-
-    if (isMobileDevice) return;
-
     let idleTimer: ReturnType<typeof setTimeout> | null = null;
 
     const startIdleTimer = () => {
       if (idleTimer) clearTimeout(idleTimer);
-      // 3 minutes of desktop idle inactivity before screensaver
+      // 15 seconds of idle inactivity before ambient screensaver activates
       idleTimer = setTimeout(() => {
         setIsScreensaverActive(true);
-      }, 180000);
+      }, 15000);
     };
 
     const handleUserActivity = () => {

@@ -48,6 +48,8 @@ import {
   PauseIcon,
   PaintBoardIcon,
   Globe02Icon,
+  VolumeHighIcon,
+  VolumeOffIcon,
 } from 'hugeicons-react';
 
 /**
@@ -87,6 +89,8 @@ export const CheckSquare = wrap(CheckmarkSquare02Icon, 'CheckSquare');
 export const LayoutList = wrap(ListViewIcon, 'LayoutList');
 export const Grid = wrap(GridViewIcon, 'Grid');
 export const Palette = wrap(PaintBoardIcon, 'Palette');
+export const Volume2 = wrap(VolumeHighIcon, 'Volume2');
+export const VolumeX = wrap(VolumeOffIcon, 'VolumeX');
 
 // --- Notifications / theme ---------------------------------------------------
 export const Bell = wrap(Notification01Icon, 'Bell');

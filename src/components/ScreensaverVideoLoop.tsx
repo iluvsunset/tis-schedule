@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Maximize2, Minimize2, MapPin, User, Calendar, Sparkles } from './icons';
+import { Maximize2, Minimize2, MapPin, User, Calendar, Sparkles, Volume2, VolumeX } from './icons';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { Language, ScheduleData, DayKey, ScheduleItem } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
@@ -22,6 +22,7 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
 
   // Sync fullscreen state with document
   useEffect(() => {
@@ -41,34 +42,36 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
     }
   };
 
-  // Play video continuously in a loop
-  useEffect(() => {
+  const toggleSound = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     const video = videoRef.current;
     if (!video) return;
 
-    video.muted = true;
-    video.defaultMuted = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.setAttribute('playsinline', 'true');
-    video.setAttribute('webkit-playsinline', 'true');
-    video.setAttribute('muted', '');
-    video.setAttribute('autoplay', '');
-    video.setAttribute('loop', '');
-
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.catch((err) => {
-        console.warn('Screensaver loop video playback notice:', err);
+    if (isMuted) {
+      video.muted = false;
+      video.volume = 1.0;
+      video.play().then(() => {
+        setIsMuted(false);
+      }).catch((err) => {
+        console.warn('Playback with audio prevented by browser:', err);
+        video.muted = true;
+        setIsMuted(true);
       });
+    } else {
+      video.muted = true;
+      setIsMuted(true);
     }
-  }, []);
+  };
 
-  // Keyboard shortcut (F) and user activity dismissal listener
+  // Keyboard shortcut (F for fullscreen, M for audio) and user activity dismissal listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'f' || e.key === 'F') {
         toggleFullscreen();
+        return;
+      }
+      if (e.key === 'm' || e.key === 'M') {
+        toggleSound();
         return;
       }
       if (!locked) {
@@ -103,12 +106,55 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
       window.removeEventListener('keydown', handleKeyDown);
       clearTimeout(timer);
     };
-  }, [onDismiss, locked]);
+  }, [onDismiss, locked, isMuted]);
 
+  // Responsive device tier detection & video source selection:
+  // Mobile (<768px): Keep same original logo video as requested
+  // Tablet (768px - 1023px) or low-spec devices: Hardware-optimized 720p (4.3MB, level 3.1) with AAC audio
+  // Laptop / Desktop (>=1024px): Crisp 1080p promo video (11.3MB, level 4.1) with AAC audio
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const isTabletOrLowEnd = typeof window !== 'undefined' && (
+    (window.innerWidth >= 768 && window.innerWidth < 1024) ||
+    // @ts-ignore
+    (typeof navigator !== 'undefined' && navigator.deviceMemory && navigator.deviceMemory <= 4)
+  );
+
   const videoSource = isMobile
     ? '/The_International_School_Logo_mobile.mp4'
-    : '/The_International_School_Logo.mp4';
+    : isTabletOrLowEnd
+      ? '/tis-promo-remotion-720p.mp4'
+      : '/tis-promo-remotion-final-30s.mp4';
+
+  // Play video continuously in a loop with audio support
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = isMuted;
+    video.defaultMuted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('webkit-playsinline', 'true');
+    if (isMuted) {
+      video.setAttribute('muted', '');
+    } else {
+      video.removeAttribute('muted');
+    }
+    video.setAttribute('autoplay', '');
+    video.setAttribute('loop', '');
+
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((err) => {
+        console.warn('Screensaver loop video playback notice:', err);
+      });
+    }
+
+    return () => {
+      video.pause();
+    };
+  }, [videoSource]);
 
   const gradeName = language === 'vi' 
     ? (scheduleData?.gradeTitleVi || 'Lớp 11-TN') 
@@ -219,7 +265,7 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
         locked ? 'cursor-default' : 'cursor-pointer'
       }`}
     >
-      {/* Background: School Video Seamlessly Floating Fullscreen (Scaled gracefully for mobile) */}
+      {/* Background: School Video Seamlessly Floating Fullscreen (Responsive layout & low-end device optimization) */}
       <div className="absolute inset-0 flex items-center justify-center overflow-hidden z-0 pointer-events-none bg-white">
         <video
           ref={videoRef}
@@ -227,39 +273,71 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
           src={videoSource}
           autoPlay
           loop
-          muted
+          muted={isMuted}
           playsInline
           preload="auto"
           poster="/tis-intro-poster.webp"
-          className="w-full h-full object-contain scale-[1.55] sm:scale-100 sm:object-cover transition-transform duration-500 transform-gpu relative z-10"
+          className={`w-full h-full ${
+            isMobile
+              ? 'object-contain scale-[1.55] sm:scale-100 sm:object-cover'
+              : 'object-cover'
+          } transition-transform duration-500 transform-gpu relative z-10`}
         />
       </div>
 
-      {/* Top Bar: Fullscreen Control & Class/Room Badges */}
+      {/* Top Bar: Controls & Class/Room Badges */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.35 }}
         className="absolute top-5 sm:top-7 left-5 sm:left-8 right-5 sm:right-8 z-20 flex items-center justify-between pointer-events-none"
       >
-        {/* Fullscreen Toggle Button */}
-        <button
-          type="button"
-          onClick={toggleFullscreen}
-          className="btn-cozy bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl border-[1.5px] border-[#ded0bf] shadow-puffy flex items-center gap-2 text-xs font-mono font-bold text-[var(--fg)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all cursor-pointer pointer-events-auto"
-          title="Toggle Fullscreen (F)"
-        >
-          {isFullscreen ? (
-            <Minimize2 className="w-4 h-4 text-[var(--accent)]" />
-          ) : (
-            <Maximize2 className="w-4 h-4 text-[var(--accent)]" />
+        {/* Action Controls (Fullscreen + Audio Toggle) */}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Fullscreen Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="btn-cozy bg-white/95 backdrop-blur-md px-3.5 sm:px-4 py-2 rounded-2xl border-[1.5px] border-[#ded0bf] shadow-puffy flex items-center gap-2 text-xs font-mono font-bold text-[var(--fg)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all cursor-pointer"
+            title="Toggle Fullscreen (F)"
+          >
+            {isFullscreen ? (
+              <Minimize2 className="w-4 h-4 text-[var(--accent)]" />
+            ) : (
+              <Maximize2 className="w-4 h-4 text-[var(--accent)]" />
+            )}
+            <span className="hidden sm:inline font-mono text-xs font-bold tracking-wide">
+              {isFullscreen 
+                ? (language === 'vi' ? 'Thu Nhỏ (F)' : 'Exit Fullscreen') 
+                : (language === 'vi' ? 'Toàn Màn Hình (F)' : 'Fullscreen')}
+            </span>
+          </button>
+
+          {/* Audio Mute/Unmute Button (available for desktop/tablet promo video with soundtrack) */}
+          {!isMobile && (
+            <button
+              type="button"
+              onClick={toggleSound}
+              className={`btn-cozy bg-white/95 backdrop-blur-md px-3.5 sm:px-4 py-2 rounded-2xl border-[1.5px] shadow-puffy flex items-center gap-2 text-xs font-mono font-bold transition-all cursor-pointer ${
+                !isMuted 
+                  ? 'border-[var(--accent)] text-[var(--accent)] bg-[#ffedd5]' 
+                  : 'border-[#ded0bf] text-[var(--fg)] hover:text-[var(--accent)] hover:border-[var(--accent)]'
+              }`}
+              title={isMuted ? 'Unmute Audio (M)' : 'Mute Audio (M)'}
+            >
+              {!isMuted ? (
+                <Volume2 className="w-4 h-4 text-[var(--accent)] animate-pulse" />
+              ) : (
+                <VolumeX className="w-4 h-4 text-[#9a3412]" />
+              )}
+              <span className="hidden sm:inline font-mono text-xs font-bold tracking-wide">
+                {!isMuted
+                  ? (language === 'vi' ? 'Tắt Âm (M)' : 'Mute (M)')
+                  : (language === 'vi' ? 'Bật Âm (M)' : 'Unmute (M)')}
+              </span>
+            </button>
           )}
-          <span className="hidden sm:inline font-mono text-xs font-bold tracking-wide">
-            {isFullscreen 
-              ? (language === 'vi' ? 'Thu Nhỏ (F)' : 'Exit Fullscreen') 
-              : (language === 'vi' ? 'Toàn Màn Hình (F)' : 'Fullscreen')}
-          </span>
-        </button>
+        </div>
 
         {/* Class / Room Pill */}
         <div className="bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border-[1.5px] border-[#ded0bf] shadow-puffy flex items-center gap-2 pointer-events-auto">

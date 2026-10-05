@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="vi" class="scroll-smooth dark">
+<html lang="vi" class="scroll-smooth" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="color-scheme" content="dark" />
-  <meta name="theme-color" content="transparent" id="theme-color-meta" />
+  <meta name="theme-color" content="#f7f4eb" id="theme-color-meta" />
+  <script>document.documentElement.classList.remove('dark');document.documentElement.setAttribute('data-theme','light');try{localStorage.removeItem('tis_theme_pref');}catch(e){}</script>
 
   <!-- Preload Instant Visual Poster -->
   <link rel="preload" href="/tis-intro-poster.webp" as="image" type="image/webp" />
@@ -44,20 +44,20 @@
   <!-- iOS / iPadOS PWA Full Screen & Status Bar -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="TIS Schedule" />
   <link rel="apple-touch-icon" href="/tis-logo.png" />
 
-  <!-- Google Fonts: Montserrat (TIS Official) & Plus Jakarta Sans -->
+  <!-- Google Fonts: Baloo 2 (adorable bubbly display with full Vietnamese support) & Nunito (soft body) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&display=swap"
     rel="stylesheet" />
 </head>
 
 <body
-  class="selection:bg-slate-900 selection:text-white dark:selection:bg-white dark:selection:text-slate-900 transition-colors duration-300">
+  class="transition-colors duration-300">
   <div id="root"><!--ssr-outlet--></div>
   <script type="module" src="/src/entry-client.tsx"></script>
 </body>

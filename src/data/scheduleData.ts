@@ -1771,6 +1771,24 @@ export const SUBJECT_METADATA: Record<SubjectType, {
     text: "text-rose-900 dark:text-rose-200",
     accent: "#f43f5e"
   },
+  activity: {
+    nameVi: "Hoạt Động / CLB",
+    nameEn: "Activity / Club",
+    badgeBg: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+    bg: "bg-amber-500/5 dark:bg-amber-500/10",
+    border: "border-amber-200 dark:border-amber-900/50",
+    text: "text-amber-900 dark:text-amber-200",
+    accent: "#f59e0b"
+  },
+  humanities: {
+    nameVi: "Khoa Học Xã Hội",
+    nameEn: "Humanities & Social Studies",
+    badgeBg: "bg-rose-500/10 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300 border-rose-200 dark:border-rose-800",
+    bg: "bg-rose-500/5 dark:bg-rose-500/10",
+    border: "border-rose-200 dark:border-rose-900/50",
+    text: "text-rose-900 dark:text-rose-200",
+    accent: "#f43f5e"
+  },
   break: {
     nameVi: "Giờ Ra Chơi",
     nameEn: "Recess Break",

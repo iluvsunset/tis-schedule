@@ -23,3 +23,9 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Media & local testing artifacts
+video-projects/
+capture_live/
+test_*.png
+scripts/capture_real_ui.cjs

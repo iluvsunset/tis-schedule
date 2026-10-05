@@ -7,6 +7,7 @@ import { VietnamTimeInfo, getDateStatus, formatScheduleDate } from '../utils/vie
 import { listContainerVariants as containerVariants, listItemVariants as itemVariants } from '../utils/motionTokens';
 import { TimelineCard } from './TimelineCard';
 import { WeekSelectorButton } from './WeekSelectorButton';
+import { Sun, Sunset, Coffee, Utensils, Sparkles } from './icons';
 
 interface TimelineViewProps {
   selectedDay: DayKey;
@@ -19,7 +20,6 @@ interface TimelineViewProps {
   selectedWeekGid?: string;
   onSelectWeek?: (gid: string) => void;
   isMinimalMode?: boolean;
-  onToggleMinimalMode?: () => void;
   onOpenRoomSelector?: () => void;
   onSwitchToLiveFocus?: () => void;
 }
@@ -35,8 +35,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   selectedWeekGid,
   onSelectWeek,
   isMinimalMode,
-  onToggleMinimalMode,
-  onOpenRoomSelector,
+  onOpenRoomSelector: _onOpenRoomSelector,
   onSwitchToLiveFocus
 }) => {
   const currentSchedule = scheduleData || SCHEDULE_DATA;
@@ -86,6 +85,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const morningItems = filterItems(dayData.morning);
   const afternoonItems = filterItems(dayData.afternoon);
 
+  // Lesson counts (excluding breaks)
+  const morningLessons = morningItems.filter(i => i.type !== 'break').length;
+  const afternoonLessons = afternoonItems.filter(i => i.type !== 'break').length;
+  const totalLessons = morningLessons + afternoonLessons;
+
   // Check if entire day is a national holiday
   const isAllDayHoliday = React.useMemo(() => {
     const holidayMorning = dayData.morning.filter(i => i.type !== 'break').every(i => /nghỉ lễ/i.test(i.subjectVi) || /holiday/i.test(i.subjectEn));
@@ -99,10 +103,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
       : { x: 0.5, y: 0.5 };
 
     confetti({
-      particleCount: 70,
-      spread: 60,
+      particleCount: 75,
+      spread: 70,
       origin,
-      colors: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444']
+      colors: ['#d4674a', '#f7e7a9', '#d3e3c4', '#f6d5d8', '#d4e4ea']
     });
   };
 
@@ -135,9 +139,6 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     ? `${dayData.dayNameVi} · ${formattedDate}`
     : `${dayData.dayNameEn} · ${formattedDate}`;
 
-  const roomName = currentSchedule.roomNameVi || `Phòng ${currentSchedule.room}`;
-  const className = language === 'vi' ? currentSchedule.gradeTitleVi : currentSchedule.gradeTitleEn;
-
   // Lunch status calculation
   const lunchStatus = (() => {
     const [lsh, lsm] = (dayData.lunch?.startTime || '11:30').split(':').map(Number);
@@ -157,49 +158,40 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   })();
 
   return (
-    <div className="space-y-4 select-none relative z-20">
+    <div className="space-y-5 sm:space-y-6 select-none relative z-20 w-full">
       
-      {/* Top Header Bar (OpenDesign Glass Pill Bar) */}
+      {/* Prominent, Adorable Day Status / Greeting Banner */}
       {!isMinimalMode && (
         <motion.div 
-          key={`header-${selectedDay}`}
-          initial={{ opacity: 0, y: -6 }}
+          key={`banner-${selectedDay}`}
+          initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className="od-glass rounded-2xl px-4 py-2.5 flex items-center justify-between gap-3 border border-slate-200/80 dark:border-white/[0.08] relative z-40"
+          className="bg-white rounded-3xl p-4 sm:p-6 pt-5 sm:pt-6 border-[1.5px] border-[var(--border)] shadow-puffy flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden"
         >
-          {/* Day & Room Info */}
-          <div className="flex items-center gap-2 flex-wrap min-w-0">
-            <h2 className="text-sm sm:text-base font-display font-extrabold text-slate-900 dark:text-white tracking-tight truncate">
+          {/* Soft decorative ambient glow in top corner */}
+          <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-[#fef3c7]/40 blur-2xl pointer-events-none" />
+
+          {/* Left: Day Title, Date */}
+          <div className="space-y-1.5 min-w-0 relative z-10 pt-1">
+            <h2 className="text-2xl sm:text-3xl font-display font-black text-[var(--fg)] tracking-tight leading-snug">
               {dayTitle}
             </h2>
-            {isToday && (
-              <span className="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider bg-[var(--fg)] text-[var(--bg)] rounded-md shadow-xs">
-                {language === 'vi' ? 'Hôm Nay' : 'Today'}
-              </span>
-            )}
-            <button
-              type="button"
-              onClick={onOpenRoomSelector}
-              className="text-xs text-slate-500 dark:text-slate-400 font-medium hover:text-slate-800 dark:hover:text-white transition cursor-pointer"
-            >
-              • {roomName} ({className})
-            </button>
+
+            <p className="text-xs sm:text-sm text-[var(--fg-muted)] font-semibold flex items-center gap-2">
+              <span>{language === 'vi' ? `Tổng cộng ${totalLessons} tiết học trong ngày` : `${totalLessons} total lessons today`}</span>
+              {isToday && (
+                <>
+                  <span>•</span>
+                  <span className="text-[var(--accent)] font-bold">{vnTime.timeStr} (UTC+7)</span>
+                </>
+              )}
+            </p>
           </div>
 
-          {/* Controls: Live Room Toggle & Week Selector */}
-          <div className="flex items-center gap-2 shrink-0">
-            {onSwitchToLiveFocus && (
-              <button
-                type="button"
-                onClick={onSwitchToLiveFocus}
-                className="px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white dark:hover:bg-white/[0.1] text-xs font-mono font-bold text-slate-800 dark:text-slate-200 transition cursor-pointer shadow-xs"
-                title={language === 'vi' ? 'Màn hình hiển thị 1 môn đang bắt đầu' : 'Single starting subject display'}
-              >
-                {language === 'vi' ? 'Phòng Trực Tiếp' : 'Live Room'}
-              </button>
-            )}
-
+          {/* Right: Quick Action Controls */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap shrink-0 relative z-10">
+            {/* Week Selector Button if available */}
             {availableWeeks && availableWeeks.length > 0 && onSelectWeek && (
               <WeekSelectorButton
                 availableWeeks={availableWeeks}
@@ -209,21 +201,23 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
               />
             )}
 
-            {onToggleMinimalMode && (
+            {/* Live Room Switcher Button */}
+            {onSwitchToLiveFocus && (
               <button
                 type="button"
-                onClick={onToggleMinimalMode}
-                className="hidden sm:flex px-2.5 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 text-xs font-mono uppercase bg-white/70 dark:bg-white/[0.05] text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-white/[0.1] transition cursor-pointer shadow-xs"
-                title="Full-screen minimal focus (F)"
+                onClick={onSwitchToLiveFocus}
+                className="btn-cozy px-3.5 py-2.5 rounded-2xl text-xs font-mono font-bold text-[var(--fg)] hover:text-[var(--accent)] transition cursor-pointer shadow-xs flex items-center gap-1.5"
+                title={language === 'vi' ? 'Màn hình hiển thị 1 môn đang bắt đầu' : 'Single starting subject display'}
               >
-                Focus
+                <Sparkles className="w-3.5 h-3.5 text-[var(--accent)]" />
+                <span>{language === 'vi' ? 'Phòng Trực Tiếp' : 'Live Room'}</span>
               </button>
             )}
           </div>
         </motion.div>
       )}
 
-      {/* If All-Day Holiday: Show Celebration Card (Zero Icons, Original Palette) */}
+      {/* If All-Day Holiday: Show Celebration Card */}
       {isAllDayHoliday ? (
         <motion.div 
           key={`holiday-${selectedDay}`}
@@ -231,31 +225,42 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.3 }}
           onClick={(e) => triggerCelebrationConfetti(e)}
-          className="glass-card rounded-3xl p-8 sm:p-12 border border-rose-200/80 dark:border-rose-900/40 bg-gradient-to-br from-rose-500/10 via-amber-500/5 to-transparent text-center space-y-3 shadow-sm cursor-pointer select-none"
+          className="bg-white rounded-3xl p-8 sm:p-12 border-[1.5px] border-[var(--border)] bg-gradient-to-br from-[#ffedd5]/40 via-[#fef3c7]/30 to-white text-center space-y-3.5 shadow-puffy cursor-pointer select-none"
         >
-          <h3 className="text-xl sm:text-3xl font-display font-black text-slate-900 dark:text-white tracking-tight">
+          <Sparkles className="w-9 h-9 text-[var(--accent)] mx-auto animate-pulse" />
+          <h3 className="text-xl sm:text-3xl font-display font-black text-[var(--fg)] tracking-tight">
             {language === 'vi' ? 'NGHỈ LỄ QUỐC KHÁNH 2/9' : 'VIETNAM NATIONAL DAY HOLIDAY'}
           </h3>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium max-w-md mx-auto">
+          <p className="text-xs sm:text-sm text-[var(--fg-secondary)] font-medium max-w-md mx-auto">
             {language === 'vi' 
-              ? 'Toàn trường TIS nghỉ lễ theo quy định. Không có tiết học trong ngày. (Nhấn để mừng lễ)' 
-              : 'All TIS classes are off in observance of National Day. (Tap to celebrate)'}
+              ? 'Toàn trường TIS nghỉ lễ theo quy định. Không có tiết học trong ngày. (Nhấn để mừng lễ ✨)' 
+              : 'All TIS classes are off in observance of National Day. (Tap to celebrate ✨)'}
           </p>
         </motion.div>
       ) : (
-        /* Regular Day Morning & Afternoon Grid (Zero Icons, Original Color Palette) */
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+        /* Regular Day Morning & Afternoon Bento Grid (Spacious, Expansive 2-Column Desktop) */
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 lg:gap-8 items-start w-full min-w-0">
           
-          {/* Morning Session Column */}
-          <div className="space-y-2.5 sm:space-y-3">
-            <div className="flex items-center justify-between px-1">
-              <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 tracking-tight">
-                {language === 'vi' ? 'Buổi Sáng (07:40 – 11:30)' : 'Morning Session (07:40 – 11:30)'}
-              </h3>
+          {/* Column 1 (Left): Morning Session Section */}
+          <div className="bg-white rounded-3xl p-3 xs:p-4 sm:p-6 border-[1.5px] border-[var(--border)] shadow-puffy flex flex-col gap-3 sm:gap-4 min-w-0 w-full overflow-hidden">
+            
+            {/* Morning Header: Sun Icon & 07:40 - 11:30 */}
+            <div className="flex items-center justify-between px-1 pb-3 border-b border-[var(--border)]/70">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-2xl bg-[#fef3c7] flex items-center justify-center text-[#92400e] shadow-xs shrink-0">
+                  <Sun className="w-4.5 h-4.5 text-[#d97706]" />
+                </div>
+                <h3 className="font-display font-black text-base sm:text-lg text-[var(--fg)] tracking-tight">
+                  {language === 'vi' ? 'Buổi Sáng' : 'Morning Session'}
+                </h3>
+              </div>
+              <span className="px-3 py-1 rounded-full text-xs font-bold font-mono tabular-nums bg-[#fef3c7] text-[#92400e] border border-[#fde68a] shadow-xs">
+                07:40 – 11:30
+              </span>
             </div>
 
             {morningItems.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500 glass-card rounded-2xl">
+              <div className="p-8 text-center text-xs text-[var(--fg-muted)] rounded-2xl border-[1.5px] border-dashed border-[var(--border)] bg-[#faf8f2] font-medium">
                 {language === 'vi' ? 'Không có tiết học nào phù hợp bộ lọc' : 'No periods matching filter'}
               </div>
             ) : (
@@ -263,7 +268,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 variants={containerVariants}
                 initial={hasAnimatedRef.current ? false : "hidden"}
                 animate="visible"
-                className="space-y-2.5 sm:space-y-3"
+                className="space-y-3"
               >
                 {morningItems.map((item, idx) => {
                   const status = getPeriodStatus(item);
@@ -275,6 +280,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                       isCurrent={status.isCurrent}
                       isPast={status.isPast}
                       remainingMinutes={status.remainingMinutes}
+                      vnTime={vnTime}
                       variants={itemVariants}
                     />
                   );
@@ -283,67 +289,110 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             )}
           </div>
 
-          {/* Afternoon Session Column */}
-          <div className="space-y-2.5 sm:space-y-3">
-            
-            {/* Lunch Break Bar (OpenDesign Tactile Lunch Strip) */}
+          {/* Column 2 (Right): Lunch Break Connector + Afternoon Session Section */}
+          <div className="flex flex-col gap-5 sm:gap-6 lg:gap-8">
+
+            {/* Standalone Lunch Break Connector Card: Cozy Café Styling (11:30 – 13:30) */}
             <motion.div 
-              initial={{ opacity: 0, y: 4 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`p-2.5 sm:p-3 rounded-2xl border transition-all flex items-center justify-between text-xs select-none ${
+              whileHover={{ y: -1.5, transition: { duration: 0.18 } }}
+              className={`p-4 sm:p-5 rounded-3xl border-[1.5px] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 select-none card-cozy-interactive ${
                 lunchStatus.isCurrent
-                  ? 'bg-amber-500/15 border-amber-500/40 ring-1 ring-amber-400/40 text-amber-900 dark:text-amber-200 shadow-sm font-bold'
+                  ? 'bg-gradient-to-r from-[#fffbeb] via-[#fef3c7] to-[#fff7ed] border-[var(--accent)] card-current-glow ring-2 ring-[var(--accent)]/20 shadow-md text-[var(--fg)]'
                   : lunchStatus.isPast
-                    ? 'bg-slate-100/50 dark:bg-white/[0.02] border-slate-200/50 dark:border-white/[0.05] text-slate-400 dark:text-slate-500 line-through'
-                    : 'bg-amber-500/10 dark:bg-amber-400/10 border-amber-500/20 text-amber-900 dark:text-amber-300'
+                    ? 'bg-white/80 border-[var(--border)] text-[var(--fg-faint)] opacity-70 shadow-xs'
+                    : 'bg-white border-[var(--border)] text-[var(--fg-secondary)] shadow-puffy hover:border-[var(--border-hover)]'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-xs tracking-tight">
-                  {language === 'vi' ? dayData.lunch.titleVi : dayData.lunch.titleEn}
-                </span>
-                {lunchStatus.isCurrent && (
-                  <span className="px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[9px] uppercase tabular-nums">
-                    {lunchStatus.remainingMinutes}p
-                  </span>
-                )}
+              <div className="flex items-center gap-3.5 min-w-0">
+                <div className="w-10 h-10 rounded-2xl bg-[#fef3c7] text-[#92400e] border border-[#fde68a] flex items-center justify-center shadow-xs shrink-0">
+                  {lunchStatus.isCurrent ? (
+                    <Utensils className="w-5 h-5 text-[var(--accent)] animate-pulse" />
+                  ) : (
+                    <Coffee className="w-5 h-5 text-[#92400e]" />
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-display font-black text-sm sm:text-base text-[var(--fg)] tracking-tight truncate">
+                      {language === 'vi' ? dayData.lunch.titleVi : dayData.lunch.titleEn}
+                    </span>
+                    {lunchStatus.isCurrent && (
+                      <span className="px-2.5 py-0.5 rounded-full font-mono font-black text-[11px] bg-[#ffedd5] text-[#9a3412] border border-[#fed7aa] shadow-xs tabular-nums shrink-0">
+                        {language === 'vi' ? `Còn ${lunchStatus.remainingMinutes}p` : `${lunchStatus.remainingMinutes}m left`}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11px] sm:text-xs text-[var(--fg-muted)] font-medium mt-0.5 truncate">
+                    {language === 'vi' 
+                      ? 'Giờ ăn trưa, nạp năng lượng & nghỉ ngơi tại trường' 
+                      : 'Lunch break & rest time at school'}
+                  </p>
+                </div>
               </div>
-              <span className="font-mono text-xs font-semibold tabular-nums">{dayData.lunch.time}</span>
+
+              <div className="shrink-0 text-right sm:self-center">
+                <span className={`px-3.5 py-1.5 rounded-full text-xs font-mono font-bold tabular-nums border shadow-xs inline-block ${
+                  lunchStatus.isCurrent 
+                    ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
+                    : lunchStatus.isPast 
+                      ? 'bg-[var(--bg-subtle)] text-[var(--fg-faint)] border-[var(--border)] line-through'
+                      : 'bg-[#fff8f0] text-[var(--accent)] border-[var(--border)]'
+                }`}>
+                  11:30 – 13:30
+                </span>
+              </div>
             </motion.div>
 
-            <div className="flex items-center justify-between px-1 pt-1">
-              <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 tracking-tight">
-                {language === 'vi' ? 'Buổi Chiều (13:30 – 16:05)' : 'Afternoon Session (13:30 – 16:05)'}
-              </h3>
+            {/* Afternoon Session Section */}
+            <div className="bg-white rounded-3xl p-3 xs:p-4 sm:p-6 border-[1.5px] border-[var(--border)] shadow-puffy flex flex-col gap-3 sm:gap-4 min-w-0 w-full overflow-hidden">
+              
+              {/* Afternoon Header: Sunset Icon & 13:30 - 16:05 */}
+              <div className="flex items-center justify-between px-1 pb-3 border-b border-[var(--border)]/70">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-2xl bg-[#e0f2fe] flex items-center justify-center text-[#0369a1] shadow-xs shrink-0">
+                    <Sunset className="w-4.5 h-4.5 text-[#0284c7]" />
+                  </div>
+                  <h3 className="font-display font-black text-base sm:text-lg text-[var(--fg)] tracking-tight">
+                    {language === 'vi' ? 'Buổi Chiều' : 'Afternoon Session'}
+                  </h3>
+                </div>
+                <span className="px-3 py-1 rounded-full text-xs font-bold font-mono tabular-nums bg-[#e0f2fe] text-[#0369a1] border border-[#bae6fd] shadow-xs">
+                  13:30 – 16:05
+                </span>
+              </div>
+
+              {afternoonItems.length === 0 ? (
+                <div className="p-8 text-center text-xs text-[var(--fg-muted)] rounded-2xl border-[1.5px] border-dashed border-[var(--border)] bg-[#faf8f2] font-medium">
+                  {language === 'vi' ? 'Không có tiết học buổi chiều' : 'No afternoon classes'}
+                </div>
+              ) : (
+                <motion.div 
+                  variants={containerVariants}
+                  initial={hasAnimatedRef.current ? false : "hidden"}
+                  animate="visible"
+                  className="space-y-3"
+                >
+                  {afternoonItems.map((item, idx) => {
+                    const status = getPeriodStatus(item);
+                    return (
+                      <TimelineCard
+                        key={`afternoon-${item.period}-${idx}`}
+                        item={item}
+                        language={language}
+                        isCurrent={status.isCurrent}
+                        isPast={status.isPast}
+                        remainingMinutes={status.remainingMinutes}
+                        vnTime={vnTime}
+                        variants={itemVariants}
+                      />
+                    );
+                  })}
+                </motion.div>
+              )}
             </div>
 
-            {afternoonItems.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500 od-glass rounded-2xl">
-                {language === 'vi' ? 'Không có tiết học buổi chiều' : 'No afternoon classes'}
-              </div>
-            ) : (
-              <motion.div 
-                variants={containerVariants}
-                initial={hasAnimatedRef.current ? false : "hidden"}
-                animate="visible"
-                className="space-y-2.5 sm:space-y-3"
-              >
-                {afternoonItems.map((item, idx) => {
-                  const status = getPeriodStatus(item);
-                  return (
-                    <TimelineCard
-                      key={`afternoon-${item.period}-${idx}`}
-                      item={item}
-                      language={language}
-                      isCurrent={status.isCurrent}
-                      isPast={status.isPast}
-                      remainingMinutes={status.remainingMinutes}
-                      variants={itemVariants}
-                    />
-                  );
-                })}
-              </motion.div>
-            )}
           </div>
         </div>
       )}

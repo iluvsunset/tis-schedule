@@ -16,7 +16,6 @@ interface WeeklyMatrixViewProps {
   selectedWeekGid?: string;
   onSelectWeek?: (gid: string) => void;
   isMinimalMode?: boolean;
-  onToggleMinimalMode?: () => void;
 }
 
 export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
@@ -28,8 +27,7 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
   availableWeeks,
   selectedWeekGid,
   onSelectWeek,
-  isMinimalMode,
-  onToggleMinimalMode
+  isMinimalMode
 }) => {
   const periodsConfig = [
     { labelVi: "S1", labelEn: "M1", time: "07:40 - 08:25", startTime: "07:40", endTime: "08:25", isMorning: true, period: 1 },
@@ -54,18 +52,18 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.99 }}
       transition={springCard}
-      className="od-glass rounded-2xl p-2.5 sm:p-3.5 shadow-sm border border-slate-200/80 dark:border-white/[0.08] relative z-20"
+      className="od-glass rounded-3xl p-3 sm:p-5 shadow-puffy border-[1.5px] border-[var(--border)] relative z-20"
     >
       {/* Top Header Bar (Only in Standard Mode) */}
       {!isMinimalMode && (
-        <div className="flex items-center justify-between mb-2.5 relative z-40">
+        <div className="flex items-center justify-between mb-3 relative z-40">
           <div className="flex items-center gap-2">
-            <h2 className="text-xs sm:text-sm font-display font-bold text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-xs sm:text-sm font-display font-black text-[var(--fg)] tracking-tight">
               {language === 'vi' 
                 ? `Thời Khóa Biểu Tuần • ${currentSchedule.gradeTitleVi || 'Lớp 11-TN'}` 
                 : `Full Weekly Matrix • ${currentSchedule.gradeTitleEn || 'Grade 11-TN'}`}
             </h2>
-            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium hidden md:inline">
+            <span className="text-[11px] text-[var(--fg-muted)] font-semibold hidden md:inline">
               • {language === 'vi' ? 'Phòng' : 'Room'} {currentSchedule.room || '504'} ({language === 'vi' ? 'GVQN' : 'HR'}: {currentSchedule.homeroomTeacher?.name})
             </span>
           </div>
@@ -79,22 +77,11 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
               />
             )}
 
-            {/* Full-Screen Minimal Mode Toggle Button */}
-            {onToggleMinimalMode && (
-              <motion.button 
-                whileTap={gestureTokens.button.whileTap}
-                onClick={onToggleMinimalMode}
-                className="no-print px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white dark:hover:bg-white/[0.1] text-xs font-mono uppercase text-slate-700 dark:text-slate-200 transition cursor-pointer shadow-xs"
-                title={language === 'vi' ? "Chế độ xem tối giản (Phím F)" : "Full-screen minimal (F)"}
-              >
-                Focus
-              </motion.button>
-            )}
 
             <motion.button 
               whileTap={gestureTokens.button.whileTap}
               onClick={() => window.print()}
-              className="no-print px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white dark:hover:bg-white/[0.1] text-xs font-mono uppercase text-slate-700 dark:text-slate-200 transition cursor-pointer shadow-xs"
+              className="btn-cozy no-print px-3 py-1.5 rounded-2xl text-xs font-mono font-bold uppercase text-[var(--fg)] transition cursor-pointer shadow-xs"
             >
               <span>{language === 'vi' ? 'In Lịch' : 'Print'}</span>
             </motion.button>
@@ -106,19 +93,19 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
       <div className="overflow-x-auto">
         <table className="w-full min-w-[700px] border-collapse text-xs">
         <thead>
-          <tr className="text-left bg-slate-100/70 dark:bg-white/[0.04] border-b border-slate-200/80 dark:border-white/[0.08]">
-            <th className="p-2 font-bold text-slate-600 dark:text-slate-300 rounded-l-xl w-20 text-center font-mono tabular-nums">
+          <tr className="text-left bg-[var(--surface-solid)] border-b border-[var(--border)]">
+            <th className="p-2.5 font-bold text-[var(--fg-muted)] rounded-l-2xl w-20 text-center font-mono tabular-nums text-xs">
               {language === 'vi' ? 'Tiết / Giờ' : 'Period'}
             </th>
             {days.map((d) => {
               const isToday = getDateStatus(d.date, vnTime.dateStr) === 'today';
               return (
-                <th key={d.dayKey} className={`p-2 font-bold ${isToday ? 'bg-slate-200/70 dark:bg-white/[0.08] text-slate-900 dark:text-white rounded-t-xl' : 'text-slate-700 dark:text-slate-300'}`}>
-                  <div className="flex items-center gap-1 font-mono">
-                    <span>{language === 'vi' ? d.dayNameVi : d.dayNameEn}</span>
-                    <span className="text-[10px] font-normal text-slate-400 tabular-nums">({d.date.slice(0, 5)})</span>
+                <th key={d.dayKey} className={`p-2.5 font-bold ${isToday ? 'bg-[var(--fg)] text-[var(--bg)] rounded-t-2xl shadow-xs' : 'text-[var(--fg)]'}`}>
+                  <div className="flex items-center gap-1.5 font-mono">
+                    <span className="font-bold">{language === 'vi' ? d.dayNameVi : d.dayNameEn}</span>
+                    <span className={`text-[10px] tabular-nums font-semibold ${isToday ? 'opacity-90' : 'text-[var(--fg-muted)]'}`}>({d.date.slice(0, 5)})</span>
                     {isToday && (
-                      <span className="ml-1 px-1.5 py-0.2 bg-[var(--fg)] text-[var(--bg)] rounded text-[9px] font-black uppercase">
+                      <span className="chip-peach px-2 py-0.5 rounded-full text-[9px] font-black uppercase shadow-xs">
                         Today
                       </span>
                     )}
@@ -128,16 +115,16 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
             })}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+        <tbody className="divide-y divide-[var(--border)]">
           {periodsConfig.map((row, rIdx) => {
             if (row.isLunch) {
               return (
-                <tr key={rIdx} className="bg-slate-50/60 dark:bg-slate-900/40 font-semibold text-slate-700 dark:text-slate-300">
-                  <td className="p-1 font-mono text-[10px] text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
+                <tr key={rIdx} className="bg-[var(--butter)]/40 font-bold text-[var(--fg)]">
+                  <td className="p-2 font-mono text-[10px] text-[var(--fg-secondary)] text-center whitespace-nowrap font-bold">
                     11:30 - 13:30
                   </td>
-                  <td colSpan={days.length} className="p-1 text-center text-[11px] tracking-wide font-mono">
-                    <span className="text-amber-600 dark:text-amber-400">{language === 'vi' ? 'NGHỈ TRƯA & DÙNG BỮA' : 'LUNCH BREAK & REST'}</span>
+                  <td colSpan={days.length} className="p-2 text-center text-xs tracking-wide font-display font-black text-[#7a5f12]">
+                    <span>{language === 'vi' ? 'NGHỈ TRƯA & DÙNG BỮA' : 'LUNCH BREAK & REST'}</span>
                   </td>
                 </tr>
               );
@@ -145,11 +132,11 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
 
             if (row.isBreak) {
               return (
-                <tr key={rIdx} className="bg-slate-50/40 dark:bg-slate-900/20 text-slate-500 dark:text-slate-400 font-mono">
-                  <td className="p-1 font-mono text-[10px] text-center whitespace-nowrap">
+                <tr key={rIdx} className="bg-[var(--surface-solid)]/50 text-[var(--fg-muted)] font-mono">
+                  <td className="p-1.5 font-mono text-[10px] text-center whitespace-nowrap font-semibold">
                     {row.time.split(' - ')[0]}
                   </td>
-                  <td colSpan={days.length} className="p-1 text-center text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                  <td colSpan={days.length} className="p-1.5 text-center text-[10px] text-[var(--fg-muted)] uppercase tracking-wider font-bold">
                     <span>{language === 'vi' ? 'Ra chơi giải lao' : 'Recess Interval'}</span>
                   </td>
                 </tr>
@@ -163,12 +150,12 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
             const currentMin = vnTime.totalMinutes;
 
             return (
-              <tr key={rIdx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
-                <td className="p-1 border-r border-slate-100 dark:border-slate-800 text-center whitespace-nowrap bg-slate-50/40 dark:bg-slate-800/20">
-                  <div className="font-bold text-slate-800 dark:text-slate-200 text-xs">
+              <tr key={rIdx} className="hover:bg-[var(--surface-active)]/40 transition-colors">
+                <td className="p-1.5 border-r border-[var(--border)] text-center whitespace-nowrap bg-[var(--surface-solid)]/60">
+                  <div className="font-display font-black text-[var(--fg)] text-xs">
                     {language === 'vi' ? row.labelVi : row.labelEn}
                   </div>
-                  <div className="text-[9px] font-mono text-slate-400 dark:text-slate-500">{row.time.split(' - ')[0]}</div>
+                  <div className="text-[10px] font-mono text-[var(--fg-muted)]">{row.time.split(' - ')[0]}</div>
                 </td>
 
                 {days.map((day) => {
@@ -190,7 +177,7 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                   const item = session.find(i => i.period === row.period);
 
                   if (!item) {
-                    return <td key={day.dayKey} className="p-1 text-slate-300 dark:text-slate-600 text-center">-</td>;
+                    return <td key={day.dayKey} className="p-1 text-[var(--fg-faint)] text-center">-</td>;
                   }
 
                   const subjectName = language === 'vi' ? item.subjectVi : item.subjectEn;
@@ -209,27 +196,27 @@ export const WeeklyMatrixView: React.FC<WeeklyMatrixViewProps> = ({
                     : 'opacity-20 grayscale';
 
                   return (
-                    <td key={day.dayKey} className={`p-1 align-top ${isToday ? 'bg-slate-50/30 dark:bg-slate-800/20' : ''}`}>
+                    <td key={day.dayKey} className={`p-1.5 align-top ${isToday ? 'bg-[var(--peach)]/10' : ''}`}>
                       <motion.div 
                         whileTap={gestureTokens.subtle.whileTap}
-                        className={`p-2 rounded-xl transition-all relative ${
+                        className={`p-2.5 rounded-2xl transition-all relative border-[1.5px] ${
                           isCurrent 
-                            ? 'bg-[var(--surface-solid)] border-2 border-[var(--border-active)] shadow-md ring-1 ring-sky-500/30 dark:ring-sky-400/30' 
+                            ? 'bg-white border-[var(--accent)] shadow-puffy ring-2 ring-[var(--accent)]/20' 
                             : isPast 
-                              ? 'bg-white/40 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/[0.05]' 
-                              : 'od-glass hover:border-slate-300 dark:hover:border-white/20'
+                              ? 'bg-white/50 border-[#ebdccb]' 
+                              : 'bg-white border-[#ded0be] hover:border-[#cbbbaa] shadow-xs'
                         } ${opacityClass}`}
                       >
                         {isCurrent && (
-                          <div className="text-[9px] font-black uppercase text-sky-600 dark:text-sky-400 tracking-wider mb-1 flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse shrink-0" />
+                          <div className="chip-peach px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider mb-1 flex items-center gap-1.5 shadow-xs w-fit">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse shrink-0" />
                             <span>{language === 'vi' ? 'Đang học' : 'Live'}</span>
                           </div>
                         )}
-                        <div className={`font-display font-bold text-xs leading-tight tracking-tight truncate ${isCurrent ? 'text-slate-900 dark:text-white font-black' : isPast ? 'text-slate-400 dark:text-slate-500 line-through decoration-slate-400 dark:decoration-slate-500' : 'text-slate-900 dark:text-slate-100'}`}>
+                        <div className={`font-display font-bold text-xs leading-tight tracking-tight truncate ${isCurrent ? 'text-[var(--fg)] font-black' : isPast ? 'text-[var(--fg-faint)] line-through' : 'text-[var(--fg)]'}`}>
                           {subjectName}
                         </div>
-                        <div className={`text-[10px] font-medium truncate mt-0.5 ${isCurrent ? 'text-slate-700 dark:text-slate-300 font-semibold' : 'text-slate-400 dark:text-slate-500'}`}>
+                        <div className={`text-[10px] font-semibold truncate mt-0.5 ${isCurrent ? 'text-[var(--fg-secondary)]' : 'text-[var(--fg-muted)]'}`}>
                           {item.teacher || ''}
                         </div>
                       </motion.div>

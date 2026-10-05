@@ -41,11 +41,11 @@ export const WeekSelectorButton: React.FC<WeekSelectorProps> = ({
       <motion.button
         whileTap={gestureTokens.button.whileTap}
         onClick={() => setIsOpen(!isOpen)}
-        className="px-3 py-1.5 rounded-xl text-xs font-mono bg-slate-100 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-all flex items-center gap-1.5 cursor-pointer select-none whitespace-nowrap shrink-0 shadow-2xs"
+        className="px-3 py-1.5 rounded-2xl text-xs font-mono font-bold bg-[var(--surface-solid)] hover:bg-[var(--surface-hover)] border-[1.5px] border-[var(--border)] hover:border-[var(--border-hover)] text-[var(--fg)] transition-all flex items-center gap-1.5 cursor-pointer select-none whitespace-nowrap shrink-0 shadow-xs"
         title={language === 'vi' ? "Chọn tuần học" : "Select week"}
       >
         <span>{activeWeekName}</span>
-        <span className={`text-[10px] text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>▼</span>
+        <span className={`text-[10px] text-[var(--fg-muted)] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>▼</span>
       </motion.button>
 
       <AnimatePresence>
@@ -55,9 +55,9 @@ export const WeekSelectorButton: React.FC<WeekSelectorProps> = ({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute right-0 top-full mt-2 w-48 z-[100] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-1.5 space-y-1"
+            className="absolute right-0 top-full mt-2 w-48 z-[100] bg-[var(--surface-solid)] border-[1.5px] border-[var(--border)] rounded-[24px] shadow-puffy p-2 space-y-1 backdrop-blur-xl"
           >
-            <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800">
+            <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-muted)] border-b border-[var(--border)]">
               {language === 'vi' ? 'Tuần biểu' : 'Week Schedule'}
             </div>
             {availableWeeks.map((week) => {
@@ -71,13 +71,13 @@ export const WeekSelectorButton: React.FC<WeekSelectorProps> = ({
                   }}
                   className={`w-full text-left px-3 py-2 rounded-xl text-xs font-mono transition flex items-center justify-between cursor-pointer ${
                     isSelected
-                      ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      ? 'bg-[var(--fg)] text-[var(--bg)] font-bold'
+                      : 'text-[var(--fg-secondary)] hover:bg-[var(--surface-active)] hover:text-[var(--fg)]'
                   }`}
                 >
                   <span>{week.name}</span>
                   {isSelected && (
-                    <span className="text-[10px] uppercase font-mono tracking-wider">Active</span>
+                    <span className="text-[10px] uppercase font-bold tracking-wider">Active</span>
                   )}
                 </button>
               );

@@ -3,91 +3,63 @@
 @tailwind utilities;
 
 /* ==========================================================================
-   OPENDESIGN SYSTEM TOKENS & CRAFT SPEC
+   COZY CREAM DESIGN SYSTEM (Pure Creamy White, Zero Dark Mode)
+   --------------------------------------------------------------------------
+   Mood: Warm cream paper (#f7f4eb), crisp milk-white cards (#ffffff),
+   warm espresso text (#3d2f26), sweet pastel accents (peach, butter, sage,
+   mist, lilac, blush), puffy rounded shapes, calm 60fps animations.
    ========================================================================== */
 
-/* 🌟 TIS Official Light Mode (Royal Navy & TIS Orange on Soft Blue) */
-:root, :root[data-theme="light"] {
-  --bg: #f4f7ff;
-  --bg-subtle: #ebf0fe;
-  --surface: rgba(255, 255, 255, 0.88);
+:root {
+  color-scheme: light;
+
+  /* Creamy White Background & Pure White Surfaces */
+  --bg: #f7f4eb;
+  --bg-subtle: #efeae0;
+  --surface: #ffffff;
   --surface-solid: #ffffff;
-  --surface-hover: rgba(255, 255, 255, 0.98);
-  --surface-active: #e2eafc;
-  
-  --fg: #050b28;
-  --fg-secondary: #1e293b;
-  --fg-muted: #64748b;
-  --fg-faint: #94a3b8;
-  
-  --border: rgba(0, 0, 138, 0.1);
-  --border-hover: rgba(0, 0, 138, 0.22);
-  --border-active: #00008A;
-  
-  --primary-navy: #00008A;
-  --accent: #ee5421;
-  --accent-hover: #d84413;
-  --accent-muted: rgba(238, 84, 33, 0.12);
+  --surface-hover: #fdfbf7;
+  --surface-active: #f5eedf;
+
+  /* Warm Espresso Ink - High Contrast */
+  --fg: #231812;
+  --fg-secondary: #483526;
+  --fg-muted: #735c49;
+  --fg-faint: #b3a191;
+
+  /* Soft Warm Borders with crisp distinction */
+  --border: rgba(115, 75, 40, 0.18);
+  --border-hover: rgba(115, 75, 40, 0.35);
+  --border-active: #d4674a;
+  --edge: rgba(115, 75, 40, 0.14);
+
+  /* Terracotta Coral Accent */
+  --accent: #d4674a;
+  --accent-hover: #c2573b;
+  --accent-muted: rgba(212, 103, 74, 0.12);
   --accent-fg: #ffffff;
 
-  --success: #059669;
-  --success-muted: rgba(5, 150, 105, 0.1);
-  --warn: #ee5421;
-  --warn-muted: rgba(238, 84, 33, 0.1);
-  --danger: #dc2626;
-  --danger-muted: rgba(220, 38, 38, 0.1);
+  /* Cute Pastel Companions */
+  --peach: #ffedd5;
+  --butter: #fef3c7;
+  --sage: #d1fae5;
+  --mist: #e0f2fe;
+  --lilac: #ede9fe;
+  --blush: #ffe4e6;
 
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 138, 0.04);
-  --shadow-sm: 0 4px 16px -2px rgba(0, 0, 138, 0.06), 0 2px 4px -1px rgba(0, 0, 138, 0.03);
-  --shadow-md: 0 10px 25px -4px rgba(0, 0, 138, 0.09), 0 4px 10px -2px rgba(0, 0, 138, 0.04);
-  --shadow-lg: 0 20px 40px -8px rgba(0, 0, 138, 0.12);
+  --success: #4a7c42;
+  --success-muted: rgba(74, 124, 66, 0.12);
+  --warn: #d4674a;
+  --warn-muted: rgba(212, 103, 74, 0.12);
+  --danger: #c4524f;
+  --danger-muted: rgba(196, 82, 79, 0.12);
 
-  /* Compatibility bindings */
-  --bg-color: var(--bg);
-  --text-primary: var(--fg);
-  --text-secondary: var(--fg-secondary);
-  --text-muted: var(--fg-muted);
-  --card-bg: var(--surface);
-  --card-border: var(--border);
-  --card-hover-border: var(--border-hover);
-  --card-shadow: var(--shadow-sm);
-}
-
-/* 🌑 TIS Official Dark Mode (Royal Midnight Navy & TIS Orange) */
-:root[data-theme="dark"], .dark {
-  --bg: #050716;
-  --bg-subtle: #090e2b;
-  --surface: rgba(11, 17, 46, 0.78);
-  --surface-solid: #0c1334;
-  --surface-hover: rgba(18, 27, 72, 0.88);
-  --surface-active: #18245e;
-  
-  --fg: #f8fafc;
-  --fg-secondary: #cbd5e1;
-  --fg-muted: #8c9bb5;
-  --fg-faint: #475569;
-  
-  --border: rgba(140, 165, 255, 0.12);
-  --border-hover: rgba(238, 84, 33, 0.45);
-  --border-active: #ee5421;
-  
-  --primary-navy: #00008A;
-  --accent: #ee5421;
-  --accent-hover: #ff6b3d;
-  --accent-muted: rgba(238, 84, 33, 0.18);
-  --accent-fg: #ffffff;
-
-  --success: #34d399;
-  --success-muted: rgba(52, 211, 153, 0.12);
-  --warn: #ee5421;
-  --warn-muted: rgba(238, 84, 33, 0.18);
-  --danger: #f87171;
-  --danger-muted: rgba(248, 113, 113, 0.12);
-
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-  --shadow-sm: 0 6px 20px -2px rgba(0, 0, 0, 0.5), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 14px 34px -4px rgba(0, 0, 0, 0.65), 0 6px 14px -2px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 24px 50px -8px rgba(0, 0, 0, 0.8);
+  /* Puffy, Cloud-like Soft Tinted Shadows */
+  --shadow-xs: 0 1px 3px rgba(120, 80, 50, 0.05);
+  --shadow-sm: 0 4px 16px -2px rgba(120, 80, 50, 0.07), 0 1px 3px rgba(120, 80, 50, 0.04);
+  --shadow-md: 0 12px 28px -6px rgba(120, 80, 50, 0.10), 0 3px 8px -2px rgba(120, 80, 50, 0.05);
+  --shadow-lg: 0 20px 44px -8px rgba(120, 80, 50, 0.13);
+  --shadow-puffy: 0 8px 24px -4px rgba(120, 80, 50, 0.08), 0 2px 0 var(--edge), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
   /* Compatibility bindings */
   --bg-color: var(--bg);
@@ -115,12 +87,23 @@
   body {
     background-color: var(--bg);
     color: var(--fg);
-    letter-spacing: -0.011em;
+    font-family: 'Nunito', 'Plus Jakarta Sans', ui-rounded, system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0;
     min-height: 100dvh;
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Baloo 2', 'Nunito', ui-rounded, system-ui, -apple-system, sans-serif;
+    letter-spacing: 0;
+  }
+
+  ::selection {
+    background: var(--peach);
+    color: var(--fg);
   }
 
   #root {
@@ -129,95 +112,166 @@
     background: transparent !important;
     position: relative;
   }
+
+  :focus-visible {
+    outline: 3px solid var(--accent-muted);
+    outline-offset: 2px;
+    border-radius: 14px;
+  }
 }
 
 /* Responsive Root Scaling */
 @media (min-width: 640px) { html { font-size: 15.5px; } }
 @media (min-width: 1024px) { html { font-size: 16px; } }
 @media (min-width: 1536px) { html { font-size: 17px; } }
-@media (min-width: 1920px) { html { font-size: 18px; } }
+
+/* Faint paper grain for tactile warmth */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -20;
+  pointer-events: none;
+  opacity: 0.25;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.35  0 0 0 0 0.2  0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
 
 /* ==========================================================================
-   OPENDESIGN GLASS & UTILITY COMPONENTS
+   SURFACES — Puffy, Creamy, Tactile
    ========================================================================== */
 
-/* Apple & Linear Hybrid Glass Surface */
+/* Main puffy cream-white card */
 .od-glass {
   background: var(--surface);
-  backdrop-filter: blur(20px) saturate(190%);
-  -webkit-backdrop-filter: blur(20px) saturate(190%);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-}
-
-/* Clean Uniform Translucent Glass Surface (Zero Gradients) */
-.liquid-glass {
-  background-color: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: 
-    0 16px 40px -8px rgba(15, 23, 42, 0.25),
-    0 4px 12px -2px rgba(15, 23, 42, 0.08);
-}
-
-.liquid-glass-inner {
-  background-color: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.liquid-glass-inner:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.20);
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-puffy);
 }
 
 .od-glass-interactive {
   background: var(--surface);
-  backdrop-filter: blur(20px) saturate(190%);
-  -webkit-backdrop-filter: blur(20px) saturate(190%);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  transition: border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1), 
-              box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-puffy);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .od-glass-interactive:hover {
   border-color: var(--border-hover);
   box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
-/* Backward-compatible glass aliases */
+/* Backward-compatible card aliases */
 .glass-card {
   background: var(--surface);
-  backdrop-filter: blur(20px) saturate(190%);
-  -webkit-backdrop-filter: blur(20px) saturate(190%);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  transition: border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-puffy);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease;
 }
-
-.glass-card:hover {
-  border-color: var(--border-hover);
-}
+.glass-card:hover { border-color: var(--border-hover); }
 
 .luxury-pill {
   background: var(--surface);
-  backdrop-filter: blur(14px) saturate(180%);
-  -webkit-backdrop-filter: blur(14px) saturate(180%);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
 }
 
-/* Tabular numbers for clocks, countdowns, periods, tables */
+/* Over-video frosted glass for screensaver */
+.liquid-glass {
+  background-color: rgba(255, 253, 247, 0.85);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1.5px solid rgba(138, 98, 62, 0.18);
+  box-shadow: 0 16px 40px -8px rgba(120, 80, 50, 0.15);
+}
+
+.liquid-glass-inner {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(138, 98, 62, 0.12);
+}
+
+/* ==========================================================================
+   COZY STICKER BUTTONS & PASTEL CHIPS
+   ========================================================================== */
+
+/* 3D Tactile sticker button */
+.btn-cozy {
+  border: 1.5px solid var(--border);
+  background: #ffffff;
+  color: var(--fg);
+  border-radius: 16px;
+  box-shadow: 0 2.5px 0 var(--edge);
+  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.16s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+.btn-cozy:hover { background: #fffdf9; border-color: var(--border-hover); transform: translateY(-1px); }
+.btn-cozy:active { transform: translateY(2px); box-shadow: 0 0.5px 0 var(--edge); }
+
+/* Pastel chips */
+.chip-peach  { background: #ffedd5; color: #9a3412; }
+.chip-butter { background: #fef3c7; color: #92400e; }
+.chip-sage   { background: #d1fae5; color: #065f46; }
+.chip-mist   { background: #e0f2fe; color: #0369a1; }
+.chip-lilac  { background: #ede9fe; color: #5b21b6; }
+.chip-blush  { background: #ffe4e6; color: #9f1239; }
+
+/* Gentle breathing for live dots */
+@keyframes cozy-breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.75; }
+}
+.animate-pulse { animation: cozy-breathe 2.8s ease-in-out infinite !important; }
+
+/* Ambient background drift */
+@keyframes cozy-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -12px, 0); }
+}
+.cozy-blob { 
+  animation: cozy-drift 14s ease-in-out infinite;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Active period card warm pulsing glow */
+@keyframes cozy-current-glow {
+  0%, 100% {
+    box-shadow: 0 8px 24px -4px rgba(212, 103, 74, 0.20), 0 0 0 2px var(--accent);
+  }
+  50% {
+    box-shadow: 0 12px 32px -4px rgba(212, 103, 74, 0.35), 0 0 0 2.5px var(--accent), 0 0 16px 2px rgba(212, 103, 74, 0.20);
+  }
+}
+.card-current-glow {
+  animation: cozy-current-glow 3.2s ease-in-out infinite;
+}
+
+/* 60fps Hardware-Accelerated Interactive Cozy Card */
+.card-cozy-interactive {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform, box-shadow;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              box-shadow 0.22s ease, 
+              border-color 0.2s ease;
+}
+.card-cozy-interactive:hover {
+  transform: translate3d(0, -2px, 0);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-hover);
+}
+.card-cozy-interactive:active {
+  transform: translate3d(0, 1px, 0) scale(0.99);
+}
+
+/* Tabular numbers */
 .tabular-nums, .font-tabular {
   font-variant-numeric: tabular-nums;
   -webkit-font-feature-settings: "tnum";
   font-feature-settings: "tnum";
 }
 
-/* Reduced Motion Safeguard (OpenDesign Accessibility Floor) */
+/* Reduced Motion Safeguard */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
@@ -227,7 +281,7 @@
   }
 }
 
-/* Completely Hide Scrollbars Everywhere (Ultra-clean native app aesthetic) */
+/* Clean scrollbar styling */
 * {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
@@ -238,18 +292,9 @@
   width: 0px !important;
   height: 0px !important;
   display: none !important;
-  background: transparent !important;
 }
 
-::-webkit-scrollbar-track,
-::-webkit-scrollbar-thumb {
-  display: none !important;
-  background: transparent !important;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none !important;
-}
+.no-scrollbar::-webkit-scrollbar { display: none !important; }
 .no-scrollbar {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
@@ -261,6 +306,7 @@
     background: #ffffff !important;
     color: #000000 !important;
   }
+  body::before { display: none; }
   .no-print { display: none !important; }
   .print-only { display: block !important; }
 }

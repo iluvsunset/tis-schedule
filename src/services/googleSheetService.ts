@@ -49,7 +49,7 @@ export async function getAllSheetTabs(sheetId: string = DEFAULT_CONFIG.sheetId):
     console.warn('Could not auto-detect sheet tabs from HTML view:', e);
   }
 
-  // Static Fallback Tabs
+  // Static Fallback Tabs (Tuần 10 is current active week)
   const fallbackTabs: WeekTabInfo[] = [
     { name: 'Tuần 1', gid: '782076123' },
     { name: 'Tuần 2', gid: '1550771511' },
@@ -68,21 +68,24 @@ export async function getAllSheetTabs(sheetId: string = DEFAULT_CONFIG.sheetId):
  */
 export async function getLatestSheetTab(sheetId: string = DEFAULT_CONFIG.sheetId): Promise<WeekTabInfo | null> {
   const tabs = await getAllSheetTabs(sheetId);
-  return tabs.length > 0 ? tabs[tabs.length - 1] : null;
+  return tabs.length > 0 ? tabs[tabs.length - 1] : { name: 'Tuần 10', gid: '245759597', isLatest: true };
 }
 
 /**
  * Flexible structural detector for Google Sheet rows:
- * Handles varying column offsets (whether Column A is empty or filled),
+ * Handles varying column & row offsets (whether row 0 or Column A is empty or filled),
  * dynamically locating Header, Room, and Teacher rows.
  */
 export function detectSheetStructure(rows: string[][]) {
-  let headerRowIdx = 0;
+  let headerRowIdx = -1;
   let roomRowIdx = -1;
   let teacherRowIdx = -1;
 
-  for (let r = 0; r < Math.min(6, rows.length); r++) {
+  for (let r = 0; r < Math.min(8, rows.length); r++) {
     const rowStr = (rows[r] || []).map(c => (c || '').toLowerCase()).join(' ');
+    if (headerRowIdx === -1 && (rowStr.includes('buổi') || rowStr.includes('tiết') || rowStr.includes('lớp') || rowStr.includes('grade') || rowStr.includes('session'))) {
+      headerRowIdx = r;
+    }
     if (roomRowIdx === -1 && (rowStr.includes('phòng') || rowStr.includes('room'))) {
       roomRowIdx = r;
     }
@@ -91,8 +94,9 @@ export function detectSheetStructure(rows: string[][]) {
     }
   }
 
-  if (roomRowIdx === -1) roomRowIdx = 1;
-  if (teacherRowIdx === -1) teacherRowIdx = 2;
+  if (headerRowIdx === -1) headerRowIdx = 0;
+  if (roomRowIdx === -1) roomRowIdx = headerRowIdx + 1;
+  if (teacherRowIdx === -1) teacherRowIdx = headerRowIdx + 2;
 
   const headerRow = rows[headerRowIdx] || [];
   const roomRow = rows[roomRowIdx] || [];
@@ -605,9 +609,6 @@ export function parseSheetCSV(csvText: string, targetClassId: string = '11-tn'):
       let cellValue = (row[gradeCol] || '').trim();
 
       // School day strictly starts at 07:40
-      if (currentSession === 'morning' && endTime <= '07:40') {
-        continue;
-      }
       // Only skip afternoon periods after 16:05 if there is NO scheduled lesson in the cell
       if (currentSession === 'afternoon' && startTime >= '16:05' && !cellValue) {
         continue;

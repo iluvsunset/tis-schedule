@@ -118,9 +118,14 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
           exit={{ opacity: 0 }}
           transition={{ duration: 0.35, ease: 'easeInOut' }}
           onClick={handleFinish}
-          className="fixed inset-0 z-[999999] bg-white flex items-center justify-center overflow-hidden select-none cursor-pointer"
+          className="fixed inset-0 z-[999999] bg-[#f7f4eb] flex items-center justify-center overflow-hidden select-none cursor-pointer"
           title="Tap anywhere to skip"
         >
+          {/* Subtle Warm Loading Spinner behind video during buffering */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-10 h-10 rounded-full border-2 border-[var(--border)] border-t-[var(--accent)] animate-spin opacity-50" />
+          </div>
+
           {/* Subtle Tap-to-Skip Badge in top right */}
           <motion.button
             type="button"
@@ -131,12 +136,12 @@ export const IntroVideoLoader: React.FC<IntroVideoLoaderProps> = ({ onComplete }
               e.stopPropagation();
               handleFinish();
             }}
-            className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-full bg-slate-900/10 hover:bg-slate-900/20 active:scale-95 backdrop-blur-md text-[11px] font-medium text-slate-700 transition-all cursor-pointer"
+            className="btn-cozy absolute top-4 right-4 z-10 px-3.5 py-1.5 rounded-full text-xs font-bold text-[var(--fg)] shadow-xs transition-all cursor-pointer"
           >
             Skip &times;
           </motion.button>
 
-          <div className="w-full h-full flex items-center justify-center overflow-hidden">
+          <div className="w-full h-full flex items-center justify-center overflow-hidden bg-[#f7f4eb]">
             <video
               ref={videoRef}
               autoPlay

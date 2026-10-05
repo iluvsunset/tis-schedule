@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { X } from './icons';
 import { RoomInfo, ClassInfo, Language, INITIAL_CLASSES } from '../types/schedule';
 
 interface RoomSelectorModalProps {
@@ -86,7 +87,7 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={allowClose ? onClose : undefined}
-            className="fixed inset-0 bg-slate-950/60 backdrop-blur-md cursor-pointer"
+            className="fixed inset-0 bg-[#4a3b2f]/40 backdrop-blur-sm cursor-pointer"
           />
 
           {/* Focused Grade 11 Class Switcher Dialog */}
@@ -95,24 +96,24 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-lg bg-white/95 dark:bg-[#10131c]/95 border border-slate-200/80 dark:border-white/[0.08] shadow-2xl backdrop-blur-2xl rounded-3xl z-10 overflow-hidden flex flex-col"
+            className="relative w-full max-w-lg bg-[var(--surface-solid)] border-[1.5px] border-[var(--border)] shadow-puffy rounded-[28px] z-10 overflow-hidden flex flex-col"
           >
             {/* Top Bar: Title, Language Switcher, Close Button */}
-            <div className="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between bg-slate-50/70 dark:bg-white/[0.02] shrink-0">
-              <span className="text-[11px] font-mono font-bold tracking-[0.2em] uppercase text-slate-500 dark:text-slate-400">
+            <div className="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-[var(--border)] flex items-center justify-between bg-[var(--bg-subtle)]/40 shrink-0">
+              <span className="text-[11px] font-mono font-bold tracking-[0.2em] uppercase text-[var(--fg-muted)]">
                 TIS SCHEDULE · {language === 'vi' ? 'CHỌN LỚP HỌC' : 'CHOOSE CLASS'}
               </span>
 
               <div className="flex items-center gap-2.5">
                 {onLanguageChange && (
-                  <div className="flex items-center border border-slate-200 dark:border-white/[0.1] rounded-full p-0.5 text-xs font-mono bg-slate-100/60 dark:bg-white/[0.04]">
+                  <div className="flex items-center border border-[var(--border)] rounded-full p-0.5 text-xs font-mono bg-[var(--surface)]">
                     <button
                       type="button"
                       onClick={() => onLanguageChange('vi')}
                       className={`px-2.5 py-0.5 rounded-full transition cursor-pointer ${
                         language === 'vi' 
-                          ? 'bg-white dark:bg-white/20 text-slate-900 dark:text-white font-bold shadow-xs' 
-                          : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                          ? 'bg-[var(--accent)] text-white font-bold shadow-xs' 
+                          : 'text-[var(--fg-muted)] hover:text-[var(--fg)]'
                       }`}
                     >
                       VI
@@ -122,8 +123,8 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                       onClick={() => onLanguageChange('en')}
                       className={`px-2.5 py-0.5 rounded-full transition cursor-pointer ${
                         language === 'en' 
-                          ? 'bg-white dark:bg-white/20 text-slate-900 dark:text-white font-bold shadow-xs' 
-                          : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                          ? 'bg-[var(--accent)] text-white font-bold shadow-xs' 
+                          : 'text-[var(--fg-muted)] hover:text-[var(--fg)]'
                       }`}
                     >
                       EN
@@ -135,9 +136,10 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="text-xs font-mono uppercase text-slate-400 hover:text-slate-700 dark:hover:text-white px-2.5 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] transition cursor-pointer"
+                    className="btn-cozy text-xs font-bold px-3 py-1.5 rounded-2xl cursor-pointer flex items-center gap-1.5"
                   >
-                    {language === 'vi' ? 'Đóng' : 'Close'}
+                    <X className="w-3.5 h-3.5" />
+                    <span>{language === 'vi' ? 'Đóng' : 'Close'}</span>
                   </button>
                 )}
               </div>
@@ -146,10 +148,10 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
             {/* Modal Body: Two Grade 11 Class Cards */}
             <div className="p-6 sm:p-7 space-y-4">
               <div className="space-y-1 text-center sm:text-left">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                <h3 className="text-sm font-semibold text-[var(--fg)] font-display">
                   {language === 'vi' ? 'Khối 11 (Năm học 2026 - 2027)' : 'Grade 11 (Academic Year 2026 - 2027)'}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-[var(--fg-muted)]">
                   {language === 'vi' 
                     ? 'Chọn lớp học của bạn để xem thời khóa biểu chi tiết' 
                     : 'Select your class to view the full timetable'}
@@ -170,40 +172,40 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                       onClick={() => handlePickClass(c)}
                       className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 relative overflow-hidden group ${
                         isCurrent
-                          ? 'bg-amber-500/10 text-amber-950 dark:text-amber-200 border-amber-500/40 shadow-sm ring-1 ring-amber-500/20'
-                          : 'bg-slate-50/80 hover:bg-slate-100/90 dark:bg-white/[0.03] dark:hover:bg-white/[0.06] border-slate-200/80 dark:border-white/[0.08] text-slate-900 dark:text-slate-100'
+                          ? 'bg-[#ffedd5]/50 text-[#9a3412] border-[#fed7aa] shadow-xs ring-2 ring-[var(--accent)]'
+                          : 'bg-[var(--surface)] hover:bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--fg)]'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2 w-full">
-                        <span className={`text-base font-bold tracking-tight ${isCurrent ? 'text-amber-700 dark:text-amber-300' : 'text-slate-900 dark:text-white'}`}>
+                        <span className={`text-base font-bold font-display tracking-tight ${isCurrent ? 'text-[var(--accent)]' : 'text-[var(--fg)]'}`}>
                           {classNameStr}
                         </span>
                         <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full shrink-0 font-semibold ${
                           isCurrent
-                            ? 'bg-amber-500/20 text-amber-800 dark:text-amber-300'
-                            : 'bg-slate-200/60 dark:bg-white/[0.08] text-slate-600 dark:text-slate-400'
+                            ? 'bg-[#ffedd5] text-[#9a3412] border border-[#fed7aa]'
+                            : 'bg-[var(--bg-subtle)] text-[var(--fg-secondary)] border border-[var(--border)]'
                         }`}>
                           {formatRoomBadge(c.room)}
                         </span>
                       </div>
 
                       <div className="space-y-1 text-xs">
-                        <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                        <div className="flex items-center justify-between text-[var(--fg-muted)]">
                           <span>{language === 'vi' ? 'Vị trí:' : 'Floor:'}</span>
-                          <span className="font-mono font-medium text-slate-700 dark:text-slate-300">
+                          <span className="font-mono font-medium text-[var(--fg-secondary)]">
                             {is11_1 ? (language === 'vi' ? 'Tầng 5 · P.504' : 'Floor 5 · Rm 504') : (language === 'vi' ? 'Tầng 5 · P. Tâm lý' : 'Floor 5 · Psych Rm')}
                           </span>
                         </div>
-                        <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                        <div className="flex items-center justify-between text-[var(--fg-muted)]">
                           <span>{language === 'vi' ? 'GVCN:' : 'Homeroom:'}</span>
-                          <span className="font-medium text-slate-700 dark:text-slate-300">
+                          <span className="font-medium text-[var(--fg-secondary)]">
                             {c.homeroomTeacher}
                           </span>
                         </div>
                       </div>
 
                       {isCurrent && (
-                        <div className="text-[11px] font-mono text-amber-600 dark:text-amber-400 font-semibold pt-1 border-t border-amber-500/20 flex items-center gap-1">
+                        <div className="text-[11px] font-mono text-[var(--accent)] font-semibold pt-1 border-t border-[var(--border)] flex items-center gap-1">
                           <span>●</span> {language === 'vi' ? 'Đang chọn' : 'Active'}
                         </div>
                       )}
@@ -213,7 +215,7 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
               </div>
 
               <div className="pt-2 text-center">
-                <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">
+                <span className="text-[11px] font-mono text-[var(--fg-faint)]">
                   {language === 'vi' 
                     ? 'Thời khóa biểu Khối 11 · Trường TIS' 
                     : 'Grade 11 Timetable · The International School'}

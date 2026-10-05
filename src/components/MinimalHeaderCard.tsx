@@ -2,12 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { 
   Calendar, 
-  Minimize2, 
-  Sun, 
-  Moon, 
-  Laptop 
-} from 'lucide-react';
-import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, WeekTabInfo } from '../types/schedule';
+  Minimize2 
+} from './icons';
+import { Language, ViewMode, DayKey, ScheduleData, WeekTabInfo } from '../types/schedule';
 import { VietnamTimeInfo, getDateStatus, formatScheduleDate } from '../utils/vietnamTime';
 import { WeekSelectorButton } from './WeekSelectorButton';
 import { SCHEDULE_DATA } from '../data/scheduleData';
@@ -17,8 +14,6 @@ interface MinimalHeaderCardProps {
   selectedDay: DayKey;
   onSelectDay: (day: DayKey) => void;
   language: Language;
-  theme: ThemeKey;
-  onThemeChange: (theme: ThemeKey) => void;
   scheduleData?: ScheduleData | null;
   availableWeeks?: WeekTabInfo[];
   selectedWeekGid?: string;
@@ -33,8 +28,6 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
   selectedDay,
   onSelectDay,
   language,
-  theme,
-  onThemeChange,
   scheduleData,
   availableWeeks,
   selectedWeekGid,
@@ -82,12 +75,6 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
     sat: 'Saturday',
   };
 
-  const cycleTheme = () => {
-    if (theme === 'system') onThemeChange('dark');
-    else if (theme === 'dark') onThemeChange('light');
-    else onThemeChange('system');
-  };
-
   const currentDayData = days.find(d => d.dayKey === selectedDay) || days[0];
   const isSelectedToday = getDateStatus(currentDayData.date, vnTime.dateStr) === 'today';
   
@@ -99,7 +86,7 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.98 }}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      className="od-glass rounded-2xl sm:rounded-3xl p-3 sm:p-5 mb-2.5 sm:mb-4 sticky top-0 z-30 pt-[max(0.25rem,env(safe-area-inset-top,0px))] w-full border border-slate-200/80 dark:border-white/[0.08]"
+      className="od-glass rounded-3xl p-3.5 sm:p-5 mb-2.5 sm:mb-4 sticky top-0 z-30 pt-[max(0.25rem,env(safe-area-inset-top,0px))] w-full border-[1.5px] border-[var(--border)] shadow-puffy"
     >
       {/* DESKTOP LAYOUT (>= md screens) */}
       <div className="hidden md:flex md:flex-row md:items-center md:justify-between gap-4">
@@ -107,7 +94,7 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
         <div className="flex items-center gap-4">
           <div className="flex flex-col">
             <div className="flex items-baseline gap-1" suppressHydrationWarning>
-              <span className="text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 dark:text-white tabular-nums" suppressHydrationWarning>
+              <span className="text-4xl lg:text-5xl font-display font-black tracking-tight text-[var(--fg)] tabular-nums" suppressHydrationWarning>
                 {vnTime.timeStr}
               </span>
               <span className="text-sm font-mono font-bold text-[var(--accent)] tabular-nums" suppressHydrationWarning>
@@ -115,18 +102,18 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
-              <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <span className="text-slate-900 dark:text-slate-200 font-bold">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--fg-muted)] mt-0.5">
+              <Calendar className="w-3.5 h-3.5 text-[var(--accent)] shrink-0" />
+              <span className="text-[var(--fg)] font-bold">
                 {displayDayName} • {formatScheduleDate(currentDayData.date)}
               </span>
               {isSelectedToday && (
-                <span className="px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider bg-[var(--fg)] text-[var(--bg)] rounded-md shadow-xs">
+                <span className="chip-peach px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded-full shadow-xs">
                   {language === 'vi' ? 'Hôm nay' : 'Today'}
                 </span>
               )}
-              <span className="text-slate-300 dark:text-slate-600">•</span>
-              <span className="text-[11px] font-medium text-slate-400">
+              <span className="text-[var(--fg-faint)]">•</span>
+              <span className="text-[11px] font-medium text-[var(--fg-muted)]">
                 {language === 'vi' ? (currentSchedule.gradeTitleVi || 'Lớp 11-TN') : (currentSchedule.gradeTitleEn || 'Grade 11-TN')} ({language === 'vi' ? 'P.' : 'R.'}{currentSchedule.room || '504'})
               </span>
             </div>
@@ -135,7 +122,7 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
 
         {/* Center: Day Switcher */}
         <div className="flex items-center justify-center">
-          <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-100/80 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/[0.06] shadow-xs">
+          <div className="flex items-center gap-1 p-1 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border)] shadow-xs">
             {days.map((d) => {
               const isSelected = viewMode === 'timeline' && selectedDay === d.dayKey;
               const label = language === 'vi' ? dayLabelsVi[d.dayKey] : dayLabelsEn[d.dayKey];
@@ -150,14 +137,14 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
                   }}
                   className={`relative px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center z-10 ${
                     isSelected 
-                      ? 'text-white dark:text-slate-950 font-black' 
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                      ? 'text-[var(--bg)] font-black' 
+                      : 'text-[var(--fg-secondary)] hover:text-[var(--fg)]'
                   }`}
                 >
                   {isSelected && (
                     <motion.div
                       layoutId="minimal-active-tab-desktop"
-                      className="absolute inset-0 bg-slate-900 dark:bg-white rounded-xl shadow-sm z-[-1]"
+                      className="absolute inset-0 bg-[var(--fg)] rounded-xl shadow-xs z-[-1]"
                       transition={{ type: "spring", stiffness: 480, damping: 34 }}
                     />
                   )}
@@ -182,22 +169,11 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
 
           <motion.button
             whileTap={{ scale: 0.94 }}
-            onClick={cycleTheme}
-            className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer flex items-center justify-center shadow-2xs"
-            title={language === 'vi' ? "Chuyển giao diện Sáng / Tối" : "Toggle Theme"}
-          >
-            {theme === 'light' && <Sun className="w-4 h-4 text-amber-500" />}
-            {theme === 'dark' && <Moon className="w-4 h-4 text-blue-400" />}
-            {theme === 'system' && <Laptop className="w-4 h-4 text-slate-400" />}
-          </motion.button>
-
-          <motion.button
-            whileTap={{ scale: 0.94 }}
             onClick={onToggleMinimalMode}
-            className="p-2 rounded-xl border border-amber-400 bg-amber-500 text-slate-950 font-black hover:bg-amber-400 transition cursor-pointer flex items-center justify-center shadow-2xs"
+            className="p-2 rounded-2xl border-[1.5px] border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-fg)] font-black hover:bg-[var(--accent-hover)] transition cursor-pointer flex items-center justify-center shadow-xs"
             title={language === 'vi' ? "Thoát chế độ tối giản (Escape hoặc F)" : "Exit full-screen minimal mode (Esc / F)"}
           >
-            <Minimize2 className="w-4 h-4 text-slate-950" />
+            <Minimize2 className="w-4 h-4 text-[var(--accent-fg)]" />
           </motion.button>
         </div>
       </div>
@@ -208,10 +184,10 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
         <div className="flex items-center justify-between gap-2">
           {/* Digital Clock */}
           <div className="flex items-baseline gap-1" suppressHydrationWarning>
-            <span className="text-2xl xs:text-3xl font-display font-black tracking-tight text-slate-900 dark:text-white" suppressHydrationWarning>
+            <span className="text-2xl xs:text-3xl font-display font-black tracking-tight text-[var(--fg)]" suppressHydrationWarning>
               {vnTime.timeStr}
             </span>
-            <span className="text-xs font-mono font-bold text-amber-500 dark:text-amber-400" suppressHydrationWarning>
+            <span className="text-xs font-mono font-bold text-[var(--accent)]" suppressHydrationWarning>
               :{String(vnTime.seconds).padStart(2, '0')}
             </span>
           </div>
@@ -229,35 +205,24 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
 
             <motion.button
               whileTap={{ scale: 0.94 }}
-              onClick={cycleTheme}
-              className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer flex items-center justify-center shadow-2xs"
-              title={language === 'vi' ? "Chuyển giao diện" : "Theme"}
-            >
-              {theme === 'light' && <Sun className="w-3.5 h-3.5 text-amber-500" />}
-              {theme === 'dark' && <Moon className="w-3.5 h-3.5 text-blue-400" />}
-              {theme === 'system' && <Laptop className="w-3.5 h-3.5 text-slate-400" />}
-            </motion.button>
-
-            <motion.button
-              whileTap={{ scale: 0.94 }}
               onClick={onToggleMinimalMode}
-              className="p-1.5 rounded-xl border border-amber-400 bg-amber-500 text-slate-950 font-black hover:bg-amber-400 transition cursor-pointer flex items-center justify-center shadow-2xs"
+              className="p-1.5 rounded-2xl border-[1.5px] border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-fg)] font-black hover:bg-[var(--accent-hover)] transition cursor-pointer flex items-center justify-center shadow-xs"
               title={language === 'vi' ? "Thoát chế độ tối giản" : "Exit"}
             >
-              <Minimize2 className="w-3.5 h-3.5 text-slate-950" />
+              <Minimize2 className="w-3.5 h-3.5 text-[var(--accent-fg)]" />
             </motion.button>
           </div>
         </div>
 
         {/* Tier 2: Date, Class & Period Count */}
-        <div className="flex items-center justify-between gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800/80 pt-2">
+        <div className="flex items-center justify-between gap-2 text-xs font-semibold text-[var(--fg-muted)] border-t border-[var(--border)] pt-2">
           <div className="flex items-center gap-1.5 min-w-0">
-            <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
-            <span className="text-slate-900 dark:text-slate-200 font-bold truncate">
+            <Calendar className="w-3 h-3 text-[var(--accent)] shrink-0" />
+            <span className="text-[var(--fg)] font-bold truncate">
               {displayDayName} • {formatScheduleDate(currentDayData.date)}
             </span>
             {isSelectedToday && (
-              <span className="px-1 py-0.2 text-[8px] font-bold uppercase tracking-wider bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded shadow-2xs shrink-0">
+              <span className="chip-peach px-2 py-0.5 text-[8px] font-black uppercase tracking-wider rounded-full shadow-xs shrink-0">
                 {language === 'vi' ? 'Hôm nay' : 'Today'}
               </span>
             )}
@@ -265,7 +230,7 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
         </div>
 
         {/* Tier 3: Full-Width Day Switcher Tabs */}
-        <div className="grid grid-cols-6 gap-1 p-1 rounded-2xl bg-slate-100/80 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/[0.06] w-full shadow-xs">
+        <div className="grid grid-cols-6 gap-1 p-1 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border)] w-full shadow-xs">
           {days.map((d) => {
             const isSelected = viewMode === 'timeline' && selectedDay === d.dayKey;
             const label = language === 'vi' ? dayLabelsVi[d.dayKey] : dayLabelsEn[d.dayKey];
@@ -280,14 +245,14 @@ export const MinimalHeaderCard: React.FC<MinimalHeaderCardProps> = ({
                 }}
                 className={`relative py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center z-10 ${
                   isSelected 
-                    ? 'text-white dark:text-slate-950 font-black' 
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                    ? 'text-[var(--bg)] font-black' 
+                    : 'text-[var(--fg-secondary)] hover:text-[var(--fg)]'
                 }`}
               >
                 {isSelected && (
                   <motion.div
                     layoutId="minimal-active-tab-mobile"
-                    className="absolute inset-0 bg-slate-900 dark:bg-white rounded-xl shadow-sm z-[-1]"
+                    className="absolute inset-0 bg-[var(--fg)] rounded-xl shadow-xs z-[-1]"
                     transition={{ type: "spring", stiffness: 480, damping: 34 }}
                   />
                 )}

@@ -34,7 +34,7 @@ import {
   Palette,
   X,
   GraduationCap
-} from 'lucide-react';
+} from '../components/icons';
 
 interface IconProps {
   name: string;

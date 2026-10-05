@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, X } from 'lucide-react';
+import { Bell, X } from './icons';
 import { Language } from '../types/schedule';
 import { 
   isNotificationSupported, 
@@ -52,36 +52,36 @@ export const NotificationPermissionModal: React.FC<NotificationPermissionModalPr
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.92 }}
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
-          className="pointer-events-auto flex items-center gap-2 sm:gap-3 pl-3 pr-2 py-1.5 rounded-full bg-slate-900/95 dark:bg-slate-900/95 text-white backdrop-blur-2xl border border-white/15 shadow-2xl ring-1 ring-black/20"
+          className="pointer-events-auto flex items-center gap-2.5 sm:gap-3 pl-3 pr-2 py-2 rounded-full bg-[var(--surface-solid)] text-[var(--fg)] backdrop-blur-2xl border-[1.5px] border-[var(--border)] shadow-puffy"
         >
-            {/* Glowing Bell */}
-            <div className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-              <Bell className="w-3.5 h-3.5 animate-pulse" />
-            </div>
+          {/* Glowing Bell */}
+          <div className="w-7 h-7 rounded-full bg-[var(--accent-muted)] text-[var(--accent)] flex items-center justify-center shrink-0 shadow-2xs">
+            <Bell className="w-3.5 h-3.5 animate-pulse" />
+          </div>
 
-            {/* Label */}
-            <span className="text-xs font-bold text-slate-200 whitespace-nowrap">
-              {language === 'vi' ? 'Nhắc lịch học 21:00' : 'Evening Reminder 21:00'}
-            </span>
+          {/* Label */}
+          <span className="text-xs font-bold text-[var(--fg)] whitespace-nowrap font-display">
+            {language === 'vi' ? 'Nhắc lịch học 21:00' : 'Evening Reminder 21:00'}
+          </span>
 
-            {/* Enable Button */}
-            <motion.button
-              whileTap={{ scale: 0.94 }}
-              onClick={handleEnableNotifications}
-              className="px-3 py-1 rounded-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition cursor-pointer shadow-xs whitespace-nowrap"
-            >
-              {language === 'vi' ? 'Bật' : 'Enable'}
-            </motion.button>
+          {/* Enable Button */}
+          <motion.button
+            whileTap={{ scale: 0.94 }}
+            onClick={handleEnableNotifications}
+            className="px-3.5 py-1.5 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--accent-fg)] font-bold text-xs transition cursor-pointer shadow-[0_2px_0_var(--edge)] active:translate-y-0.5 whitespace-nowrap"
+          >
+            {language === 'vi' ? 'Bật' : 'Enable'}
+          </motion.button>
 
-            {/* Close Button */}
-            <button
-              onClick={handleDismiss}
-              className="text-slate-400 hover:text-white p-1 rounded-full transition cursor-pointer"
-              title={language === 'vi' ? "Bỏ qua" : "Dismiss"}
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </motion.div>
+          {/* Close Button */}
+          <button
+            onClick={handleDismiss}
+            className="text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--surface-active)] p-1.5 rounded-full transition cursor-pointer flex items-center justify-center"
+            title={language === 'vi' ? "Bỏ qua" : "Dismiss"}
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </motion.div>
       </AnimatePresence>
     </aside>
   );

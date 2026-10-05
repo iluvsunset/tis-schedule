@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, GraduationCap } from 'lucide-react';
+import { X, GraduationCap } from './icons';
 import { Language } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { CustomSubjectIcon } from './CustomSubjectIcons';
@@ -44,7 +44,7 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed inset-0 bg-slate-950/75 backdrop-blur-md"
+            className="fixed inset-0 bg-[#4a3b2f]/40 backdrop-blur-sm"
             onClick={onClose}
           />
 
@@ -54,20 +54,20 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="relative z-10 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl shadow-2xl max-w-3xl w-full max-h-[85vh] sm:max-h-[85vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100"
+            className="relative z-10 bg-[var(--surface-solid)] border-[1.5px] border-[var(--border)] rounded-[28px] shadow-puffy max-w-3xl w-full max-h-[85vh] sm:max-h-[85vh] flex flex-col overflow-hidden text-[var(--fg)]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-5 sm:p-6 pb-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
+            <div className="flex items-center justify-between p-5 sm:p-6 pb-4 border-b border-[var(--border)] shrink-0 bg-[var(--bg-subtle)]/40">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 flex items-center justify-center shadow-sm shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-[var(--accent)] text-[var(--accent-fg)] flex items-center justify-center shadow-[0_2px_0_var(--edge)] shrink-0">
                   <GraduationCap className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm sm:text-base font-display font-bold text-slate-900 dark:text-slate-100">
+                  <h3 className="text-sm sm:text-base font-display font-bold text-[var(--fg)]">
                     {language === 'vi' ? 'Đội Ngũ Giáo Viên Bộ Môn' : 'Faculty Directory'}
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-[var(--fg-muted)]">
                     {language === 'vi' ? `GVQN: ${homeroomTeacher.name} • Phòng 504` : `Homeroom: ${homeroomTeacher.name} • Room 504`}
                   </p>
                 </div>
@@ -76,7 +76,7 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
               <motion.button
                 whileTap={gestureTokens.iconButton.whileTap}
                 onClick={onClose}
-                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center transition cursor-pointer"
+                className="btn-cozy w-9 h-9 rounded-2xl flex items-center justify-center transition cursor-pointer text-[var(--fg)]"
               >
                 <X className="w-4 h-4" />
               </motion.button>
@@ -111,23 +111,23 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
                       key={idx}
                       variants={staggerListItem}
                       whileTap={gestureTokens.card.whileTap}
-                      className="p-3 rounded-2xl bg-slate-50/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 transition-all flex flex-col justify-between cursor-default"
+                      className="p-3.5 rounded-2xl bg-[var(--surface)] hover:bg-[var(--surface-hover)] border-[1.5px] border-[var(--border)] hover:border-[var(--border-hover)] shadow-xs transition-all flex flex-col justify-between cursor-default"
                     >
                       <div>
                         <div className="flex items-center gap-2.5 mb-2">
-                          <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700/70 flex items-center justify-center shrink-0">
+                          <div className="w-9 h-9 rounded-xl bg-[var(--surface-solid)] border border-[var(--border)] flex items-center justify-center shrink-0 shadow-2xs">
                             <CustomSubjectIcon type={subType} className="w-4 h-4" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">{t.name}</h4>
-                            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block truncate">{subject}</span>
+                            <h4 className="font-bold text-xs text-[var(--fg)] truncate">{t.name}</h4>
+                            <span className="text-[11px] font-semibold text-[var(--fg-muted)] block truncate">{subject}</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 font-medium pt-1.5 border-t border-slate-200/50 dark:border-slate-700/50">
-                        <span>{t.room}</span>
-                        <span className="bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold px-1.5 py-0.2 rounded uppercase tracking-wider">TIS</span>
+                      <div className="flex items-center justify-between text-[10px] text-[var(--fg-muted)] font-medium pt-2 border-t border-[var(--border)]">
+                        <span className="font-mono">{t.room}</span>
+                        <span className="chip-mist font-bold px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider">TIS</span>
                       </div>
                     </motion.div>
                   );

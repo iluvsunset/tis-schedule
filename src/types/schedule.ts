@@ -10,11 +10,13 @@ export type SubjectType =
   | 'pe' 
   | 'homeroom' 
   | 'event' 
+  | 'activity'
+  | 'humanities'
   | 'break';
 
 export type Language = 'vi' | 'en';
 
-export type ThemeKey = 'system' | 'light' | 'dark';
+export type ThemeKey = 'light';
 
 export type ViewMode = 'timeline' | 'grid';
 

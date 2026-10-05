@@ -10,14 +10,9 @@ import {
   Globe, 
   Bell, 
   BellRing, 
-  Sun, 
-  Moon, 
-  Laptop,
-  School,
-  Maximize2,
-  Minimize2
-} from 'lucide-react';
-import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, INITIAL_CLASSES } from '../types/schedule';
+  School
+} from './icons';
+import { Language, ViewMode, DayKey, ScheduleData, INITIAL_CLASSES } from '../types/schedule';
 import { exportScheduleToICS } from '../utils/icsExport';
 import { VietnamTimeInfo } from '../utils/vietnamTime';
 import { SCHEDULE_DATA } from '../data/scheduleData';
@@ -33,8 +28,6 @@ import { dropdownMenuVariants } from '../utils/motionTokens';
 interface NavbarProps {
   language: Language;
   onLanguageChange: (lang: Language) => void;
-  theme: ThemeKey;
-  onThemeChange: (theme: ThemeKey) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
   vnTime: VietnamTimeInfo;
@@ -47,15 +40,12 @@ interface NavbarProps {
   onOpenRoomSelector?: () => void;
   scheduleData?: ScheduleData | null;
   isMinimalMode?: boolean;
-  onToggleMinimalMode?: () => void;
   viewType?: 'room' | 'class';
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   language,
   onLanguageChange,
-  theme,
-  onThemeChange,
   searchQuery,
   onSearchChange,
   vnTime,
@@ -67,8 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenClassModal,
   onOpenRoomSelector,
   scheduleData,
-  isMinimalMode,
-  onToggleMinimalMode,
+  isMinimalMode: _isMinimalMode,
   viewType = 'class'
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -167,15 +156,9 @@ export const Navbar: React.FC<NavbarProps> = ({
     };
   }, []);
 
-  const handleCycleTheme = () => {
-    if (theme === 'system') onThemeChange('light');
-    else if (theme === 'light') onThemeChange('dark');
-    else onThemeChange('system');
-  };
-
   return (
     <header className="sticky top-0 z-50 no-print pt-[max(0.25rem,env(safe-area-inset-top,0px))] pb-2 sm:pb-3">
-      <div className="od-glass rounded-2xl sm:rounded-3xl p-2.5 sm:p-3 flex flex-col gap-2 sm:gap-2.5">
+      <div className="od-glass rounded-3xl p-2.5 sm:p-3 flex flex-col gap-2 sm:gap-2.5 border-[1.5px] border-[var(--border)] shadow-puffy">
         
         {/* Top Row: Left Brand/Class Info & Right Quick Action Buttons */}
         <div className="flex items-center justify-between gap-2 w-full">
@@ -187,7 +170,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               whileTap={{ scale: 0.94 }}
               onClick={onOpenClassModal}
               title={language === 'vi' ? "Đổi lớp học" : "Change class"}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white dark:bg-white/[0.05] p-1 shadow-xs border border-slate-200/80 dark:border-white/10 flex items-center justify-center shrink-0 overflow-hidden cursor-pointer transition hover:border-slate-300 dark:hover:border-white/20"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[var(--surface-solid)] p-1.5 shadow-xs border-[1.5px] border-[var(--border)] flex items-center justify-center shrink-0 overflow-hidden cursor-pointer transition hover:border-[var(--border-hover)] hover:bg-[var(--surface-hover)]"
             >
               {!logoError ? (
                 <img 
@@ -197,7 +180,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onError={() => setLogoError(true)}
                 />
               ) : (
-                <span className="font-display font-black text-slate-800 dark:text-slate-100 text-xs">TIS</span>
+                <span className="font-display font-black text-[var(--fg)] text-xs">TIS</span>
               )}
             </motion.button>
 
@@ -209,21 +192,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="flex items-center gap-1.5 cursor-pointer group text-left max-w-full"
                 title={language === 'vi' ? "Nhấn để nhập hoặc đổi số phòng học" : "Click to enter or change room number"}
               >
-                <h1 className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight leading-none truncate group-hover:text-[var(--accent)] transition-colors">
+                <h1 className="font-display font-black text-sm sm:text-base text-[var(--fg)] tracking-tight leading-none truncate group-hover:text-[var(--accent)] transition-colors">
                   {language === 'vi' ? (scheduleData?.roomNameVi || `Phòng ${currentRoom}`) : (scheduleData?.roomNameEn || `Room ${currentRoom}`)}
                 </h1>
-                <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-medium bg-slate-100 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 text-slate-600 dark:text-white/70 group-hover:border-slate-400 dark:group-hover:border-white/30 transition-colors shrink-0">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-[var(--surface-solid)] border border-[var(--border)] text-[var(--fg-secondary)] group-hover:border-[var(--border-hover)] transition-colors shrink-0">
                   {currentClassName}
                 </span>
-                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-white transition hidden xs:inline">
+                <span className="text-[11px] font-bold text-[var(--fg-muted)] group-hover:text-[var(--fg)] transition hidden xs:inline">
                   [{language === 'vi' ? 'Đổi' : 'Change'}]
                 </span>
               </motion.button>
 
-              <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">
+              <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 text-[11px] sm:text-xs text-[var(--fg-muted)] font-semibold truncate">
                 <span className="truncate hidden xs:inline">{language === 'vi' ? 'GV' : 'HR'}: {currentTeacher}</span>
-                <span className="text-slate-300 dark:text-slate-700 hidden xs:inline">•</span>
-                <span className="font-mono text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 tabular-nums shrink-0" suppressHydrationWarning>
+                <span className="text-[var(--fg-faint)] hidden xs:inline">•</span>
+                <span className="font-mono text-[11px] sm:text-xs font-bold text-[var(--fg)] tabular-nums shrink-0" suppressHydrationWarning>
                   {vnTime.timeStr}
                   <span className="text-[var(--accent)] hidden xs:inline" suppressHydrationWarning>:{String(vnTime.seconds).padStart(2, '0')}</span>
                 </span>
@@ -236,19 +219,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             
             {/* Search Bar (Only shown in Class View on sm+ screens) */}
             {viewType === 'class' && (
-              <div className="hidden sm:block relative w-32 sm:w-40 md:w-48 focus-within:w-52 transition-all duration-200">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <div className="hidden sm:block relative w-36 sm:w-44 md:w-52 focus-within:w-56 transition-all duration-200">
+                <Search className="w-3.5 h-3.5 text-[var(--fg-muted)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input 
                   type="text" 
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   placeholder={language === 'vi' ? "Tìm môn..." : "Search..."}
-                  className="w-full pl-7 pr-6 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:border-slate-400 text-xs transition-all outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400"
+                  className="w-full pl-8 pr-7 py-1.5 rounded-2xl bg-[var(--surface-solid)] border-[1.5px] border-[var(--border)] focus:bg-[var(--surface-hover)] focus:border-[var(--accent)] text-xs transition-all outline-none text-[var(--fg)] placeholder-[var(--fg-faint)] font-medium shadow-xs"
                 />
                 {searchQuery && (
                   <button 
                     onClick={() => onSearchChange('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer p-0.5"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--fg-muted)] hover:text-[var(--fg)] cursor-pointer p-0.5"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -256,79 +239,34 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
 
-            {/* Quick Theme Cycle Button */}
-            <motion.button
-              whileTap={{ scale: 0.92 }}
-              onClick={handleCycleTheme}
-              className="p-1.5 sm:p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer flex items-center justify-center shadow-2xs"
-              title={
-                theme === 'system'
-                  ? (language === 'vi' ? 'Giao diện: Tự động' : 'Theme: Auto')
-                  : theme === 'light'
-                    ? (language === 'vi' ? 'Giao diện: Sáng' : 'Theme: Light')
-                    : (language === 'vi' ? 'Giao diện: Tối' : 'Theme: Dark')
-              }
-            >
-              {theme === 'system' ? (
-                <Laptop className="w-3.5 h-3.5 text-blue-500" />
-              ) : theme === 'light' ? (
-                <Sun className="w-3.5 h-3.5 text-amber-500" />
-              ) : (
-                <Moon className="w-3.5 h-3.5 text-indigo-400" />
-              )}
-            </motion.button>
-
             {/* Quick Notification Bell Toggle (Desktop / sm+) */}
             {isNotificationSupported() && (
               <motion.button
                 whileTap={{ scale: 0.92 }}
                 onClick={handleToggleNotification}
-                className={`hidden sm:flex p-1.5 sm:p-2 rounded-xl border transition-all cursor-pointer items-center justify-center ${
+                className={`hidden sm:flex p-1.5 sm:p-2 rounded-2xl border-[1.5px] transition-all cursor-pointer items-center justify-center shadow-xs ${
                   notifActive 
-                    ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400 shadow-2xs' 
-                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                    ? 'bg-[var(--peach)]/40 border-[var(--accent)] text-[var(--accent)]' 
+                    : 'bg-[var(--surface-solid)] border-[var(--border)] text-[var(--fg-muted)] hover:text-[var(--fg)] hover:border-[var(--border-hover)]'
                 }`}
                 title={notifActive 
                   ? (language === 'vi' ? 'Đã bật nhắc nhở mỗi tối (21:00)' : 'Evening reminders active') 
                   : (language === 'vi' ? 'Bật nhắc nhở lịch học mỗi tối' : 'Enable reminders')}
               >
-                {notifActive ? <BellRing className="w-3.5 h-3.5 text-amber-500 animate-pulse" /> : <Bell className="w-3.5 h-3.5" />}
+                {notifActive ? <BellRing className="w-3.5 h-3.5 text-[var(--accent)] animate-pulse" /> : <Bell className="w-3.5 h-3.5" />}
               </motion.button>
             )}
 
-            {/* Full-Screen Minimal View Quick Action Button (Desktop / sm+) */}
-            {onToggleMinimalMode && (
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={onToggleMinimalMode}
-                className={`hidden sm:flex p-1.5 sm:p-2 rounded-xl border transition cursor-pointer items-center justify-center shadow-2xs ${
-                  isMinimalMode
-                    ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold'
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
-                }`}
-                title={
-                  isMinimalMode
-                    ? (language === 'vi' ? "Thoát chế độ tối giản (Escape hoặc F)" : "Exit minimal mode (Esc or F)")
-                    : (language === 'vi' ? "Chế độ xem tối giản toàn màn hình (Phím F)" : "Full-screen minimal focus mode (F)")
-                }
-              >
-                {isMinimalMode ? (
-                  <Minimize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950" />
-                ) : (
-                  <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500" />
-                )}
-              </motion.button>
-            )}
 
             {/* Floating Action Menu Trigger */}
             <div className="relative z-[110]" ref={menuRef}>
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`p-1.5 sm:p-2 rounded-xl border transition-all cursor-pointer flex items-center justify-center ${
+                className={`p-1.5 sm:p-2 rounded-2xl border-[1.5px] transition-all cursor-pointer flex items-center justify-center shadow-xs ${
                   isMenuOpen 
-                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-md' 
-                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                    ? 'bg-[var(--fg)] text-[var(--bg)] border-[var(--fg)]' 
+                    : 'bg-[var(--surface-solid)] border-[var(--border)] text-[var(--fg-secondary)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] hover:text-[var(--fg)]'
                 }`}
                 title={language === 'vi' ? "Tùy chọn & Tiện ích" : "Options & Tools"}
               >
@@ -343,7 +281,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     initial="initial"
                     animate="animate"
                     exit="exit"
-                    className="absolute right-0 top-full mt-2 w-72 sm:w-76 z-[120] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-3 divide-y divide-slate-100 dark:divide-slate-800 text-xs ring-1 ring-black/10 space-y-2.5"
+                    className="absolute right-0 top-full mt-2 w-72 sm:w-80 z-[120] bg-[var(--surface-solid)] border-[1.5px] border-[var(--border)] rounded-[28px] shadow-puffy p-3 divide-y divide-[var(--border)] text-xs space-y-2.5 backdrop-blur-xl"
                   >
                     
                     {/* Switch Class */}
@@ -354,12 +292,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                           onOpenClassModal?.();
                           setIsMenuOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl font-bold text-[var(--fg)] hover:bg-[var(--surface-active)] transition cursor-pointer"
                       >
-                        <School className="w-4 h-4 text-amber-500 shrink-0" />
+                        <School className="w-4 h-4 text-[var(--accent)] shrink-0" />
                         <div className="text-left min-w-0 flex-1">
                           <div className="whitespace-nowrap font-bold text-xs">{language === 'vi' ? 'Đổi Lớp Học' : 'Switch Class'}</div>
-                          <div className="text-[10px] text-slate-400 font-normal truncate">{currentClassName}</div>
+                          <div className="text-[11px] text-[var(--fg-muted)] font-normal truncate">{currentClassName}</div>
                         </div>
                       </motion.button>
                     </div>
@@ -372,55 +310,32 @@ export const Navbar: React.FC<NavbarProps> = ({
                           onOpenTeacherModal();
                           setIsMenuOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl font-bold text-[var(--fg)] hover:bg-[var(--surface-active)] transition cursor-pointer"
                       >
-                        <Users className="w-4 h-4 text-slate-700 dark:text-slate-300 shrink-0" />
+                        <Users className="w-4 h-4 text-[var(--fg-secondary)] shrink-0" />
                         <span className="whitespace-nowrap font-bold text-xs">{language === 'vi' ? 'Danh sách Giáo Viên' : 'Teacher Directory'}</span>
                       </motion.button>
                     </div>
 
-                    {/* Full-Screen Minimal Focus Mode */}
-                    {onToggleMinimalMode && (
-                      <div className="pt-2.5 pb-1">
-                        <motion.button
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => {
-                            onToggleMinimalMode();
-                            setIsMenuOpen(false);
-                          }}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                        >
-                          <Maximize2 className="w-4 h-4 text-indigo-500 shrink-0" />
-                          <div className="text-left">
-                            <div className="whitespace-nowrap font-bold text-xs">
-                              {language === 'vi' ? 'Toàn màn hình tối giản' : 'Full-Screen Minimal'}
-                            </div>
-                            <div className="text-[10px] text-slate-400 font-normal">
-                              {language === 'vi' ? 'Chỉ xem thời khóa biểu (Phím F)' : 'Show only schedule cards (F)'}
-                            </div>
-                          </div>
-                        </motion.button>
-                      </div>
-                    )}
 
                     {/* Language Toggle */}
                     <div className="pt-2.5 flex items-center justify-between px-3 py-1">
-                      <div className="flex items-center gap-2.5 text-slate-700 dark:text-slate-300 font-semibold">
-                        <Globe className="w-4 h-4 text-slate-500 shrink-0" />
+                      <div className="flex items-center gap-2.5 text-[var(--fg)] font-bold">
+                        <Globe className="w-4 h-4 text-[var(--fg-secondary)] shrink-0" />
                         <span className="whitespace-nowrap text-xs">{language === 'vi' ? 'Ngôn ngữ' : 'Language'}</span>
                       </div>
-                      <div className="flex rounded-xl bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200/80 dark:border-slate-700/80 shrink-0">
+                      <div className="flex rounded-2xl bg-[var(--bg-subtle)] p-0.5 border border-[var(--border)] shrink-0">
                         <motion.button
                           whileTap={{ scale: 0.92 }}
                           onClick={() => onLanguageChange('vi')}
-                          className={`px-2.5 py-1 rounded-lg text-[10px] font-black cursor-pointer transition ${language === 'vi' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                          className={`px-3 py-1 rounded-xl text-[10px] font-black cursor-pointer transition ${language === 'vi' ? 'bg-[var(--surface-solid)] text-[var(--fg)] shadow-xs' : 'text-[var(--fg-muted)] hover:text-[var(--fg)]'}`}
                         >
                           VIE
                         </motion.button>
                         <motion.button
                           whileTap={{ scale: 0.92 }}
                           onClick={() => onLanguageChange('en')}
-                          className={`px-2.5 py-1 rounded-lg text-[10px] font-black cursor-pointer transition ${language === 'en' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                          className={`px-3 py-1 rounded-xl text-[10px] font-black cursor-pointer transition ${language === 'en' ? 'bg-[var(--surface-solid)] text-[var(--fg)] shadow-xs' : 'text-[var(--fg-muted)] hover:text-[var(--fg)]'}`}
                         >
                           ENG
                         </motion.button>
@@ -432,17 +347,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <motion.button
                         whileTap={{ scale: 0.95 }}
                         onClick={() => exportScheduleToICS(days, currentClassName)}
-                        className="flex items-center justify-center gap-2 py-2.5 px-2 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer whitespace-nowrap"
+                        className="btn-cozy flex items-center justify-center gap-2 py-2.5 px-2 rounded-2xl font-bold text-xs cursor-pointer whitespace-nowrap"
                       >
-                        <CalendarPlus className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                        <CalendarPlus className="w-3.5 h-3.5 text-[var(--accent)] shrink-0" />
                         <span className="whitespace-nowrap">{language === 'vi' ? 'Thêm Lịch' : 'Sync Cal'}</span>
                       </motion.button>
                       <motion.button
                         whileTap={{ scale: 0.95 }}
                         onClick={() => window.print()}
-                        className="flex items-center justify-center gap-2 py-2.5 px-2 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer whitespace-nowrap"
+                        className="btn-cozy flex items-center justify-center gap-2 py-2.5 px-2 rounded-2xl font-bold text-xs cursor-pointer whitespace-nowrap"
                       >
-                        <Printer className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                        <Printer className="w-3.5 h-3.5 text-[var(--fg-secondary)] shrink-0" />
                         <span className="whitespace-nowrap">{language === 'vi' ? 'In Lịch' : 'Print'}</span>
                       </motion.button>
                     </div>
@@ -455,10 +370,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Bottom Row: OpenDesign Floating Day & Week Capsule */}
+        {/* Bottom Row: Floating Day & Week Capsule (Spacious Desktop Layout) */}
         {viewType === 'class' && (
           <div className="w-full overflow-x-auto no-scrollbar scroll-smooth">
-            <div className="flex items-center gap-0.5 sm:gap-1 p-1 rounded-2xl bg-slate-100/80 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/[0.06] w-full justify-between sm:justify-start sm:w-auto shadow-xs">
+            <div className="flex items-center gap-1 sm:gap-1.5 p-1.5 rounded-2xl bg-[var(--bg-subtle)] border-[1.5px] border-[var(--border)] w-full shadow-xs">
               {days.map((d) => {
                 const isSelected = viewMode === 'timeline' && selectedDay === d.dayKey;
                 const label = language === 'vi' ? dayLabelsVi[d.dayKey] : dayLabelsEn[d.dayKey];
@@ -473,21 +388,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onSelectDay(d.dayKey);
                       onViewModeChange('timeline');
                     }}
-                    className={`relative flex-1 sm:flex-initial px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1 whitespace-nowrap z-10 shrink-0 ${
+                    className={`relative flex-1 px-2.5 sm:px-4 lg:px-6 py-2 rounded-xl text-xs sm:text-sm font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap z-10 shrink-0 ${
                       isSelected 
-                        ? 'text-white dark:text-slate-950 font-black' 
-                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                        ? 'text-[var(--bg)] font-black' 
+                        : 'text-[var(--fg-secondary)] hover:text-[var(--fg)]'
                     }`}
                   >
                     {isSelected && (
                       <motion.div
                         layoutId="active-nav-tab"
-                        className="absolute inset-0 bg-slate-900 dark:bg-white rounded-xl shadow-sm z-[-1]"
+                        className="absolute inset-0 bg-[var(--fg)] rounded-xl shadow-xs z-[-1]"
                         transition={{ type: "spring", stiffness: 480, damping: 34 }}
                       />
                     )}
                     <span>{label}</span>
-                    <span className={`text-[10px] font-mono tabular-nums hidden sm:inline ${isSelected ? 'opacity-90' : 'text-slate-400 dark:text-slate-500'}`}>
+                    <span className={`text-[11px] font-mono tabular-nums hidden sm:inline ${isSelected ? 'opacity-90' : 'text-[var(--fg-muted)]'}`}>
                       {dateStr}
                     </span>
                   </motion.button>
@@ -498,20 +413,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               <motion.button
                 whileTap={{ scale: 0.94 }}
                 onClick={() => onViewModeChange('grid')}
-                className={`relative flex-1 sm:flex-initial px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer whitespace-nowrap border-l border-slate-200/80 dark:border-white/10 ml-0.5 pl-2 sm:pl-3 z-10 shrink-0 ${
+                className={`relative flex-1 sm:flex-initial px-3 sm:px-4 lg:px-6 py-2 rounded-xl text-xs sm:text-sm font-bold transition-colors cursor-pointer whitespace-nowrap border-l border-[var(--border)] ml-1 pl-2.5 sm:pl-4 z-10 shrink-0 ${
                   viewMode === 'grid' 
-                    ? 'text-white dark:text-slate-950 font-black' 
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                    ? 'text-[var(--bg)] font-black' 
+                    : 'text-[var(--fg-secondary)] hover:text-[var(--fg)]'
                 }`}
               >
                 {viewMode === 'grid' && (
                   <motion.div
                     layoutId="active-nav-tab"
-                    className="absolute inset-0 bg-slate-900 dark:bg-white rounded-xl shadow-sm z-[-1]"
+                    className="absolute inset-0 bg-[var(--fg)] rounded-xl shadow-xs z-[-1]"
                     transition={{ type: "spring", stiffness: 480, damping: 34 }}
                   />
                 )}
-                <span>{language === 'vi' ? 'Tuần' : 'Week'}</span>
+                <span>{language === 'vi' ? 'Toàn Tuần' : 'All Week'}</span>
               </motion.button>
             </div>
           </div>

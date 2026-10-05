@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Language, ThemeKey, ViewMode, DayKey, ScheduleData, WeekTabInfo, INITIAL_ROOMS, INITIAL_CLASSES, RoomInfo } from './types/schedule';
+import { Language, ViewMode, DayKey, ScheduleData, WeekTabInfo, INITIAL_ROOMS, INITIAL_CLASSES, RoomInfo } from './types/schedule';
 import { getFallbackRoomSchedule } from './data/scheduleData';
 import { fetchLiveRoomSchedule, fetchLiveSchedule, getAllSheetTabs } from './services/googleSheetService';
 import { Navbar } from './components/Navbar';
@@ -16,6 +16,7 @@ import { ScreensaverVideoLoop } from './components/ScreensaverVideoLoop';
 import { NotificationPermissionModal } from './components/NotificationPermissionModal';
 import { getVietnamTime, VietnamTimeInfo, getDateStatus } from './utils/vietnamTime';
 import { checkAndTriggerEveningReminder } from './utils/notificationService';
+import { initCreamyKeyboardListener } from './utils/audio';
 
 const DAY_OF_WEEK_MAP: Record<number, DayKey> = {
   0: 'mon',
@@ -75,9 +76,24 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
     }
   });
 
-  const [theme, setTheme] = useState<ThemeKey>('system');
-  const [viewMode, setViewMode] = useState<ViewMode>('timeline');
-  const [selectedDay, setSelectedDay] = useState<DayKey>('mon');
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    if (typeof window === 'undefined') return 'timeline';
+    try {
+      const p = new URLSearchParams(window.location.search).get('view');
+      if (p === 'grid' || p === 'matrix') return 'grid';
+    } catch (e) {}
+    return 'timeline';
+  });
+  const [selectedDay, setSelectedDay] = useState<DayKey>(() => {
+    if (typeof window === 'undefined') return 'mon';
+    try {
+      const p = new URLSearchParams(window.location.search).get('day');
+      if (p === 'all' || p === 'mon' || p === 'tue' || p === 'wed' || p === 'thu' || p === 'fri') {
+        return p as DayKey;
+      }
+    } catch (e) {}
+    return 'mon';
+  });
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [vnTime, setVnTime] = useState<VietnamTimeInfo>(getVietnamTime());
   
@@ -85,6 +101,8 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
   const [showIntroVideo, setShowIntroVideo] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     try {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get('nointro') === '1' || searchParams.get('skipintro') === '1') return false;
       if (sessionStorage.getItem('tis_intro_seen') === 'true') return false;
       if (typeof navigator !== 'undefined' && !navigator.onLine) return false;
       const conn = (navigator as any)?.connection;
@@ -94,9 +112,21 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
     } catch (e) {}
     return true;
   });
-  const [isRoomModalOpen, setIsRoomModalOpen] = useState<boolean>(false);
+  const [isRoomModalOpen, setIsRoomModalOpen] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return new URLSearchParams(window.location.search).get('modal') === 'class';
+    } catch (e) {}
+    return false;
+  });
 
-  const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
+  const [isTeacherModalOpen, setIsTeacherModalOpen] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return new URLSearchParams(window.location.search).get('modal') === 'teacher';
+    } catch (e) {}
+    return false;
+  });
   const [availableWeeks, setAvailableWeeks] = useState<WeekTabInfo[]>([]);
   const [selectedWeekGid, setSelectedWeekGid] = useState<string>('');
   const [rooms] = useState<RoomInfo[]>(INITIAL_ROOMS);
@@ -105,7 +135,14 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
   const [isMinimalMode, setIsMinimalMode] = useState<boolean>(false);
 
   // 10s Inactivity Ambient Screensaver State & Dev Console Test Mode
-  const [isScreensaverActive, setIsScreensaverActive] = useState<boolean>(false);
+  const [isScreensaverActive, setIsScreensaverActive] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      const p = new URLSearchParams(window.location.search);
+      if (p.get('screensaver') === '1') return true;
+    } catch (e) {}
+    return false;
+  });
   const [isScreensaverLocked, setIsScreensaverLocked] = useState<boolean>(false);
   const isScreensaverLockedRef = useRef<boolean>(false);
 
@@ -181,13 +218,23 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
     // If the initial intro video is actively playing on startup, wait until it finishes
     if (showIntroVideo) return;
 
+    // Screensaver is only for desktop kiosk mode (not mobile phones / touch devices)
+    const isMobileDevice = typeof window !== 'undefined' && (
+      window.innerWidth < 768 || 
+      'ontouchstart' in window || 
+      (navigator.maxTouchPoints && navigator.maxTouchPoints > 0)
+    );
+
+    if (isMobileDevice) return;
+
     let idleTimer: ReturnType<typeof setTimeout> | null = null;
 
     const startIdleTimer = () => {
       if (idleTimer) clearTimeout(idleTimer);
+      // 3 minutes of desktop idle inactivity before screensaver
       idleTimer = setTimeout(() => {
         setIsScreensaverActive(true);
-      }, 10000);
+      }, 180000);
     };
 
     const handleUserActivity = () => {
@@ -212,6 +259,12 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
     };
   }, [showIntroVideo]);
 
+  // Creamy Mechanical Keyboard Interaction Sound Effect
+  useEffect(() => {
+    const cleanup = initCreamyKeyboardListener();
+    return cleanup;
+  }, []);
+
   const handleToggleMinimalMode = () => {
     setIsMinimalMode(prev => {
       const next = !prev;
@@ -233,10 +286,9 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
       if (localStorage.getItem('tis_minimal_mode') === 'true') {
         setIsMinimalMode(true);
       }
-      const savedTheme = localStorage.getItem('tis_theme_pref') as ThemeKey;
-      if (savedTheme && ['system', 'light', 'dark'].includes(savedTheme)) {
-        setTheme(savedTheme);
-      }
+      localStorage.removeItem('tis_theme_pref');
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
       const route = parsePath(window.location.pathname);
       if (!route.roomId && !route.classId) {
         if (!localStorage.getItem('tis_selected_room') && !localStorage.getItem('tis_selected_class')) {
@@ -344,11 +396,6 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
     } else {
       setScheduleData(null);
     }
-
-    // Normalize URL
-    if (location.pathname === '/' || location.pathname === `/${route.lang}`) {
-      navigate(`/${route.lang}/11-tn`, { replace: true });
-    }
   }, [location.pathname, navigate]);
 
   // Handle Room Selection: Navigates directly to Room Live View (Single live subject only)
@@ -435,38 +482,14 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
     }
   };
 
-  // Update root data-theme attribute & auto-detect device dark mode
+  // Enforce permanent Cozy Cream Light Mode (Zero Dark Mode)
   useEffect(() => {
-    localStorage.setItem('tis_theme_pref', theme);
-
-    const applyTheme = () => {
-      let isDark = true;
-      if (theme === 'light') {
-        isDark = false;
-      } else if (theme === 'system') {
-        isDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : false;
-      } else {
-        isDark = true;
-      }
-
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-        document.documentElement.setAttribute('data-theme', 'dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        document.documentElement.setAttribute('data-theme', 'light');
-      }
-    };
-
-    applyTheme();
-
-    if (theme === 'system' && window.matchMedia) {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const listener = () => applyTheme();
-      mediaQuery.addEventListener('change', listener);
-      return () => mediaQuery.removeEventListener('change', listener);
-    }
-  }, [theme]);
+    document.documentElement.classList.remove('dark');
+    document.documentElement.setAttribute('data-theme', 'light');
+    try {
+      localStorage.removeItem('tis_theme_pref');
+    } catch (e) {}
+  }, []);
 
   // Real-time ticker strictly in Vietnam Time (UTC+7) + Evening Reminder Check
   useEffect(() => {
@@ -509,19 +532,20 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
   }
 
   return (
-    <div className={`min-h-[100dvh] bg-[var(--bg)] relative text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'}`}>
+    <div className={`min-h-[100dvh] bg-[var(--bg)] relative text-[var(--fg)] transition-colors duration-200 font-sans flex flex-col ${isMinimalMode ? 'justify-start md:justify-center items-center py-1 sm:py-3' : 'justify-between'}`}>
       
       {/* Non-intrusive First-Time Notification Permission Prompt */}
       <NotificationPermissionModal language={language} />
 
-      {/* OpenDesign Atmospheric Depth (Subtle, non-distracting) */}
+      {/* Cozy Atmospheric Depth Blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 no-print">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[300px] rounded-full bg-sky-500/[0.03] dark:bg-sky-400/[0.03] blur-3xl transform-gpu pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[300px] rounded-full bg-slate-400/[0.04] dark:bg-slate-700/[0.05] blur-3xl transform-gpu pointer-events-none" />
+        <div className="absolute top-[-50px] left-1/4 w-[500px] h-[350px] rounded-full bg-[#f9d9c4]/20 blur-3xl transform-gpu pointer-events-none cozy-blob" />
+        <div className="absolute bottom-[-50px] right-1/4 w-[550px] h-[350px] rounded-full bg-[#f7e7a9]/20 blur-3xl transform-gpu pointer-events-none cozy-blob" />
+        <div className="absolute top-1/2 left-[-100px] w-[350px] h-[350px] rounded-full bg-[#d3e3c4]/15 blur-3xl transform-gpu pointer-events-none cozy-blob" />
       </div>
 
-      {/* Main Responsive Container */}
-      <div className={`relative z-10 w-full ${isMinimalMode ? 'max-w-full sm:max-w-[98%] xl:max-w-6xl 2xl:max-w-7xl md:my-auto justify-start md:justify-center' : 'max-w-[98%] sm:max-w-[95%] lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1550px]'} mx-auto px-2.5 sm:px-4 lg:px-6 pt-1 sm:pt-3 pb-6 sm:pb-10 flex-1 flex flex-col transition-all duration-300`}>
+      {/* Main Responsive Container (Full Width Utilization) */}
+      <div className={`relative z-10 w-full max-w-[1850px] mx-auto px-2.5 xs:px-4 sm:px-6 lg:px-8 xl:px-10 ${isMinimalMode ? 'md:my-auto justify-start md:justify-center' : ''} pt-1 sm:pt-3 pb-6 sm:pb-10 flex-1 flex flex-col transition-all duration-300`}>
         
         {/* Top Header Card */}
         {isMinimalMode ? (
@@ -530,8 +554,6 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
             selectedDay={selectedDay}
             onSelectDay={setSelectedDay}
             language={language}
-            theme={theme}
-            onThemeChange={setTheme}
             scheduleData={scheduleData}
             availableWeeks={availableWeeks}
             selectedWeekGid={selectedWeekGid}
@@ -544,8 +566,6 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
           <Navbar
             language={language}
             onLanguageChange={handleLanguageChange}
-            theme={theme}
-            onThemeChange={setTheme}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             vnTime={vnTime}
@@ -558,7 +578,6 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
             onOpenRoomSelector={() => setIsRoomModalOpen(true)}
             scheduleData={scheduleData}
             isMinimalMode={isMinimalMode}
-            onToggleMinimalMode={handleToggleMinimalMode}
             viewType={viewType}
           />
         )}
@@ -567,27 +586,27 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
         <main className={`flex-1 ${viewType === 'room' || isMinimalMode ? 'flex flex-col justify-center items-center my-auto w-full' : 'mt-1 sm:mt-1.5'} relative z-0`}>
           <AnimatePresence mode="wait">
             {!scheduleData ? (
-              /* Room Not Found Screen (Zero Icons, Pure High-Contrast Typography) */
+              /* Room Not Found Screen (Cozy Cream Styling) */
               <motion.div
                 key={`not-found-${selectedRoomId}`}
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -14 }}
-                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full max-w-lg mx-auto my-auto py-16 px-6 text-center space-y-6"
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full max-w-lg mx-auto my-auto py-12 px-8 text-center space-y-6 od-glass rounded-3xl"
               >
-                <div className="w-16 h-16 mx-auto rounded-3xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 flex items-center justify-center font-mono font-black text-2xl text-slate-500 dark:text-slate-400 select-none">
+                <div className="w-16 h-16 mx-auto rounded-3xl bg-[var(--surface-solid)] border-[1.5px] border-[var(--border)] shadow-puffy flex items-center justify-center font-display font-black text-2xl text-[var(--accent)] select-none">
                   404
                 </div>
 
                 <div className="space-y-2">
-                  <span className="text-xs font-mono uppercase tracking-[0.25em] text-rose-500 dark:text-rose-400 font-bold block">
-                    {language === 'vi' ? 'PHÒNG HỌC KHÔNG TỒN TẠI' : 'ROOM NOT FOUND'}
+                  <span className="px-3 py-1 rounded-full text-xs font-bold chip-blush inline-block">
+                    {language === 'vi' ? 'Phòng học không tồn tại' : 'Room Not Found'}
                   </span>
-                  <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                  <h2 className="text-2xl sm:text-3xl font-display font-black tracking-tight text-[var(--fg)]">
                     {language === 'vi' ? `Không tìm thấy phòng "${selectedRoomId}"` : `Room "${selectedRoomId}" not found`}
                   </h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
+                  <p className="text-sm text-[var(--fg-muted)] max-w-sm mx-auto leading-relaxed">
                     {language === 'vi'
                       ? 'Số phòng này không có trong danh sách thời khóa biểu của trường. Vui lòng kiểm tra lại hoặc thử chọn trực tiếp theo Lớp học của bạn.'
                       : 'This room number was not found in the timetable. Please check the room number or choose your class.'}
@@ -598,14 +617,14 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
                   <button
                     type="button"
                     onClick={() => setIsRoomModalOpen(true)}
-                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-mono font-bold text-xs uppercase tracking-wider transition cursor-pointer shadow-sm"
+                    className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--accent-fg)] font-bold text-xs uppercase tracking-wider transition cursor-pointer shadow-[0_3px_0_rgba(0,0,0,0.12)] active:translate-y-0.5"
                   >
                     {language === 'vi' ? 'Chọn theo Lớp học' : 'Choose by Class'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsRoomModalOpen(true)}
-                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-mono font-semibold text-xs uppercase tracking-wider transition cursor-pointer border border-slate-200 dark:border-slate-700"
+                    className="w-full sm:w-auto px-6 py-3 rounded-2xl btn-cozy font-semibold text-xs uppercase tracking-wider cursor-pointer"
                   >
                     {language === 'vi' ? 'Nhập lại số phòng' : 'Re-enter Room'}
                   </button>
@@ -650,7 +669,6 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
                   selectedWeekGid={selectedWeekGid}
                   onSelectWeek={handleSelectWeek}
                   isMinimalMode={isMinimalMode}
-                  onToggleMinimalMode={handleToggleMinimalMode}
                   onOpenRoomSelector={() => setIsRoomModalOpen(true)}
                 />
               </motion.div>
@@ -674,18 +692,17 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
                   selectedWeekGid={selectedWeekGid}
                   onSelectWeek={handleSelectWeek}
                   isMinimalMode={isMinimalMode}
-                  onToggleMinimalMode={handleToggleMinimalMode}
                 />
               </motion.div>
             )}
           </AnimatePresence>
         </main>
 
-        {/* Sleek Hotel Luxury Minimalist Footer (Zero Icons - Only in Class View) */}
+        {/* Cozy Soft Footer (Only in Class View) */}
         {!isMinimalMode && scheduleData && viewType === 'class' && (
-          <footer className="mt-auto pt-8 pb-3 text-center text-[11px] font-mono text-slate-400 dark:text-white/40 no-print">
+          <footer className="mt-auto pt-8 pb-3 text-center text-[12px] font-sans text-[var(--fg-faint)] no-print">
             <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-              <span className="font-semibold text-slate-600 dark:text-white/70">
+              <span className="font-bold text-[var(--fg-secondary)]">
                 {language === 'vi' ? (scheduleData.roomNameVi || `Phòng ${selectedRoomId}`) : (scheduleData.roomNameEn || `Room ${selectedRoomId}`)}
               </span>
               <span>·</span>

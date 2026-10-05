@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { X } from './icons';
 import { RoomInfo, ClassInfo, Language, INITIAL_ROOMS, INITIAL_CLASSES } from '../types/schedule';
 
 interface RoomSelectorModalProps {
@@ -140,7 +141,7 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={allowClose ? onClose : undefined}
-            className="fixed inset-0 bg-slate-950/60 backdrop-blur-md cursor-pointer"
+            className="fixed inset-0 bg-[#4a3b2f]/40 backdrop-blur-sm cursor-pointer"
           />
 
           {/* Two-Panel Horizontal Screen Modal */}
@@ -149,24 +150,24 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-4xl lg:max-w-5xl bg-white/95 dark:bg-[#10131c]/95 border border-slate-200/80 dark:border-white/[0.08] shadow-2xl backdrop-blur-2xl rounded-3xl z-10 overflow-hidden flex flex-col max-h-[90vh]"
+            className="relative w-full max-w-4xl lg:max-w-5xl bg-[var(--surface-solid)] border-[1.5px] border-[var(--border)] shadow-puffy rounded-[28px] z-10 overflow-hidden flex flex-col max-h-[90vh]"
           >
             {/* Top Bar: Title, Language Switcher, Close Button */}
-            <div className="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between bg-slate-50/70 dark:bg-white/[0.02] shrink-0">
-              <span className="text-[11px] font-mono font-bold tracking-[0.2em] uppercase text-slate-500 dark:text-slate-400">
+            <div className="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-[var(--border)] flex items-center justify-between bg-[var(--bg-subtle)]/40 shrink-0">
+              <span className="text-xs sm:text-sm font-display font-bold tracking-wider uppercase text-[var(--fg)]">
                 TIS SCHEDULE · {language === 'vi' ? 'CHỌN LỊCH HỌC' : 'CHOOSE SCHEDULE'}
               </span>
 
               <div className="flex items-center gap-2.5">
                 {onLanguageChange && (
-                  <div className="flex items-center border border-slate-200 dark:border-white/[0.1] rounded-full p-0.5 text-xs font-mono bg-slate-100/60 dark:bg-white/[0.04]">
+                  <div className="flex items-center border border-[var(--border)] rounded-full p-0.5 text-xs font-mono bg-[var(--surface-solid)] shadow-xs">
                     <button
                       type="button"
                       onClick={() => onLanguageChange('vi')}
-                      className={`px-2.5 py-0.5 rounded-full transition cursor-pointer ${
+                      className={`px-3 py-1 rounded-full transition cursor-pointer font-bold ${
                         language === 'vi' 
-                          ? 'bg-white dark:bg-white/20 text-slate-900 dark:text-white font-bold shadow-xs' 
-                          : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                          ? 'bg-[var(--fg)] text-[var(--bg)] shadow-xs' 
+                          : 'text-[var(--fg-muted)] hover:text-[var(--fg)]'
                       }`}
                     >
                       VI
@@ -174,10 +175,10 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                     <button
                       type="button"
                       onClick={() => onLanguageChange('en')}
-                      className={`px-2.5 py-0.5 rounded-full transition cursor-pointer ${
+                      className={`px-3 py-1 rounded-full transition cursor-pointer font-bold ${
                         language === 'en' 
-                          ? 'bg-white dark:bg-white/20 text-slate-900 dark:text-white font-bold shadow-xs' 
-                          : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                          ? 'bg-[var(--fg)] text-[var(--bg)] shadow-xs' 
+                          : 'text-[var(--fg-muted)] hover:text-[var(--fg)]'
                       }`}
                     >
                       EN
@@ -189,22 +190,23 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="text-xs font-mono uppercase text-slate-400 hover:text-slate-700 dark:hover:text-white px-2.5 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] transition cursor-pointer"
+                    className="btn-cozy text-xs font-bold px-3 py-1.5 rounded-2xl cursor-pointer flex items-center gap-1.5"
                   >
-                    {language === 'vi' ? 'Đóng' : 'Close'}
+                    <X className="w-3.5 h-3.5" />
+                    <span>{language === 'vi' ? 'Đóng' : 'Close'}</span>
                   </button>
                 )}
               </div>
             </div>
 
             {/* Two Panels: Left = Room Type-In, Right = Class Choosing */}
-            <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-200/80 dark:divide-white/[0.08] overflow-y-auto no-scrollbar">
+            <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--border)] overflow-y-auto no-scrollbar">
               
               {/* LEFT PANEL: Room Number Type-In (Centered Box) */}
               <div className="p-6 sm:p-8 flex flex-col justify-center space-y-6">
                 <div>
                   <div className="mb-5 text-center sm:text-left">
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    <p className="text-xs text-[var(--fg-muted)] font-medium">
                       {language === 'vi' ? 'Nhập mã phòng để tra cứu lịch phòng học trực tiếp' : 'Enter room number to view live room schedule'}
                     </p>
                   </div>
@@ -219,10 +221,10 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                         value={typedRoom}
                         onChange={(e) => setTypedRoom(e.target.value)}
                         placeholder={language === 'vi' ? "504, 4012, Tâm lý..." : "504, 4012, Psychology..."}
-                        className={`w-full text-center py-4 px-6 text-2xl sm:text-3xl font-mono font-bold tracking-wider text-slate-900 dark:text-white bg-slate-50/80 dark:bg-white/[0.03] border-2 rounded-[22px] outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-inner ${
+                        className={`w-full text-center py-4 px-6 text-2xl sm:text-3xl font-display font-bold tracking-wider text-[var(--fg)] bg-[var(--bg)] border-2 rounded-[22px] outline-none transition-all placeholder:text-[var(--fg-faint)] shadow-inner ${
                           isTypedInvalid
-                            ? 'border-rose-400 dark:border-rose-500/80 ring-2 ring-rose-400/20'
-                            : 'border-slate-200 dark:border-white/[0.1] focus:border-slate-900 dark:focus:border-white/40 focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-white/10'
+                            ? 'border-[var(--danger)] ring-2 ring-[var(--danger-muted)]'
+                            : 'border-[var(--border)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent-muted)]'
                         }`}
                         autoFocus
                       />
@@ -231,11 +233,11 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                     {/* Room Resolution / Real-time Feedback */}
                     <div className="min-h-6 flex items-center justify-center text-center px-2">
                       {matchedRoom ? (
-                        <div className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-medium">
+                        <div className="text-xs font-mono text-[var(--success)] font-semibold">
                           ✓ {language === 'vi' ? matchedRoom.nameVi : matchedRoom.nameEn} · {language === 'vi' ? matchedRoom.defaultClassVi : matchedRoom.defaultClassEn} ({language === 'vi' ? 'Nhấn Enter ↵' : 'Press Enter ↵'})
                         </div>
                       ) : isTypedInvalid ? (
-                        <div className="text-xs font-mono text-rose-500 dark:text-rose-400 font-medium leading-tight">
+                        <div className="text-xs font-mono text-[var(--danger)] font-medium leading-tight">
                           ⚠ {language === 'vi' 
                             ? `Không tìm thấy phòng "${cleanTypedId}". Vui lòng thử lại hoặc chọn theo Lớp học bên phải ➔` 
                             : `Room "${cleanTypedId}" not found. Please try again or select your class on the right ➔`}
@@ -247,7 +249,7 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                     <button
                       type="submit"
                       disabled={!matchedRoom}
-                      className="w-full py-3 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-white dark:text-slate-900 font-mono font-bold text-xs uppercase tracking-wider transition cursor-pointer shadow-sm"
+                      className="w-full py-3 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-40 disabled:cursor-not-allowed text-[var(--accent-fg)] font-bold text-xs uppercase tracking-wider transition cursor-pointer shadow-[0_3px_0_var(--edge)] active:translate-y-0.5"
                     >
                       {matchedRoom 
                         ? (language === 'vi' ? 'Xem Thời Khóa Biểu (Enter)' : 'View Schedule (Enter)') 
@@ -263,10 +265,10 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
               <div className="p-6 sm:p-8 flex flex-col justify-between max-h-[500px] md:max-h-[560px]">
                 <div className="flex flex-col h-full overflow-hidden">
                   <div className="space-y-1 mb-4">
-                    <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-slate-400 dark:text-slate-400 font-bold">
+                    <h3 className="text-xs font-display uppercase tracking-wider text-[var(--fg-muted)] font-bold">
                       {language === 'vi' ? 'HOẶC CHỌN THEO LỚP HỌC' : 'OR CHOOSE BY CLASS'}
                     </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-[var(--fg-muted)]">
                       {language === 'vi' ? 'Danh sách các lớp THPT & THCS' : 'List of all High School & Middle School classes'}
                     </p>
                   </div>
@@ -276,7 +278,7 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                     
                     {/* THPT Group */}
                     <div className="space-y-1.5">
-                      <span className="text-[10px] font-mono font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase px-1 block">
+                      <span className="text-[10px] font-bold tracking-wider text-[var(--fg-muted)] uppercase px-1 block">
                         {language === 'vi' ? 'Khối THPT' : 'High School'}
                       </span>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -289,25 +291,25 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                               type="button"
                               onClick={() => handlePickClass(c)}
                               title={`${classNameStr} • ${c.homeroomTeacher}`}
-                              className={`h-[64px] px-3 py-2 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between overflow-hidden ${
+                              className={`h-[66px] px-3.5 py-2.5 rounded-2xl border-[1.5px] text-left transition cursor-pointer flex flex-col justify-between overflow-hidden ${
                                 isCurrent
-                                  ? 'bg-amber-500/10 text-amber-900 dark:text-amber-300 border-amber-500/30 shadow-xs'
-                                  : 'bg-slate-50 hover:bg-slate-100/80 dark:bg-white/[0.03] dark:hover:bg-white/[0.06] border-slate-200/80 dark:border-white/[0.06] text-slate-900 dark:text-slate-100'
+                                  ? 'chip-peach border-[var(--accent)]/40 shadow-xs'
+                                  : 'bg-[var(--surface)] hover:bg-[var(--surface-hover)] border-[var(--border)] hover:border-[var(--border-hover)] text-[var(--fg)] shadow-xs'
                               }`}
                             >
                               <div className="flex items-center justify-between gap-1.5 w-full min-w-0">
-                                <span className={`text-xs sm:text-[13px] truncate ${isCurrent ? 'font-bold text-amber-700 dark:text-amber-400' : 'font-semibold'}`}>
+                                <span className={`text-xs sm:text-[13px] truncate ${isCurrent ? 'font-bold' : 'font-semibold text-[var(--fg)]'}`}>
                                   {classNameStr}
                                 </span>
-                                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap ${
+                                <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full shrink-0 whitespace-nowrap ${
                                   isCurrent
-                                    ? 'bg-amber-500/20 text-amber-800 dark:text-amber-300 font-bold'
-                                    : 'bg-slate-200/60 dark:bg-white/[0.06] text-slate-600 dark:text-slate-400'
+                                    ? 'bg-[var(--accent)] text-[var(--accent-fg)] font-bold'
+                                    : 'bg-[var(--bg-subtle)] text-[var(--fg-secondary)] font-medium'
                                 }`}>
                                   {formatRoomBadge(c.room)}
                                 </span>
                               </div>
-                              <span className={`text-[11px] truncate w-full ${isCurrent ? 'text-amber-700/80 dark:text-amber-300/80 font-medium' : 'text-slate-500 dark:text-slate-400'}`}>
+                              <span className={`text-[11px] truncate w-full ${isCurrent ? 'opacity-85 font-medium' : 'text-[var(--fg-muted)]'}`}>
                                 {language === 'vi' ? 'GV' : 'HR'}: {c.homeroomTeacher}
                               </span>
                             </button>
@@ -318,7 +320,7 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
 
                     {/* THCS Group */}
                     <div className="space-y-1.5 pt-2">
-                      <span className="text-[10px] font-mono font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase px-1 block">
+                      <span className="text-[10px] font-bold tracking-wider text-[var(--fg-muted)] uppercase px-1 block">
                         {language === 'vi' ? 'Khối THCS' : 'Middle School'}
                       </span>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -331,25 +333,25 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                               type="button"
                               onClick={() => handlePickClass(c)}
                               title={`${classNameStr} • ${c.homeroomTeacher}`}
-                              className={`h-[64px] px-3 py-2 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between overflow-hidden ${
+                              className={`h-[66px] px-3.5 py-2.5 rounded-2xl border-[1.5px] text-left transition cursor-pointer flex flex-col justify-between overflow-hidden ${
                                 isCurrent
-                                  ? 'bg-amber-500/10 text-amber-900 dark:text-amber-300 border-amber-500/30 shadow-xs'
-                                  : 'bg-slate-50 hover:bg-slate-100/80 dark:bg-white/[0.03] dark:hover:bg-white/[0.06] border-slate-200/80 dark:border-white/[0.06] text-slate-900 dark:text-slate-100'
+                                  ? 'chip-peach border-[var(--accent)]/40 shadow-xs'
+                                  : 'bg-[var(--surface)] hover:bg-[var(--surface-hover)] border-[var(--border)] hover:border-[var(--border-hover)] text-[var(--fg)] shadow-xs'
                               }`}
                             >
                               <div className="flex items-center justify-between gap-1.5 w-full min-w-0">
-                                <span className={`text-xs sm:text-[13px] truncate ${isCurrent ? 'font-bold text-amber-700 dark:text-amber-400' : 'font-semibold'}`}>
+                                <span className={`text-xs sm:text-[13px] truncate ${isCurrent ? 'font-bold' : 'font-semibold text-[var(--fg)]'}`}>
                                   {classNameStr}
                                 </span>
-                                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap ${
+                                <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full shrink-0 whitespace-nowrap ${
                                   isCurrent
-                                    ? 'bg-amber-500/20 text-amber-800 dark:text-amber-300 font-bold'
-                                    : 'bg-slate-200/60 dark:bg-white/[0.06] text-slate-600 dark:text-slate-400'
+                                    ? 'bg-[var(--accent)] text-[var(--accent-fg)] font-bold'
+                                    : 'bg-[var(--bg-subtle)] text-[var(--fg-secondary)] font-medium'
                                 }`}>
                                   {formatRoomBadge(c.room)}
                                 </span>
                               </div>
-                              <span className={`text-[11px] truncate w-full ${isCurrent ? 'text-amber-700/80 dark:text-amber-300/80 font-medium' : 'text-slate-500 dark:text-slate-400'}`}>
+                              <span className={`text-[11px] truncate w-full ${isCurrent ? 'opacity-85 font-medium' : 'text-[var(--fg-muted)]'}`}>
                                 {language === 'vi' ? 'GV' : 'HR'}: {c.homeroomTeacher}
                               </span>
                             </button>
@@ -361,8 +363,8 @@ export const RoomSelectorModal: React.FC<RoomSelectorModalProps> = ({
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-200/80 dark:border-white/[0.08] text-center">
-                  <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">
+                <div className="pt-3 border-t border-[var(--border)] text-center">
+                  <span className="text-[10px] font-mono text-[var(--fg-muted)]">
                     {language === 'vi' ? 'Chọn lớp học để tự động mở thời khóa biểu của phòng tương ứng' : 'Select a class to automatically load its room schedule'}
                   </span>
                 </div>

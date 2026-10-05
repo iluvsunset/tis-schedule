@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, MapPin, User, SlidersHorizontal } from 'lucide-react';
+import { Clock, MapPin, User, SlidersHorizontal } from './icons';
 import { Language, DayKey, ScheduleItem } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
 import { VietnamTimeInfo } from '../utils/vietnamTime';
@@ -93,7 +93,7 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
     : 0;
 
   return (
-    <div className="glass-card border border-white/80 rounded-2xl p-3 sm:p-3.5 shadow-soft mb-4 no-print flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 text-xs">
+    <div className="od-glass rounded-2xl p-3 sm:p-3.5 border-[1.5px] border-[var(--border)] shadow-puffy mb-4 no-print flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 text-xs">
       
       {/* Left: Live Status Indicator */}
       <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -104,20 +104,20 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
             <CustomSubjectIcon type={currentEvent?.type || 'event'} className="w-8 h-8" />
           </div>
           <div className="min-w-0 truncate">
-            <div className="flex items-center gap-1.5 font-bold text-slate-900 truncate text-xs sm:text-sm">
+            <div className="flex items-center gap-1.5 font-display font-black text-[var(--fg)] truncate text-xs sm:text-sm">
               <span className="truncate">{currentSubject}</span>
               {currentEvent && currentEvent.period !== 'recess' && (
-                <span className="text-[11px] font-semibold text-rose-600 px-1.5 py-0.2 bg-rose-50 rounded-md border border-rose-100 shrink-0">
+                <span className="chip-peach px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 shadow-xs">
                   T{currentEvent.period}
                 </span>
               )}
             </div>
-            <div className="text-[11px] text-slate-500 truncate flex items-center gap-1.5">
+            <div className="text-[11px] text-[var(--fg-muted)] truncate flex items-center gap-1.5 font-semibold">
               <span>{currentEvent?.teacher || 'Trường TIS'}</span>
               {currentEvent && (
                 <>
-                  <span>•</span>
-                  <span className="text-rose-600 font-semibold">{remainingMinutes}p {language === 'vi' ? 'nữa' : 'left'}</span>
+                  <span className="text-[var(--fg-faint)]">•</span>
+                  <span className="text-[var(--accent)] font-bold">{remainingMinutes}p {language === 'vi' ? 'nữa' : 'left'}</span>
                 </>
               )}
             </div>
@@ -126,9 +126,9 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
 
         {/* Next Up Info (desktop) */}
         {nextEvent && (
-          <div className="hidden lg:flex items-center gap-1.5 pl-3 border-l border-slate-200 text-slate-500 shrink-0">
-            <span className="text-[11px] text-slate-400 font-medium">{language === 'vi' ? 'Tiếp:' : 'Next:'}</span>
-            <span className="font-semibold text-slate-700">
+          <div className="hidden lg:flex items-center gap-1.5 pl-3 border-l border-[var(--border)] text-[var(--fg-muted)] shrink-0">
+            <span className="text-[11px] font-medium">{language === 'vi' ? 'Tiếp:' : 'Next:'}</span>
+            <span className="font-bold text-[var(--fg)]">
               {language === 'vi' ? nextEvent.subjectVi : nextEvent.subjectEn} ({nextEvent.startTime})
             </span>
           </div>
@@ -136,22 +136,22 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
       </div>
 
       {/* Right: Vietnam Time & Class Info Badges */}
-      <div className="flex items-center gap-2 shrink-0 justify-between md:justify-end border-t md:border-t-0 pt-2 md:pt-0 border-slate-100">
+      <div className="flex items-center gap-2 shrink-0 justify-between md:justify-end border-t md:border-t-0 pt-2 md:pt-0 border-[var(--border)]">
         
         {/* Vietnam Clock */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-semibold text-[11px]" title="Giờ Việt Nam (UTC+7 / Asia/Ho_Chi_Minh)">
-          <Clock className="w-3.5 h-3.5 text-rose-500" />
-          <span className="font-mono">{vnTime.timeWithSeconds}</span>
-          <span className="text-[10px] text-slate-400 font-normal hidden sm:inline">(GMT+7)</span>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-[var(--surface-solid)] text-[var(--fg)] font-bold text-[11px] border border-[var(--border)] shadow-xs" title="Giờ Việt Nam (UTC+7 / Asia/Ho_Chi_Minh)">
+          <Clock className="w-3.5 h-3.5 text-[var(--accent)]" />
+          <span className="font-mono tabular-nums">{vnTime.timeWithSeconds}</span>
+          <span className="text-[10px] text-[var(--fg-muted)] font-normal hidden sm:inline">(GMT+7)</span>
         </div>
 
         {/* Room & Teacher Badges */}
         <div className="flex items-center gap-1.5 text-[11px]">
-          <span className="px-2 py-1 rounded-xl bg-purple-50 text-purple-700 font-bold border border-purple-200 flex items-center gap-1">
+          <span className="px-2.5 py-1 rounded-full chip-lilac font-bold flex items-center gap-1 shadow-xs">
             <User className="w-3 h-3" />
             <span>Cô Tiềng</span>
           </span>
-          <span className="px-2 py-1 rounded-xl bg-blue-50 text-blue-700 font-bold border border-blue-200 flex items-center gap-1">
+          <span className="px-2.5 py-1 rounded-full chip-mist font-bold flex items-center gap-1 shadow-xs">
             <MapPin className="w-3 h-3" />
             <span>P.504</span>
           </span>
@@ -160,8 +160,8 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
         {/* Simulation Toggle */}
         <button
           onClick={() => setIsSimulating(!isSimulating)}
-          className={`p-1.5 rounded-xl border transition cursor-pointer ${
-            isSimulating ? 'bg-amber-100 border-amber-300 text-amber-800 font-bold' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'
+          className={`btn-cozy p-2 rounded-2xl border-[1.5px] cursor-pointer shadow-xs ${
+            isSimulating ? 'bg-[var(--accent)] text-[var(--accent-fg)] border-[var(--accent)] font-bold' : 'border-[var(--border)] text-[var(--fg-secondary)]'
           }`}
           title="Mô phỏng giờ học"
         >
@@ -171,8 +171,8 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
 
       {/* Inline Simulator Panel */}
       {isSimulating && (
-        <div className="w-full mt-2 pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs bg-amber-50/60 p-2 rounded-xl">
-          <span className="font-bold text-amber-900">Mô phỏng thời gian học:</span>
+        <div className="w-full mt-2 pt-2.5 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2 text-xs bg-[var(--surface-active)]/70 p-2.5 rounded-2xl border border-[var(--border)]">
+          <span className="font-bold text-[var(--fg)]">Mô phỏng thời gian học:</span>
           <div className="flex items-center gap-2">
             <select
               value={simDay}
@@ -182,7 +182,7 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
                 const dayMap: Record<number, DayKey> = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
                 if (dayMap[d]) onSelectDay(dayMap[d]);
               }}
-              className="p-1 rounded-lg border border-amber-300 bg-white text-xs"
+              className="p-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] text-[var(--fg)] text-xs font-semibold outline-none shadow-xs"
             >
               <option value="1">Thứ Hai (24/8)</option>
               <option value="2">Thứ Ba (25/8)</option>
@@ -194,11 +194,11 @@ export const LiveStatusBar: React.FC<LiveStatusBarProps> = ({
               type="time"
               value={simTimeStr}
               onChange={(e) => setSimTimeStr(e.target.value)}
-              className="p-1 rounded-lg border border-amber-300 bg-white text-xs"
+              className="p-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] text-[var(--fg)] text-xs font-mono font-semibold outline-none shadow-xs"
             />
             <button
               onClick={() => setIsSimulating(false)}
-              className="text-xs text-rose-600 font-bold hover:underline cursor-pointer ml-1"
+              className="text-xs text-[var(--accent)] font-bold hover:underline cursor-pointer ml-1"
             >
               Đặt lại
             </button>

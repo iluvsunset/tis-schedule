@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Maximize2, Minimize2, MapPin, User } from 'lucide-react';
+import { Maximize2, Minimize2, MapPin, User, Calendar, Sparkles } from './icons';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
 import { Language, ScheduleData, DayKey, ScheduleItem } from '../types/schedule';
 import { SCHEDULE_DATA } from '../data/scheduleData';
@@ -213,186 +213,195 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.45, ease: 'easeInOut' }}
+      transition={{ duration: 0.35, ease: 'easeInOut' }}
       onClick={locked ? undefined : onDismiss}
-      className={`fixed inset-0 z-[999998] bg-white w-screen h-screen select-none overflow-hidden ${
+      className={`fixed inset-0 z-[999998] bg-[#f7f4eb] w-screen h-screen select-none overflow-hidden ${
         locked ? 'cursor-default' : 'cursor-pointer'
       }`}
     >
-      {/* Background Looping School Video - Identical to IntroVideoLoader presentation */}
+      {/* Background: School Video Seamlessly Floating Fullscreen (Scaled gracefully for mobile) */}
       <div className="absolute inset-0 flex items-center justify-center overflow-hidden z-0 pointer-events-none bg-white">
         <video
           ref={videoRef}
+          key={videoSource}
+          src={videoSource}
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
           poster="/tis-intro-poster.webp"
-          className="w-full h-full object-contain scale-[2.2] sm:scale-[1.6] md:scale-[1.2] lg:scale-100 transition-transform duration-500 transform-gpu"
-        >
-          <source src={videoSource} type="video/mp4" />
-        </video>
+          className="w-full h-full object-contain scale-[1.55] sm:scale-100 sm:object-cover transition-transform duration-500 transform-gpu relative z-10"
+        />
       </div>
 
-      {/* Top Bar: Fullscreen Control & Class/Room Pill */}
+      {/* Top Bar: Fullscreen Control & Class/Room Badges */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15, duration: 0.4 }}
-        className="absolute top-6 sm:top-8 left-6 sm:left-10 right-6 sm:right-10 z-20 flex items-center justify-between pointer-events-none"
+        transition={{ delay: 0.1, duration: 0.35 }}
+        className="absolute top-5 sm:top-7 left-5 sm:left-8 right-5 sm:right-8 z-20 flex items-center justify-between pointer-events-none"
       >
         {/* Fullscreen Toggle Button */}
         <button
           type="button"
           onClick={toggleFullscreen}
-          className="liquid-glass flex items-center gap-2 px-3.5 py-1.5 rounded-full active:scale-95 text-xs font-medium text-white/90 transition-all cursor-pointer pointer-events-auto"
+          className="btn-cozy bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl border-[1.5px] border-[#ded0bf] shadow-puffy flex items-center gap-2 text-xs font-mono font-bold text-[var(--fg)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all cursor-pointer pointer-events-auto"
           title="Toggle Fullscreen (F)"
         >
           {isFullscreen ? (
-            <Minimize2 className="w-3.5 h-3.5 text-[#ee5421]" />
+            <Minimize2 className="w-4 h-4 text-[var(--accent)]" />
           ) : (
-            <Maximize2 className="w-3.5 h-3.5 text-[#ee5421]" />
+            <Maximize2 className="w-4 h-4 text-[var(--accent)]" />
           )}
-          <span className="hidden sm:inline font-mono text-xs font-semibold tracking-wide">
-            {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+          <span className="hidden sm:inline font-mono text-xs font-bold tracking-wide">
+            {isFullscreen 
+              ? (language === 'vi' ? 'Thu Nhỏ (F)' : 'Exit Fullscreen') 
+              : (language === 'vi' ? 'Toàn Màn Hình (F)' : 'Fullscreen')}
           </span>
         </button>
 
         {/* Class / Room Pill */}
-        <div className="liquid-glass flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold text-white/90 pointer-events-auto">
-          <span>{gradeName}</span>
+        <div className="bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border-[1.5px] border-[#ded0bf] shadow-puffy flex items-center gap-2 pointer-events-auto">
+          <span className="px-2.5 py-0.5 rounded-xl bg-[#ffedd5] text-[#9a3412] font-black text-xs border border-[#fed7aa] shadow-xs">
+            {gradeName}
+          </span>
           {roomName && (
-            <>
-              <span className="text-white/40">•</span>
-              <span className="text-[#ee5421] font-mono font-bold">{roomName}</span>
-            </>
+            <span className="px-2.5 py-0.5 rounded-xl bg-[#e0f2fe] text-[#0369a1] font-mono font-bold text-xs border border-[#bae6fd] shadow-xs flex items-center gap-1">
+              <MapPin className="w-3 h-3 text-[#0284c7]" />
+              <span>{roomName}</span>
+            </span>
           )}
         </div>
       </motion.div>
 
-      {/* Ambient Digital Clock Card: On Top for Smaller Devices, Bottom-Left for Desktop */}
+      {/* Ambient Digital Clock Card: Fluffy Creamy Bento Clock (Top on Mobile, Bottom-Left on Desktop) */}
       <motion.div
-        initial={{ opacity: 0, y: -10 }}
+        initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.4, ease: 'easeOut' }}
-        className="absolute top-16 left-4 right-4 sm:top-auto sm:bottom-8 sm:left-8 sm:right-auto z-20 pointer-events-auto"
+        transition={{ delay: 0.15, duration: 0.35, ease: 'easeOut' }}
+        className="absolute top-16 sm:top-auto sm:bottom-8 left-4 sm:left-8 right-4 sm:right-auto z-20 pointer-events-auto"
       >
-        <div className="liquid-glass w-full sm:w-auto px-4 py-2 sm:px-6 sm:py-3.5 rounded-2xl sm:rounded-3xl flex items-center justify-between sm:flex-col sm:items-start text-left transition-all">
-          {/* Digital Time with Accented Seconds */}
-          <div className="flex items-baseline justify-start gap-1 text-white">
-            <span className="text-2xl sm:text-4xl md:text-5xl font-bold font-display tracking-tight tabular-nums select-none">
+        <div className="bg-white/95 backdrop-blur-xl px-4 py-2.5 sm:px-6 sm:py-5 rounded-2xl sm:rounded-3xl border-[1.5px] border-[#ded0bf] shadow-puffy flex items-center justify-between sm:flex-col sm:items-start sm:gap-2 relative overflow-hidden text-left sm:min-w-[280px]">
+          {/* Soft decorative background tint */}
+          <div className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-[#fef3c7]/60 blur-xl pointer-events-none" />
+
+          {/* Digital Time with Accented Seconds Pill */}
+          <div className="flex items-baseline gap-1 relative z-10">
+            <span className="font-display font-black text-3xl sm:text-6xl text-[var(--fg)] tracking-tight tabular-nums select-none">
               {vnTime.timeStr}
             </span>
-            <span className="text-base sm:text-xl md:text-2xl font-mono font-bold text-[#ee5421] tabular-nums select-none">
+            <span className="px-1.5 py-0.5 sm:px-2 rounded-lg sm:rounded-xl bg-[#ffedd5] text-[var(--accent)] font-mono font-black text-sm sm:text-2xl border border-[#fed7aa] shadow-xs tabular-nums select-none">
               :{String(vnTime.seconds).padStart(2, '0')}
             </span>
           </div>
 
-          {/* Full Date & Day Name */}
-          <div className="text-xs font-medium text-slate-200 tracking-wide flex items-center justify-start gap-1.5 sm:gap-2 sm:mt-1">
-            <span>{language === 'vi' ? vnTime.dayNameVi : vnTime.dayNameEn}</span>
-            <span className="text-white/40">•</span>
-            <span className="font-mono text-white/90 font-semibold">{vnTime.dateStr}</span>
+          {/* Full Date */}
+          <div className="relative z-10 sm:pt-0.5">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-bold text-[var(--fg-secondary)]">
+              <Calendar className="w-3.5 h-3.5 text-[var(--accent)] shrink-0" />
+              <span>{language === 'vi' ? vnTime.dayNameVi : vnTime.dayNameEn}</span>
+              <span className="text-[#ded0bf]">•</span>
+              <span className="font-mono text-[var(--fg)] font-bold">{vnTime.dateStr}</span>
+            </div>
           </div>
         </div>
       </motion.div>
 
-      {/* Floating Lesson Schedule Panel: Bottom for Smaller Devices, Bottom-Right for Desktop */}
+      {/* Floating Standby Schedule Bento Card: Bottom for Mobile, Bottom-Right for Desktop */}
       {lessonInfo && lessonInfo.current && (
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25, duration: 0.4, ease: 'easeOut' }}
-          className="absolute bottom-4 left-4 right-4 sm:bottom-8 sm:right-8 sm:left-auto sm:max-w-[360px] md:max-w-[380px] w-auto sm:w-full z-20 flex flex-col items-end pointer-events-auto"
+          transition={{ delay: 0.2, duration: 0.35, ease: 'easeOut' }}
+          className="absolute bottom-4 sm:bottom-8 left-4 right-4 sm:left-auto sm:right-8 z-20 pointer-events-auto sm:w-[380px] md:w-[410px] flex flex-col items-stretch sm:items-end"
         >
-          <div className="liquid-glass w-full rounded-2xl sm:rounded-3xl p-3 sm:p-4 transition-all text-white flex flex-col gap-2.5">
-            {/* Status & Time Header */}
-            <div className="flex items-center justify-between text-xs font-mono font-semibold">
-              <span className="tracking-wider uppercase text-amber-300">
+          <div className="bg-white/95 backdrop-blur-xl w-full rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 border-[1.5px] border-[#ded0bf] shadow-puffy text-[var(--fg)] flex flex-col gap-2.5 sm:gap-3 relative overflow-hidden">
+            {/* Header: Status Badge & Time Interval */}
+            <div className="flex items-center justify-between gap-2 text-xs font-bold">
+              <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-black tracking-wider uppercase bg-[#ffedd5] text-[#9a3412] border border-[#fed7aa] shadow-xs flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[var(--accent)] animate-pulse" />
                 {lessonInfo.badgeText}
               </span>
-              <span className="text-white/70">
+              <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-mono font-bold tabular-nums bg-[#fef3c7] text-[#92400e] border border-[#fde68a] shadow-xs">
                 {lessonInfo.current.time}
               </span>
             </div>
 
-            {/* Starting / Active Lesson Hero Card */}
-            <div className="liquid-glass-inner flex flex-col gap-1.5 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl transition-all">
-              <div className="flex items-center justify-between">
-                <span className="px-2 py-0.5 rounded-md bg-[#ee5421] text-white font-mono text-xs font-bold shadow-xs">
-                  {language === 'vi' ? `Tiết ${lessonInfo.current.period}` : `Period ${lessonInfo.current.period}`}
-                </span>
-                {lessonInfo.current.room && (
-                  <span className="text-xs font-mono text-white/90 font-medium flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-[#ee5421]" />
-                    {language === 'vi' ? `Phòng ${lessonInfo.current.room}` : `Room ${lessonInfo.current.room}`}
-                  </span>
-                )}
+            {/* Featured Hero Lesson */}
+            <div className="p-3 sm:p-3.5 rounded-2xl bg-[#fffefc] border-[1.5px] border-[#ebdccb] shadow-xs flex items-center gap-3 sm:gap-3.5 relative overflow-hidden">
+              {/* Period squircle badge */}
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#ffedd5] text-[#9a3412] border border-[#fed7aa] flex items-center justify-center font-display font-black text-sm sm:text-base shrink-0 shadow-xs tabular-nums">
+                T{lessonInfo.current.period}
               </div>
 
-              <div className="text-sm sm:text-base font-bold font-display tracking-tight text-white line-clamp-1">
-                {language === 'vi' ? lessonInfo.current.subjectVi : lessonInfo.current.subjectEn}
-              </div>
-
-              <div className="text-xs text-slate-200 flex items-center justify-between gap-2">
-                <span className="flex items-center gap-1.5 truncate">
-                  <User className="w-3 h-3 text-white/50 shrink-0" />
-                  <span className="truncate">{lessonInfo.current.teacher || (language === 'vi' ? 'Chưa phân công' : 'TBD')}</span>
-                </span>
-                {lessonInfo.status === 'live' && lessonInfo.remainingMinutes > 0 && (
-                  <span className="font-mono text-[#ee5421] font-bold text-xs shrink-0">
-                    {language === 'vi' ? `còn ${lessonInfo.remainingMinutes}'` : `${lessonInfo.remainingMinutes}m left`}
-                  </span>
-                )}
-                {lessonInfo.status === 'starting-soon' && lessonInfo.minutesUntilStart > 0 && (
-                  <span className="font-mono text-amber-300 font-bold text-xs shrink-0">
-                    {language === 'vi' ? `sau ${lessonInfo.minutesUntilStart}'` : `in ${lessonInfo.minutesUntilStart}m`}
-                  </span>
-                )}
-              </div>
-
-              {/* Progress bar for live lesson */}
-              {lessonInfo.status === 'live' && (
-                <div className="w-full bg-white/20 rounded-full h-1 mt-0.5 overflow-hidden">
-                  <div
-                    className="bg-[#ee5421] h-full rounded-full transition-all duration-1000 shadow-sm"
-                    style={{ width: `${lessonInfo.progressPercent}%` }}
-                  />
+              {/* Subject Title & Teacher */}
+              <div className="min-w-0 flex-1">
+                <div className="font-display font-black text-sm sm:text-lg text-[var(--fg)] tracking-tight line-clamp-1">
+                  {language === 'vi' ? lessonInfo.current.subjectVi : lessonInfo.current.subjectEn}
                 </div>
-              )}
+
+                <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-[var(--fg-muted)] mt-0.5 sm:mt-1 flex-wrap">
+                  <span className="flex items-center gap-1 font-semibold text-[var(--fg-secondary)] truncate">
+                    <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--accent)] shrink-0" />
+                    <span className="truncate max-w-[120px] sm:max-w-[140px]">{lessonInfo.current.teacher || (language === 'vi' ? 'Toàn Trường' : 'All School')}</span>
+                  </span>
+
+                  {lessonInfo.current.room && (
+                    <span className="flex items-center gap-1 font-mono font-bold text-[var(--accent)] shrink-0">
+                      <MapPin className="w-3 h-3 text-[var(--accent)] shrink-0" />
+                      <span>P.{lessonInfo.current.room}</span>
+                    </span>
+                  )}
+
+                  {lessonInfo.status === 'live' && lessonInfo.remainingMinutes > 0 && (
+                    <span className="font-mono text-[var(--accent)] font-bold shrink-0">
+                      • {language === 'vi' ? `còn ${lessonInfo.remainingMinutes}p` : `${lessonInfo.remainingMinutes}m left`}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
 
-            {/* List of Coming Up Lessons (Minimized: Hidden on Smaller Screens, Visible on sm+) */}
+            {/* Progress Bar for Active Lesson */}
+            {lessonInfo.status === 'live' && (
+              <div className="w-full bg-[#f4ece0] rounded-full h-1.5 overflow-hidden">
+                <div
+                  className="bg-[var(--accent)] h-full rounded-full transition-all duration-1000"
+                  style={{ width: `${lessonInfo.progressPercent}%` }}
+                />
+              </div>
+            )}
+
+            {/* Upcoming Lessons Preview */}
             {lessonInfo.upcoming.length > 0 && (
-              <div className="hidden sm:flex flex-col gap-1.5 pt-0.5">
-                <div className="flex items-center justify-between text-[11px] font-mono font-semibold tracking-wider uppercase text-white/60 px-0.5">
-                  <span>{language === 'vi' ? 'Tiết tiếp theo' : 'Coming Up Next'}</span>
+              <div className="flex flex-col gap-1.5 pt-0.5 sm:pt-1">
+                <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono font-black uppercase tracking-wider text-[var(--fg-muted)] px-1">
+                  <span>{language === 'vi' ? 'Tiết tiếp theo' : 'Coming Up'}</span>
                   <span>{lessonInfo.upcoming.length} {language === 'vi' ? 'tiết' : 'lessons'}</span>
                 </div>
 
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 sm:gap-1.5">
                   {lessonInfo.upcoming.map((item, idx) => (
                     <div
-                      key={`${item.period}-${idx}`}
-                      className="liquid-glass-inner flex items-center justify-between px-3 py-1.5 rounded-xl transition-all text-xs"
+                      key={`next-${item.period}-${idx}`}
+                      className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-[#fffefc] border border-[#ebdccb] flex items-center justify-between gap-2 text-xs shadow-2xs"
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-white/15 text-white shrink-0">
-                          P{item.period}
+                        <span className="px-1.5 py-0.5 rounded-lg text-[10px] font-mono font-black bg-[#fef3c7] text-[#92400e] border border-[#fde68a] shrink-0">
+                          T{item.period}
                         </span>
-                        <span className="font-semibold text-white/95 truncate">
+                        <span className="font-bold text-[var(--fg)] text-[11px] sm:text-xs truncate">
                           {language === 'vi' ? item.subjectVi : item.subjectEn}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-1.5 text-[11px] font-mono text-white/70 shrink-0">
-                        <span>{item.startTime}</span>
+                      <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono text-[var(--fg-muted)] shrink-0">
+                        <span className="font-bold text-[var(--fg-secondary)]">{item.startTime}</span>
                         {item.teacher && (
-                          <>
-                            <span className="text-white/30">•</span>
-                            <span className="text-white/80 max-w-[80px] truncate">{item.teacher}</span>
-                          </>
+                          <span className="text-[var(--fg-muted)] truncate max-w-[85px] sm:max-w-[100px]">
+                            • {item.teacher}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -403,6 +412,7 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
           </div>
         </motion.div>
       )}
+
     </motion.div>
   );
 };

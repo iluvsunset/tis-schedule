@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ScheduleData, Language, DayKey } from '../types/schedule';
 import { VietnamTimeInfo, getDateStatus } from '../utils/vietnamTime';
+import { Clock, MapPin } from './icons';
 
 interface SingleSubjectFocusScreenProps {
   scheduleData: ScheduleData;
@@ -112,21 +113,34 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        className="w-fit min-w-[300px] max-w-[92vw] sm:max-w-xl md:max-w-2xl mx-auto rounded-3xl od-glass px-6 py-8 sm:px-12 sm:py-10 text-center overflow-hidden shadow-2xl space-y-4 sm:space-y-5 flex flex-col items-center justify-center border border-slate-200/80 dark:border-white/[0.08]"
+        className="w-fit min-w-[300px] max-w-[92vw] sm:max-w-xl md:max-w-2xl mx-auto rounded-[28px] od-glass px-6 py-8 sm:px-12 sm:py-10 text-center overflow-hidden shadow-puffy space-y-4 sm:space-y-5 flex flex-col items-center justify-center border-[1.5px] border-[var(--border)]"
       >
+        {/* Quick Room & Clock Pills */}
+        <div className="flex items-center justify-center gap-2 text-xs font-bold text-[var(--fg-muted)]">
+          <span className="flex items-center gap-1.5 bg-[var(--surface-solid)] px-3 py-1 rounded-full border border-[var(--border)] shadow-xs">
+            <MapPin className="w-3.5 h-3.5 text-[var(--accent)]" />
+            <span>{language === 'vi' ? 'Phòng' : 'Room'} {currentSchedule.room}</span>
+          </span>
+          <span className="flex items-center gap-1.5 bg-[var(--surface-solid)] px-3 py-1 rounded-full border border-[var(--border)] shadow-xs">
+            <Clock className="w-3.5 h-3.5 text-[var(--accent)]" />
+            <span className="font-mono tabular-nums">{vnTime.timeStr}</span>
+          </span>
+        </div>
+
         {/* Status Pill */}
         <div className="inline-flex items-center">
           {liveState.status === 'live' ? (
-            <span className="flex items-center gap-2 text-sky-700 dark:text-sky-300 bg-sky-500/10 dark:bg-sky-400/10 px-4 py-1.5 rounded-full border border-sky-500/20 text-xs font-mono font-bold tracking-wider uppercase shadow-xs tabular-nums">
+            <span className="chip-peach px-4 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase shadow-xs tabular-nums flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
               {liveState.badgeText}
             </span>
           ) : liveState.status === 'starting-soon' ? (
-            <span className="flex items-center gap-2 text-amber-700 dark:text-amber-300 bg-amber-500/10 dark:bg-amber-400/10 px-4 py-1.5 rounded-full border border-amber-500/20 text-xs font-mono font-bold tracking-wider uppercase shadow-xs tabular-nums">
+            <span className="chip-butter px-4 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase shadow-xs tabular-nums flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#7a5f12] animate-pulse" />
               {liveState.badgeText}
             </span>
           ) : (
-            <span className="text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.05] px-4 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase border border-slate-200/60 dark:border-white/[0.08] shadow-xs">
+            <span className="bg-[var(--surface-solid)] text-[var(--fg-muted)] px-4 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase border border-[var(--border)] shadow-xs">
               {liveState.badgeText}
             </span>
           )}
@@ -136,23 +150,23 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
         {subject ? (
           <div className="space-y-3 sm:space-y-4 max-w-2xl mx-auto w-full pt-1">
             {typeof subject.period === 'number' && (
-              <span className="text-xs uppercase font-mono text-slate-400 dark:text-slate-500 tracking-widest block font-bold tabular-nums">
+              <span className="text-xs uppercase font-mono text-[var(--fg-muted)] tracking-widest block font-bold tabular-nums">
                 {language === 'vi' ? `Tiết ${subject.period}` : `Period ${subject.period}`} · {subject.time}
               </span>
             )}
 
-            <h1 className="text-4xl sm:text-6xl font-display font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+            <h1 className="text-4xl sm:text-6xl font-display font-black text-[var(--fg)] tracking-tight leading-tight">
               {subjectName}
             </h1>
 
-            <div className="pt-1 text-base sm:text-lg text-slate-600 dark:text-slate-300 font-medium flex items-center justify-center gap-2 flex-wrap">
-              <span className="text-slate-900 dark:text-white font-bold">{className}</span>
-              <span className="text-slate-300 dark:text-slate-600">·</span>
+            <div className="pt-1 text-base sm:text-lg text-[var(--fg-secondary)] font-semibold flex items-center justify-center gap-2 flex-wrap">
+              <span className="text-[var(--fg)] font-bold">{className}</span>
+              <span className="text-[var(--fg-faint)]">·</span>
               <span>{teacher}</span>
             </div>
 
             {subject.note && (
-              <div className="text-xs font-mono text-slate-400 dark:text-slate-500 pt-0.5">
+              <div className="text-xs font-mono text-[var(--fg-muted)] pt-0.5">
                 {subject.note}
               </div>
             )}
@@ -160,28 +174,28 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
             {/* Real-time Hairline Progress Track (for live subject) */}
             {liveState.status === 'live' && (
               <div className="max-w-md mx-auto mt-6 space-y-2">
-                <div className="h-[2.5px] w-full bg-slate-100 dark:bg-white/[0.08] overflow-hidden rounded-full">
+                <div className="h-2 w-full bg-[var(--bg-subtle)] overflow-hidden rounded-full border border-[var(--border)]/40">
                   <motion.div 
-                    className="h-full bg-[var(--accent)]"
+                    className="h-full bg-[var(--accent)] rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: `${liveState.progressPercent}%` }}
                     transition={{ duration: 0.8, ease: 'easeOut' }}
                   />
                 </div>
-                <div className="flex justify-between text-[11px] font-mono text-slate-400 dark:text-slate-500 tabular-nums">
+                <div className="flex justify-between text-xs font-mono font-bold text-[var(--fg-muted)] tabular-nums">
                   <span>{subject.startTime}</span>
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">{subject.endTime}</span>
+                  <span className="text-[var(--fg)]">{subject.endTime}</span>
                 </div>
               </div>
             )}
           </div>
         ) : (
-          /* Vacant / No Live Subject State (Tight, Elegant, Natural Spacing) */
+          /* Vacant / No Live Subject State */
           <div className="space-y-3 max-w-lg mx-auto w-full pt-1">
-            <h2 className="text-2xl sm:text-3xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-display font-black text-[var(--fg)] tracking-tight">
               {language === 'vi' ? `Hiện không có tiết học nào đang diễn ra` : `No Class Currently in Session`}
             </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+            <p className="text-sm text-[var(--fg-secondary)] max-w-md mx-auto leading-relaxed">
               {language === 'vi' 
                 ? `Phòng ${currentSchedule.room} hiện đang trống hoặc đã kết thúc các tiết học trong ngày.`
                 : `Room ${currentSchedule.room} is currently unoccupied or all sessions have concluded.`}
@@ -190,7 +204,7 @@ export const SingleSubjectFocusScreen: React.FC<SingleSubjectFocusScreenProps> =
               <button
                 type="button"
                 onClick={onOpenRoomSelector}
-                className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-mono font-bold uppercase tracking-wider transition cursor-pointer shadow-sm"
+                className="btn-cozy px-6 py-2.5 rounded-2xl text-xs font-mono font-bold uppercase tracking-wider text-[var(--fg)] transition cursor-pointer shadow-xs"
               >
                 {language === 'vi' ? 'Đổi phòng / Chọn lớp' : 'Change Room / Class'}
               </button>

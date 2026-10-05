@@ -1,35 +1,24 @@
 import { Language, INITIAL_ROOMS, INITIAL_CLASSES } from '../types/schedule';
 
-// Bidirectional mappings between Class ID and primary Room ID
+// Bidirectional mappings between Class ID and primary Room ID (Grade 11 focused)
 export const CLASS_TO_ROOM_MAP: Record<string, string> = {
-  '6': '501',
-  '7': '502',
-  '8': '4010',
-  '9': '4011',
-  '10-tn': '4012',
-  '10.1-tn': '4012',
-  '10-nt': '307',
-  '10.2-nt': '307',
+  '11': '504',
   '11-tn': '504',
+  '11.1': '504',
   '11.1-tn': '504',
+  '11.2': 'P. Tâm lý học đường',
   '11.2-xh': 'P. Tâm lý học đường',
   '11.2-tn': 'P. Tâm lý học đường',
-  '12-tn': '503'
+  'xh': 'P. Tâm lý học đường'
 };
 
 export const ROOM_TO_CLASS_MAP: Record<string, string> = {
-  '501': '6',
-  '502': '7',
-  '4010': '8',
-  '4011': '9',
-  '4012': '10.1-tn',
-  '307': '10.2-nt',
   '504': '11.1-tn',
   'p. tâm lý học đường': '11.2-xh',
   'tâm lý học đường': '11.2-xh',
   'tam-ly': '11.2-xh',
-  'tl': '11.2-xh',
-  '503': '12-tn'
+  'tamly': '11.2-xh',
+  'tl': '11.2-xh'
 };
 
 export function isKnownRoom(roomId: string): boolean {
@@ -50,10 +39,7 @@ export function isKnownClass(classId: string): boolean {
   return Boolean(
     CLASS_TO_ROOM_MAP[clean] || 
     INITIAL_CLASSES.some(c => c.id.toLowerCase() === clean) ||
-    clean.startsWith('10') ||
-    clean.startsWith('11') ||
-    clean.startsWith('12') ||
-    clean === '6' || clean === '7' || clean === '8' || clean === '9'
+    clean.startsWith('11')
   );
 }
 

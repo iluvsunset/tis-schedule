@@ -1,4 +1,4 @@
-import { ScheduleData, DaySchedule, ScheduleItem, SubjectType, DayKey, WeekTabInfo, ClassInfo, INITIAL_CLASSES, RoomInfo, INITIAL_ROOMS } from '../types/schedule';
+import { ScheduleData, DaySchedule, ScheduleItem, SubjectType, DayKey, WeekTabInfo, ClassInfo, RoomInfo, INITIAL_ROOMS } from '../types/schedule';
 import { SCHEDULE_DATA as FALLBACK_DATA, getFallbackRoomSchedule } from '../data/scheduleData';
 import { formatScheduleDate } from '../utils/vietnamTime';
 
@@ -9,7 +9,8 @@ export interface SheetConfig {
 }
 
 const DEFAULT_CONFIG: SheetConfig = {
-  sheetId: '1H5U71l1QHVPwCBg9c3KPaADG_jjaaRmxfsCNIXpBQJ4'
+  sheetId: '1H5U71l1QHVPwCBg9c3KPaADG_jjaaRmxfsCNIXpBQJ4',
+  gid: '245759597'
 };
 
 // In-memory cache for ultra-fast instant switching between weeks & classes
@@ -136,98 +137,68 @@ export function detectSheetStructure(rows: string[][]) {
 }
 
 /**
- * Discovers available classes dynamically from CSV header rows
+ * Discovers available Grade 11 classes from CSV header rows
  */
-export function getAvailableClassesFromCSV(rows: string[][]): ClassInfo[] {
-  if (!rows || rows.length < 3) return INITIAL_CLASSES;
+export function getAvailableClassesFromCSV(rows?: string[][]): ClassInfo[] {
+  const baseClasses: ClassInfo[] = [
+    {
+      id: '11.1-tn',
+      nameVi: 'Lớp 11.1-TN',
+      nameEn: 'Grade 11.1-TN',
+      level: 'high',
+      room: '504',
+      homeroomTeacher: 'Cô Tiềng',
+      columnIndex: 3
+    },
+    {
+      id: '11.2-xh',
+      nameVi: 'Lớp 11.2-TN & XH',
+      nameEn: 'Grade 11.2-TN & XH',
+      level: 'high',
+      room: 'P. Tâm lý học đường',
+      homeroomTeacher: 'Cô Tiềng',
+      columnIndex: 4
+    }
+  ];
+
+  if (!rows || rows.length < 3) return baseClasses;
 
   const { headerRow, roomRow, teacherRow, firstClassCol } = detectSheetStructure(rows);
-  const classes: ClassInfo[] = [];
 
   for (let c = firstClassCol; c < headerRow.length; c++) {
-    const rawTitle = (headerRow[c] || '').trim();
+    const rawTitle = (headerRow[c] || '').trim().toUpperCase();
     if (!rawTitle) continue;
-
-    let id = '';
-    let nameVi = '';
-    let nameEn = '';
-    let level: 'middle' | 'high' = 'high';
-
-    const upper = rawTitle.toUpperCase();
-    if (/LỚP\s*6\b|GRADE\s*6\b/.test(upper)) {
-      id = '6'; nameVi = 'Lớp 6'; nameEn = 'Grade 6'; level = 'middle';
-    } else if (/LỚP\s*7\b|GRADE\s*7\b/.test(upper)) {
-      id = '7'; nameVi = 'Lớp 7'; nameEn = 'Grade 7'; level = 'middle';
-    } else if (/LỚP\s*8\b|GRADE\s*8\b/.test(upper)) {
-      id = '8'; nameVi = 'Lớp 8'; nameEn = 'Grade 8'; level = 'middle';
-    } else if (/LỚP\s*9\b|GRADE\s*9\b/.test(upper)) {
-      id = '9'; nameVi = 'Lớp 9'; nameEn = 'Grade 9'; level = 'middle';
-    } else if (/10\.1|10-1/i.test(rawTitle)) {
-      id = '10.1-tn'; nameVi = 'Lớp 10.1-TN'; nameEn = 'Grade 10.1-TN'; level = 'high';
-    } else if (/10\.2|10-2/i.test(rawTitle)) {
-      id = '10.2-nt'; nameVi = 'Lớp 10.2-TN & NT'; nameEn = 'Grade 10.2-TN & NT'; level = 'high';
-    } else if (/10.*NT/i.test(rawTitle)) {
-      id = '10-nt'; nameVi = 'Lớp 10-TN & NT'; nameEn = 'Grade 10-TN & NT'; level = 'high';
-    } else if (/10/i.test(rawTitle)) {
-      id = '10-tn'; nameVi = 'Lớp 10-TN'; nameEn = 'Grade 10-TN'; level = 'high';
-    } else if (/11\.1|11-1/i.test(rawTitle)) {
-      id = '11.1-tn'; nameVi = 'Lớp 11.1-TN'; nameEn = 'Grade 11.1-TN'; level = 'high';
-    } else if (/11\.2|11-2/i.test(rawTitle)) {
-      id = '11.2-xh'; nameVi = 'Lớp 11.2-TN & XH'; nameEn = 'Grade 11.2-TN & XH'; level = 'high';
-    } else if (/11/i.test(rawTitle)) {
-      id = '11-tn'; nameVi = 'Lớp 11-TN'; nameEn = 'Grade 11-TN'; level = 'high';
-    } else if (/12/i.test(rawTitle)) {
-      id = '12-tn'; nameVi = 'Lớp 12-TN'; nameEn = 'Grade 12-TN'; level = 'high';
-    } else {
-      id = `class-${c}`; nameVi = rawTitle.split('\n')[0]; nameEn = rawTitle.split('\n')[1] || nameVi;
-    }
 
     const room = (roomRow[c] || '').trim();
     const rawTeacher = (teacherRow[c] || '').trim();
     const homeroomTeacher = rawTeacher.replace(/^[CT]\.\s*/i, (m) => m.toUpperCase().startsWith('C') ? 'Cô ' : 'Thầy ');
 
-    classes.push({
-      id,
-      nameVi,
-      nameEn,
-      level,
-      room: room || 'TIS',
-      homeroomTeacher: homeroomTeacher || 'Chưa phân công',
-      columnIndex: c
-    });
+    if (rawTitle.includes('11.1') || (rawTitle.includes('11') && !rawTitle.includes('11.2') && !rawTitle.includes('11-2') && !rawTitle.includes('XH'))) {
+      baseClasses[0].columnIndex = c;
+      if (room) baseClasses[0].room = room;
+      if (homeroomTeacher) baseClasses[0].homeroomTeacher = homeroomTeacher;
+    } else if (rawTitle.includes('11.2') || rawTitle.includes('11-2') || rawTitle.includes('XH')) {
+      baseClasses[1].columnIndex = c;
+      if (room) baseClasses[1].room = room;
+      if (homeroomTeacher) baseClasses[1].homeroomTeacher = homeroomTeacher;
+    }
   }
 
-  return classes.length > 0 ? classes : INITIAL_CLASSES;
+  return baseClasses;
 }
 
 /**
- * Flexible Class Matcher supporting aliases (e.g., 11-tn -> 11.1-tn, 10-tn -> 10.1-tn)
+ * Class Matcher for Grade 11 (supporting aliases: 11-tn, 11, 11.1, 11.2, etc.)
  */
 export function findMatchingClass(classes: ClassInfo[], targetClassId: string = '11-tn'): ClassInfo {
   const norm = targetClassId.trim().toLowerCase();
   
-  // Exact match first
-  let matched = classes.find(c => c.id.toLowerCase() === norm);
-  if (matched) return matched;
-
-  // Flexible Aliases
-  if (norm === '11-tn' || norm === '11') {
-    matched = classes.find(c => c.id === '11.1-tn') || classes.find(c => c.id === '11-tn') || classes.find(c => c.id.startsWith('11'));
-  } else if (norm === '11.1-tn' || norm === '11-1-tn' || norm === '11.1') {
-    matched = classes.find(c => c.id === '11.1-tn') || classes.find(c => c.id === '11-tn');
-  } else if (norm === '11.2-tn' || norm === '11.2-xh' || norm === '11-2-tn' || norm === '11.2') {
-    matched = classes.find(c => c.id === '11.2-xh') || classes.find(c => c.id.includes('11.2'));
-  } else if (norm === '10-tn' || norm === '10') {
-    matched = classes.find(c => c.id === '10.1-tn') || classes.find(c => c.id === '10-tn') || classes.find(c => c.id.startsWith('10'));
-  } else if (norm === '10.1-tn' || norm === '10-1-tn' || norm === '10.1') {
-    matched = classes.find(c => c.id === '10.1-tn') || classes.find(c => c.id === '10-tn');
-  } else if (norm === '10-nt' || norm === '10.2-nt' || norm === '10-2-nt' || norm === '10.2') {
-    matched = classes.find(c => c.id === '10.2-nt') || classes.find(c => c.id === '10-nt') || classes.find(c => c.id.includes('10.2'));
-  } else if (norm === '12' || norm === '12-tn') {
-    matched = classes.find(c => c.id === '12-tn') || classes.find(c => c.id.startsWith('12'));
+  if (norm === '11.2-xh' || norm === '11.2-tn' || norm === '11.2' || norm === '11-2-tn' || norm === '11-2' || norm === 'xh') {
+    return classes.find(c => c.id === '11.2-xh') || classes[1] || classes[0];
   }
 
-  return matched || classes[0] || INITIAL_CLASSES[0];
+  // Default to 11.1-TN for '11-tn', '11.1-tn', '11.1', '11', etc.
+  return classes.find(c => c.id === '11.1-tn') || classes[0];
 }
 
 /**
@@ -321,6 +292,43 @@ export function getAvailableRoomsFromCSV(rows: string[][]): RoomInfo[] {
   return Array.from(roomsMap.values());
 }
 
+export const TEACHER_NAME_MAP: Record<string, string> = {
+  'TIỀNG': 'Cô Tiềng',
+  'CAM': 'Cô Cam',
+  'TUYẾT': 'Cô Tuyết',
+  'THƯƠNG': 'Cô Thương',
+  'ĐẶNG': 'Cô Đặng',
+  'THẢO': 'Cô Thảo',
+  'NHI': 'Cô Uyển Nhi',
+  'UYỂN NHI': 'Cô Uyển Nhi',
+  'THÀNH': 'Thầy Thành',
+  'THUẬN': 'Thầy Thuận',
+  'QUÂN': 'Thầy Quân',
+  'CÔNG': 'Thầy Công',
+  'HẢI': 'Thầy Hải',
+  'TÂN': 'Thầy Tân',
+  'TRUNG': 'Thầy Trung',
+  'KIÊN': 'Thầy Kiên',
+  'HẢI LÝ': 'Ms. Hải Lý',
+  'THƯ': 'Ms. Thư',
+  'HÂN': 'Ms. Hân',
+  'HẠNH': 'Ms. Hạnh',
+  'HOÀNG ANH': 'Mr. Hoàng Anh',
+  'P ANH': 'Ms. Phương Anh',
+  'PHƯƠNG ANH': 'Ms. Phương Anh',
+  'STEVEN': 'Mr. Steven'
+};
+
+export const formatTeacherName = (tea: string): string => {
+  if (!tea) return 'Giáo viên bộ môn';
+  const clean = tea.trim().toUpperCase();
+  if (TEACHER_NAME_MAP[clean]) return TEACHER_NAME_MAP[clean];
+  if (/^[CT]\.\s*/i.test(tea)) {
+    return tea.replace(/^[CT]\.\s*/i, m => m.toUpperCase().startsWith('C') ? 'Cô ' : 'Thầy ');
+  }
+  return `Thầy/Cô ${tea}`;
+};
+
 /**
  * Helper to determine subject category for styling
  */
@@ -328,6 +336,7 @@ export const detectSubjectType = (text: string): SubjectType => {
   const t = text.toLowerCase();
   if (t.includes('nghỉ lễ') || t.includes('dã ngoại') || t.includes('field trip') || t.includes('khai giảng') || t.includes('good morning') || t.includes('rehearsal') || t.includes('hội đồng')) return 'event';
   if (t.includes('shl') || t.includes('sinh hoạt') || t.includes('hướng nghiệp') || t.includes('hđtn')) return 'homeroom';
+  if (t.includes('science') || t.includes('khoa học tiếng anh') || t.includes('khtn')) return 'science';
   if (t.includes('toán') || t.includes('math')) return 'math';
   if (t.includes('anh') || t.includes('eng') || t.includes('level')) return 'english';
   if (t.includes('văn') || t.includes('lit')) return 'literature';
@@ -335,8 +344,8 @@ export const detectSubjectType = (text: string): SubjectType => {
   if (t.includes('hóa') || t.includes('chem') || t.includes('khtn (hóa)')) return 'chemistry';
   if (t.includes('sinh học') || t.includes('bio') || t.includes('khtn (sinh)') || (/\bsinh\b/i.test(t) && !t.includes('sinh hoạt'))) return 'biology';
   if (t.includes('tin') || t.includes('cs') || t.includes('ict') || t.includes('computer')) return 'cs';
-  if (t.includes('science') || t.includes('khtn')) return 'science';
-  if (t.includes('gdtc') || t.includes('thể chất') || t.includes('pe') || t.includes('bóng')) return 'pe';
+  if (t.includes('gdtc') || t.includes('gdqp') || t.includes('thể chất') || t.includes('quốc phòng') || t.includes('pe') || t.includes('bóng')) return 'pe';
+  if (t.includes('gdktpl') || t.includes('kinh tế') || t.includes('pháp luật') || t.includes('gdđp') || t.includes('địa phương') || t.includes('gdcd') || t.includes('sử') || t.includes('lịch sử') || t.includes('địa lý')) return 'literature';
   return 'event';
 };
 
@@ -404,9 +413,12 @@ export const cleanSubjectName = (raw: string): { vi: string; en: string; teacher
   // English multi-line (Level X - Room / Eng X / Teacher)
   if (firstLine.toLowerCase().includes('level') || firstLine.toLowerCase().includes('eng')) {
     const teacherLine = lines.find(l => l.toLowerCase().startsWith('mr') || l.toLowerCase().startsWith('ms') || l.toLowerCase().startsWith('thầy') || l.toLowerCase().startsWith('cô')) || '';
+    const engLine = lines.find(l => /^eng\s*\d+/i.test(l.trim())) || '';
+    const displaySubVi = engLine ? `English (${engLine.trim()})` : `English (${firstLine})`;
+    const displaySubEn = engLine ? `English (${engLine.trim()})` : `English (${firstLine})`;
     return {
-      vi: `English (${firstLine})`,
-      en: `English (${firstLine})`,
+      vi: displaySubVi,
+      en: displaySubEn,
       teacher: teacherLine || 'GV Bản Ngữ / Việt Nam',
       note: lines.join(' • ')
     };
@@ -437,6 +449,7 @@ export const cleanSubjectName = (raw: string): { vi: string; en: string; teacher
       'SINH': { vi: 'Sinh Học', en: 'Biology' },
       'TIN': { vi: 'Tin Học', en: 'Computer Science' },
       'GDTC': { vi: 'Giáo Dục Thể Chất', en: 'Physical Education' },
+      'GDQP': { vi: 'Giáo Dục Quốc Phòng', en: 'National Defense Education' },
       'SHL': { vi: 'Sinh Hoạt Lớp', en: 'Homeroom Period' },
       'KHTN (LÝ)': { vi: 'KHTN (Vật Lý)', en: 'Natural Science (Physics)' },
       'KHTN (HÓA)': { vi: 'KHTN (Hóa Học)', en: 'Natural Science (Chemistry)' },
@@ -468,8 +481,8 @@ export const cleanSubjectName = (raw: string): { vi: string; en: string; teacher
     return {
       vi: mapped.vi,
       en: mapped.en,
-      teacher: tea ? `Thầy/Cô ${tea}` : 'Giáo viên bộ môn',
-      note: firstLine
+      teacher: formatTeacherName(tea),
+      note: lines.length > 1 ? lines.join(' • ') : firstLine
     };
   }
 
@@ -593,15 +606,13 @@ export function parseSheetCSV(csvText: string, targetClassId: string = '11-tn'):
       const startTime = formatTime(timeParts[0]);
       const endTime = formatTime(timeParts[1]);
 
-      // School day strictly starts at 07:40 and ends at 16:05 (4:05 PM)
-      if (currentSession === 'morning' && endTime <= '07:40') {
-        continue;
-      }
-      if (currentSession === 'afternoon' && startTime >= '17:00') {
-        continue;
-      }
-
       let cellValue = (row[gradeCol] || '').trim();
+
+      // School day strictly starts at 07:40
+      // Only skip afternoon periods after 16:05 if there is NO scheduled lesson in the cell
+      if (currentSession === 'afternoon' && startTime >= '16:05' && !cellValue) {
+        continue;
+      }
 
       // If whole day holiday / field trip, propagate
       if (dayHolidayText) {
@@ -737,7 +748,7 @@ export async function fetchLiveSchedule(
   }
   if (!activeGid) {
     const allTabs = await getAllSheetTabs(sheetId);
-    activeGid = allTabs[allTabs.length - 1]?.gid || '1209587897';
+    activeGid = allTabs[allTabs.length - 1]?.gid || '245759597';
   }
 
   const cacheKey = `${activeGid}-${targetClassId}`;
@@ -871,7 +882,7 @@ export async function fetchLiveRoomSchedule(
   }
   if (!activeGid) {
     const allTabs = await getAllSheetTabs(sheetId);
-    activeGid = allTabs[allTabs.length - 1]?.gid || '1209587897';
+    activeGid = allTabs[allTabs.length - 1]?.gid || '245759597';
   }
 
   const cacheKey = `room-${activeGid}-${normTarget}`;

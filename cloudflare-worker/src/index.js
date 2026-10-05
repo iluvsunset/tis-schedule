@@ -47,7 +47,7 @@ export default {
     if (url.pathname === "/api/status" || url.pathname === "/status") {
       const lastHash = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_sheet_hash") : "KV_NOT_BOUND";
       const lastSync = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_sync_time") : "N/A";
-      const lastTab = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_active_tab") : "Tuần 6";
+      const lastTab = env.SCHEDULE_KV ? await env.SCHEDULE_KV.get("last_active_tab") : "Tuần 10";
       return new Response(JSON.stringify({ status: "running", lastSync, lastHash, lastTab }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });

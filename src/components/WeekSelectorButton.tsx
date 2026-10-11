@@ -55,33 +55,35 @@ export const WeekSelectorButton: React.FC<WeekSelectorProps> = ({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute right-0 top-full mt-2 w-48 z-[100] bg-[var(--surface-solid)] border-[1.5px] border-[var(--border)] rounded-[24px] shadow-puffy p-2 space-y-1 backdrop-blur-xl"
+            className="absolute right-0 top-full mt-2 w-48 z-[100] bg-[var(--surface-solid)] border-[1.5px] border-[var(--border)] rounded-[24px] shadow-puffy p-2 space-y-1 backdrop-blur-xl max-h-[70vh] flex flex-col"
           >
-            <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-muted)] border-b border-[var(--border)]">
+            <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-muted)] border-b border-[var(--border)] shrink-0">
               {language === 'vi' ? 'Tuần biểu' : 'Week Schedule'}
             </div>
-            {availableWeeks.map((week) => {
-              const isSelected = week.gid === selectedWeekGid || (!selectedWeekGid && week === activeWeekObj);
-              return (
-                <button
-                  key={week.gid}
-                  onClick={() => {
-                    onSelectWeek?.(week.gid);
-                    setIsOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-mono transition flex items-center justify-between cursor-pointer ${
-                    isSelected
-                      ? 'bg-[var(--fg)] text-[var(--bg)] font-bold'
-                      : 'text-[var(--fg-secondary)] hover:bg-[var(--surface-active)] hover:text-[var(--fg)]'
-                  }`}
-                >
-                  <span>{week.name}</span>
-                  {isSelected && (
-                    <span className="text-[10px] uppercase font-bold tracking-wider">Active</span>
-                  )}
-                </button>
-              );
-            })}
+            <div className="overflow-y-auto space-y-1 pr-0.5 no-scrollbar">
+              {availableWeeks.map((week) => {
+                const isSelected = week.gid === selectedWeekGid || (!selectedWeekGid && week === activeWeekObj);
+                return (
+                  <button
+                    key={week.gid}
+                    onClick={() => {
+                      onSelectWeek?.(week.gid);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-mono transition flex items-center justify-between cursor-pointer ${
+                      isSelected
+                        ? 'bg-[var(--fg)] text-[var(--bg)] font-bold'
+                        : 'text-[var(--fg-secondary)] hover:bg-[var(--surface-active)] hover:text-[var(--fg)]'
+                    }`}
+                  >
+                    <span>{week.name}</span>
+                    {isSelected && (
+                      <span className="text-[10px] uppercase font-bold tracking-wider">Active</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

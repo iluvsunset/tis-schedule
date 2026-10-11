@@ -167,10 +167,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className="bg-white rounded-3xl p-4 sm:p-6 pt-5 sm:pt-6 border-[1.5px] border-[var(--border)] shadow-puffy flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden"
+          className="bg-white rounded-3xl p-4 sm:p-6 pt-5 sm:pt-6 border-[1.5px] border-[var(--border)] shadow-puffy flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-30"
         >
-          {/* Soft decorative ambient glow in top corner */}
-          <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-[#fef3c7]/40 blur-2xl pointer-events-none" />
+          {/* Soft decorative ambient glow in top corner contained cleanly */}
+          <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+            <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-[#fef3c7]/40 blur-2xl" />
+          </div>
 
           {/* Left: Day Title, Date */}
           <div className="space-y-1.5 min-w-0 relative z-10 pt-1">
@@ -190,7 +192,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
           </div>
 
           {/* Right: Quick Action Controls */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap shrink-0 relative z-10">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap shrink-0 relative z-20">
             {/* Week Selector Button if available */}
             {availableWeeks && availableWeeks.length > 0 && onSelectWeek && (
               <WeekSelectorButton

@@ -228,9 +228,20 @@ export const App: React.FC<AppProps> = ({ initialUrl }) => {
       }, 15000);
     };
 
-    const handleUserActivity = () => {
+    const handleUserActivity = (e: Event) => {
       // In dev test lock mode, do not dismiss on activity
       if (isScreensaverLockedRef.current) return;
+
+      // Allow clicking interactive screensaver buttons (e.g. Mute/Unmute audio, Fullscreen) without dismissing the screensaver
+      if (e.target instanceof Element && e.target.closest('button, [data-interactive="true"]')) {
+        return;
+      }
+
+      // Allow keyboard shortcuts 'm'/'M' (Audio toggle) and 'f'/'F' (Fullscreen toggle) without dismissing the screensaver
+      if (e instanceof KeyboardEvent && (e.key === 'm' || e.key === 'M' || e.key === 'f' || e.key === 'F')) {
+        return;
+      }
+
       setIsScreensaverActive(false);
       startIdleTimer();
     };

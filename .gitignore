@@ -29,3 +29,9 @@ video-projects/
 capture_live/
 test_*.png
 scripts/capture_real_ui.cjs
+reference_video/
+references_new/
+frame_analysis/
+brag-output-2026-10-24-145000/
+.hyperframes/
+*.log

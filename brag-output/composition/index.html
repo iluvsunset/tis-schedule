@@ -1,0 +1,2779 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+    <title>TIS Schedule — The Academic Operating System</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- GSAP 3 & TextPlugin -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/TextPlugin.min.js"></script>
+
+    <style>
+      :root {
+        --font-main: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+
+        /* Light Creamy Studio Palette (Buff Motion / LangEase / Apple Keynote) */
+        --canvas-cream: #fbf9f5;
+        --canvas-warm: #f6f2ec;
+        --canvas-taupe: #eee8de;
+
+        --card-white: #ffffff;
+        --card-frosted: rgba(255, 255, 255, 0.96);
+        --card-border: rgba(0, 0, 0, 0.08);
+        --card-border-subtle: rgba(0, 0, 0, 0.04);
+
+        /* High-Contrast Editorial Typography */
+        --text-primary: #090d16;
+        --text-secondary: #243048;
+        --text-muted: #57657e;
+
+        /* Vivid High-Energy Accents (High-Contrast WCAG AA Compliant) */
+        --accent-orange: #c2410c;
+        --accent-orange-bright: #ea580c;
+        --accent-orange-soft: #fff3eb;
+        --accent-blue: #1d4ed8;
+        --accent-blue-bright: #2563eb;
+        --accent-blue-soft: #eff6ff;
+        --accent-green: #047857;
+        --accent-green-bright: #059669;
+        --accent-green-soft: #ecfdf5;
+        --accent-purple: #6d28d9;
+        --accent-purple-bright: #7c3aed;
+        --accent-purple-soft: #f5f3ff;
+        --accent-amber: #d97706;
+
+        /* Deep Multi-Stage Studio Drop Shadows */
+        --shadow-studio-hero: 0 45px 100px -20px rgba(35, 25, 15, 0.12), 0 20px 45px -10px rgba(35, 25, 15, 0.06);
+        --shadow-studio-md: 0 28px 60px -14px rgba(35, 25, 15, 0.09), 0 12px 24px -5px rgba(35, 25, 15, 0.04);
+        --shadow-studio-sm: 0 14px 30px -6px rgba(35, 25, 15, 0.07), 0 4px 12px -2px rgba(35, 25, 15, 0.03);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: var(--canvas-cream);
+        color: var(--text-primary);
+        font-family: var(--font-main);
+        -webkit-font-smoothing: antialiased;
+        user-select: none;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: radial-gradient(circle at 50% 25%, #ffffff 0%, #fbf9f5 55%, #f2ede4 100%);
+        perspective: 1400px;
+        transform-style: preserve-3d;
+      }
+
+      /* ==========================================================================
+         CINEMATIC CAMERA RIG (GLOBAL 3D PERSPECTIVE WRAPPER)
+         ========================================================================== */
+      #camera-recoil {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+        will-change: transform;
+      }
+
+      #camera-stage {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+        will-change: transform;
+      }
+
+      /* Ambient Studio Lighting (NO DOTS) */
+      .studio-ambient-vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(45, 35, 25, 0.05) 100%);
+        z-index: 1;
+      }
+
+      .studio-soft-glow {
+        position: absolute;
+        width: 1000px;
+        height: 1000px;
+        border-radius: 9999px;
+        filter: blur(160px);
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.4;
+      }
+
+      .glow-orange {
+        top: -240px;
+        left: -140px;
+        background: #fed7aa;
+      }
+
+      .glow-blue {
+        bottom: -240px;
+        right: -140px;
+        background: #bfdbfe;
+      }
+
+      .glow-mint {
+        top: 220px;
+        right: -220px;
+        background: #a7f3d0;
+        opacity: 0.28;
+      }
+
+      .studio-window-shadow {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.5) 0%,
+          transparent 40%,
+          rgba(40, 30, 20, 0.03) 60%,
+          transparent 100%
+        );
+        z-index: 1;
+      }
+
+      /* ==========================================================================
+         CINEMATIC MOTION VFX SYSTEM (SHOCKWAVES, PARTICLES, LIGHT BEAMS)
+         ========================================================================== */
+      /* Global Floating 3D Ambient Bokeh Particles */
+      .ambient-particles-stage {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        transform-style: preserve-3d;
+        z-index: 2;
+      }
+
+      .ambient-particle {
+        position: absolute;
+        border-radius: 9999px;
+        pointer-events: none;
+        opacity: 0.35;
+        filter: blur(5px);
+        will-change: transform;
+      }
+
+      /* ==========================================================================
+         DEEP IMMERSIVE STUDIO ENVIRONMENT (ORGANIC SUNBEAMS & VOLUMETRIC GLOWS)
+         ========================================================================== */
+      .studio-caustic-beam {
+        position: absolute;
+        inset: -200px;
+        pointer-events: none;
+        background: radial-gradient(ellipse at 35% 20%, rgba(255, 248, 235, 0.45) 0%, rgba(254, 215, 170, 0.15) 45%, transparent 75%);
+        mix-blend-mode: soft-light;
+        z-index: 1;
+        will-change: transform;
+      }
+
+      .studio-floor-horizon {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 380px;
+        background: linear-gradient(180deg, transparent 0%, rgba(230, 220, 205, 0.25) 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* ==========================================================================
+         CINEMATIC KINETIC TYPOGRAPHY (MASKED REVEALS & EDITORIAL SLAM)
+         ========================================================================== */
+      .headline-container {
+        text-align: center;
+        margin-bottom: 52px;
+        z-index: 20;
+      }
+
+      .eyebrow {
+        font-size: 17px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--accent-orange);
+        margin-bottom: 18px;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .main-title {
+        font-size: 88px;
+        font-weight: 900;
+        letter-spacing: -0.045em;
+        line-height: 1.08;
+        color: var(--text-primary);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .word-mask {
+        display: inline-block;
+        overflow: hidden;
+        vertical-align: bottom;
+      }
+
+      .word {
+        display: inline-block;
+        will-change: transform;
+      }
+
+      .highlight-orange {
+        color: var(--accent-orange);
+      }
+
+      .highlight-blue {
+        color: var(--accent-blue);
+      }
+
+      .highlight-green {
+        color: var(--accent-green);
+      }
+
+      /* Base Squircle Card with Specular Light Sheen */
+      .studio-card {
+        background: var(--card-white);
+        border: 1px solid var(--card-border);
+        border-radius: 36px;
+        box-shadow: var(--shadow-studio-hero);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .specular-sheen {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          115deg,
+          transparent 30%,
+          rgba(255, 255, 255, 0.7) 48%,
+          rgba(255, 255, 255, 0.9) 50%,
+          rgba(255, 255, 255, 0.7) 52%,
+          transparent 70%
+        );
+        transform: translateX(-150%);
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      /* Scene Base */
+      .scene {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transform-style: preserve-3d;
+        opacity: 0;
+        visibility: hidden;
+        z-index: 10;
+        will-change: transform, opacity;
+      }
+
+      /* ==========================================================================
+         SCENE 1: THE MORNING BLACKOUT (0.00s - 2.20s)
+         ========================================================================== */
+      .s1-clock-card {
+        width: 1040px;
+        padding: 58px 84px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 26px;
+      }
+
+      .s1-time-display {
+        font-family: var(--font-mono);
+        font-size: 136px;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        color: var(--text-primary);
+        line-height: 1;
+        display: flex;
+        align-items: center;
+      }
+
+      .s1-time-tag {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .s1-flank-cards {
+        display: flex;
+        gap: 32px;
+        margin-top: 36px;
+      }
+
+      .s1-mini-card {
+        background: var(--card-white);
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        padding: 22px 34px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: var(--shadow-studio-md);
+      }
+
+      .s1-icon-box {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Bell Shaker Animation Wrapper & Sound Ripples */
+      .s1-bell-box {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .bell-shaker {
+        display: inline-block;
+        transform-origin: 50% 0%;
+        position: relative;
+        z-index: 2;
+      }
+
+      /* ==========================================================================
+         SCENE 2: OBSOLETE PAPER VS. APP (2.20s - 4.30s)
+         ========================================================================== */
+      .s2-comparison-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 90px;
+      }
+
+      .s2-paper-card {
+        width: 480px;
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 24px;
+        padding: 44px;
+        box-shadow: var(--shadow-studio-md);
+        position: relative;
+        transform-origin: center center;
+      }
+
+      .s2-obsolete-stamp {
+        position: absolute;
+        top: 42%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-18deg);
+        border: 4px solid #ef4444;
+        color: #ef4444;
+        font-family: var(--font-mono);
+        font-weight: 900;
+        font-size: 32px;
+        letter-spacing: 4px;
+        padding: 8px 24px;
+        border-radius: 12px;
+        opacity: 0;
+        pointer-events: none;
+        background: rgba(254, 226, 226, 0.65);
+        box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2);
+        z-index: 10;
+      }
+
+      .s2-paper-stamp {
+        position: absolute;
+        top: 28px;
+        right: 28px;
+        border: 3px solid #dc2626;
+        color: #dc2626;
+        font-weight: 900;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        padding: 6px 14px;
+        border-radius: 8px;
+        transform: rotate(8deg);
+      }
+
+      .s2-phone-mockup {
+        width: 460px;
+        height: 620px;
+        background: #090d16;
+        border-radius: 56px;
+        padding: 16px;
+        box-shadow: 0 50px 110px -25px rgba(0, 0, 0, 0.35), 0 25px 50px -10px rgba(0, 0, 0, 0.2);
+        transform: perspective(1000px) rotateY(-14deg) rotateX(8deg);
+      }
+
+      .s2-phone-screen {
+        width: 100%;
+        height: 100%;
+        background: #ffffff;
+        border-radius: 44px;
+        overflow: hidden;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+
+      .s2-dynamic-island {
+        width: 130px;
+        height: 32px;
+        background: #000000;
+        border-radius: 20px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      }
+
+      /* ==========================================================================
+         SCENE 3: THE ACADEMIC OPERATING SYSTEM (4.30s - 6.50s)
+         ========================================================================== */
+      .s3-orbit-stage {
+        position: relative;
+        width: 1120px;
+        height: 560px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .s3-orbital-ring-outer {
+        position: absolute;
+        width: 320px;
+        height: 320px;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 4;
+        will-change: transform;
+      }
+
+      .s3-core-crest {
+        width: 190px;
+        height: 190px;
+        border-radius: 48px;
+        background: linear-gradient(135deg, #ffffff, #f7f3ee);
+        border: 2px solid rgba(212, 175, 55, 0.5);
+        box-shadow: 0 35px 80px rgba(212, 175, 55, 0.3), var(--shadow-studio-hero);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 5;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .s3-orbit-tile {
+        position: absolute;
+        background: var(--card-white);
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        padding: 24px 36px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: var(--shadow-studio-md);
+        font-weight: 800;
+        font-size: 20px;
+        color: var(--text-primary);
+        z-index: 6;
+      }
+
+      /* ==========================================================================
+         SCENE 4: PERIOD 1 BIOLOGY & CONFETTI (6.50s - 8.70s)
+         ========================================================================== */
+      .s4-period-monitor {
+        width: 920px;
+        padding: 50px 60px;
+        display: flex;
+        flex-direction: column;
+        gap: 34px;
+      }
+
+      .s4-subject-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .s4-progress-bar-bg {
+        width: 100%;
+        height: 26px;
+        background: #f1f5f9;
+        border-radius: 14px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .s4-progress-bar-fill {
+        height: 100%;
+        width: 100%;
+        transform: scaleX(0);
+        transform-origin: left center;
+        background: linear-gradient(90deg, #ea580c, #ff7722);
+        border-radius: 14px;
+        position: relative;
+      }
+
+      .s4-progress-bead {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 20px;
+        background: #ffffff;
+        filter: drop-shadow(0 0 6px #ff7722);
+      }
+
+      .s4-confetti-flake {
+        position: absolute;
+        width: 14px;
+        height: 20px;
+        border-radius: 4px;
+        pointer-events: none;
+        z-index: 60;
+      }
+
+      /* ==========================================================================
+         SCENE 5: EMERGENCY SUBSTITUTE RESOLUTION & CHAT DISPATCH (8.70s - 11.00s)
+         ========================================================================== */
+      .s5-stage-wrapper {
+        display: flex;
+        align-items: stretch;
+        gap: 28px;
+        width: 1280px;
+        perspective: 1200px;
+      }
+
+      .s5-chat-card {
+        flex: 1.1;
+        padding: 28px 32px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 16px;
+        border-radius: 28px;
+      }
+
+      .s5-chat-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--card-border-subtle);
+      }
+
+      .s5-chat-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 9999px;
+        background: #eff6ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .s5-chat-body {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .s5-bubble {
+        padding: 14px 18px;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.4;
+        max-width: 88%;
+      }
+
+      .s5-bubble.received {
+        align-self: flex-start;
+        background: #f1f5f9;
+        color: var(--text-primary);
+        border-radius: 20px 20px 20px 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      }
+
+      .s5-bubble.sent {
+        align-self: flex-end;
+        background: #0a84ff;
+        color: #ffffff;
+        border-radius: 20px 20px 4px 20px;
+        box-shadow: 0 4px 14px rgba(10, 132, 255, 0.25);
+      }
+
+      .s5-typing-bubble {
+        align-self: flex-start;
+        background: #f1f5f9;
+        border-radius: 16px;
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: fit-content;
+      }
+
+      .s5-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 9999px;
+        background: #94a3b8;
+      }
+
+      .s5-msg-receipt {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-muted);
+        align-self: flex-end;
+        padding-right: 4px;
+      }
+
+      .s5-substitute-card {
+        flex: 1.25;
+        padding: 36px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 20px;
+        border-radius: 28px;
+      }
+
+      .s5-diff-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f8fafc;
+        border-radius: 22px;
+        padding: 24px 32px;
+        border: 1px solid var(--card-border-subtle);
+      }
+
+      .s5-teacher-block {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .s5-avatar-box {
+        width: 60px;
+        height: 60px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 22px;
+      }
+
+      .swap-arrow-glow {
+        color: var(--accent-green-bright);
+        font-size: 32px;
+        font-weight: 900;
+        display: inline-block;
+      }
+
+      /* ==========================================================================
+         SCENE 6: GOOGLE SHEETS LIVE SYNC (11.00s - 13.50s)
+         ========================================================================== */
+      .s6-sheet-window {
+        width: 1120px;
+        background: var(--card-white);
+        border: 1px solid var(--card-border);
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: var(--shadow-studio-hero);
+        position: relative;
+      }
+
+      .s6-laser-scan {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent 0%, #10b981 50%, transparent 100%);
+        box-shadow: 0 0 16px #10b981, 0 0 32px #10b981;
+        pointer-events: none;
+        z-index: 20;
+        opacity: 0;
+      }
+
+      .s6-window-header {
+        background: #f8fafc;
+        padding: 22px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--card-border);
+      }
+
+      .s6-window-controls {
+        display: flex;
+        gap: 10px;
+      }
+
+      .window-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 9999px;
+      }
+
+      .s6-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .s6-table th {
+        background: #f8fafc;
+        padding: 18px 26px;
+        text-align: left;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--card-border);
+      }
+
+      .s6-table td {
+        padding: 22px 26px;
+        font-size: 19px;
+        font-weight: 600;
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--card-border-subtle);
+      }
+
+      /* ==========================================================================
+         APPLE HUMAN INTERFACE & DIRECT MANIPULATION CONTROLS
+         ========================================================================== */
+      /* macOS Vector Cursor */
+      .human-cursor {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        pointer-events: none;
+        z-index: 60;
+        filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.28));
+        transform-origin: 2px 2px;
+        opacity: 0;
+      }
+
+      .human-click-ring {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid #0a84ff;
+        background: rgba(10, 132, 255, 0.22);
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Google Sheets Live Cell Selection Box */
+      .s6-cell-selection-box {
+        position: absolute;
+        inset: -2px;
+        border: 2.5px solid #1a73e8;
+        background: rgba(26, 115, 232, 0.08);
+        border-radius: 4px;
+        pointer-events: none;
+        opacity: 0;
+        transform: scale(0.96);
+      }
+
+      .s6-cell-handle {
+        position: absolute;
+        bottom: -4px;
+        right: -4px;
+        width: 7px;
+        height: 7px;
+        background: #1a73e8;
+        border: 1px solid #ffffff;
+      }
+
+      /* iOS Human Touch Pointer & Haptic Ripple */
+      .human-touch-indicator {
+        position: absolute;
+        width: 48px;
+        height: 48px;
+        pointer-events: none;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: scale(0.6);
+      }
+
+      .human-touch-core {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1.5px solid rgba(255, 255, 255, 0.95);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 3px rgba(255, 255, 255, 0.9);
+      }
+
+      .human-touch-ring {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 2.5px solid rgba(16, 185, 129, 0.7);
+        transform: scale(0.5);
+        opacity: 0;
+      }
+
+      /* Apple Human Interface Segmented Control */
+      .s9-segmented-control {
+        position: relative;
+        display: inline-flex;
+        background: #ede8e1;
+        padding: 5px;
+        border-radius: 18px;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.06);
+        margin-bottom: 28px;
+        z-index: 5;
+      }
+
+      .s9-segment-pill {
+        position: absolute;
+        top: 5px;
+        bottom: 5px;
+        left: 5px;
+        width: 170px;
+        background: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+        z-index: 1;
+      }
+
+      .s9-segment-tab {
+        position: relative;
+        padding: 10px 24px;
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--text-muted);
+        z-index: 2;
+        width: 170px;
+        text-align: center;
+        transition: color 0.2s ease;
+      }
+
+      .s9-segment-tab.active {
+        color: var(--text-primary);
+      }
+
+      /* ==========================================================================
+         SCENE 7: 142MS EDGE SPEEDOMETER (13.50s - 15.80s)
+         ========================================================================== */
+      .s7-speed-stage {
+        display: flex;
+        align-items: center;
+        gap: 84px;
+      }
+
+      .s7-meter-card {
+        padding: 50px 70px 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        position: relative;
+      }
+
+      .s7-gauge-wrapper {
+        position: relative;
+        width: 220px;
+        height: 115px;
+        margin: 4px auto -10px auto;
+      }
+
+      .s7-gauge-svg {
+        position: absolute;
+        inset: 0;
+        overflow: visible;
+      }
+
+      #s7-needle {
+        position: absolute;
+        left: 110px;
+        top: 105px;
+        width: 0;
+        height: 0;
+        transform-origin: 0 0;
+        will-change: transform;
+      }
+
+      .s7-speed-num {
+        font-family: var(--font-mono);
+        font-size: 130px;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        color: var(--accent-orange-bright);
+        line-height: 1;
+      }
+
+      .s7-metric-deck {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .s7-metric-tile {
+        width: 400px;
+        background: var(--card-white);
+        border: 1px solid var(--card-border);
+        border-radius: 26px;
+        padding: 26px 32px;
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        box-shadow: var(--shadow-studio-md);
+      }
+
+      /* ==========================================================================
+         SCENE 8: 100% OFFLINE PWA (15.80s - 18.20s)
+         ========================================================================== */
+      .s8-offline-hero {
+        display: flex;
+        align-items: center;
+        gap: 84px;
+      }
+
+      .s8-toggle-card {
+        background: var(--card-white);
+        border: 1px solid var(--card-border);
+        border-radius: 36px;
+        padding: 48px 60px;
+        box-shadow: var(--shadow-studio-hero);
+        display: flex;
+        align-items: center;
+        gap: 40px;
+      }
+
+      .s8-ios-switch {
+        width: 94px;
+        height: 56px;
+        background: #e2e8f0;
+        border-radius: 9999px;
+        padding: 6px;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .s8-switch-knob {
+        width: 44px;
+        height: 44px;
+        background: #ffffff;
+        border-radius: 9999px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+      }
+
+      /* ==========================================================================
+         SCENE 9: 12-GRADE UNIFIED MATRIX (18.20s - 20.60s)
+         ========================================================================== */
+      .s9-grade-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 26px;
+        width: 1080px;
+      }
+
+      .s9-grade-tile {
+        background: var(--card-white);
+        border: 1px solid var(--card-border);
+        border-radius: 26px;
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        box-shadow: var(--shadow-studio-md);
+      }
+
+      .s9-grade-tile.active-grade {
+        border: 2.5px solid var(--accent-orange-bright);
+        box-shadow: 0 30px 60px rgba(255, 85, 0, 0.18), var(--shadow-studio-md);
+      }
+
+      /* ==========================================================================
+         SCENE 10: EVENING NOTIFICATION DISPATCH (20.60s - 23.00s)
+         ========================================================================== */
+      #scene-10 .headline-container {
+        margin-bottom: 34px;
+      }
+
+      .s10-notification-card {
+        width: 820px;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 34px;
+        padding: 36px 46px;
+        box-shadow: var(--shadow-studio-hero);
+        overflow: hidden;
+        position: relative;
+      }
+
+      .s10-check-row {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-top: 18px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      /* ==========================================================================
+         SCENE 11: THE VISION QUOTE (23.00s - 25.50s)
+         ========================================================================== */
+      .s11-quote-wrapper {
+        text-align: center;
+        max-width: 1180px;
+        padding: 0 40px;
+      }
+
+      .s11-quote-text {
+        font-size: 72px;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        line-height: 1.25;
+        color: var(--text-primary);
+      }
+
+      /* ==========================================================================
+         SCENE 12: MONUMENTAL PAYOFF (25.50s - 30.00s)
+         ========================================================================== */
+      .s12-tis-emblem {
+        width: 140px;
+        height: 140px;
+        border-radius: 38px;
+        background: #ffffff;
+        border: 2px solid rgba(234, 88, 12, 0.22);
+        box-shadow: 0 30px 70px -10px rgba(234, 88, 12, 0.28), var(--shadow-studio-hero);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .s12-hero-lockup {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 46px;
+      }
+
+      .s12-title {
+        font-size: 104px;
+        font-weight: 900;
+        letter-spacing: -0.045em;
+        line-height: 1.05;
+      }
+
+      .s12-url-capsule {
+        background: #090d16;
+        color: #ffffff;
+        border-radius: 26px;
+        padding: 26px 56px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        font-family: var(--font-mono);
+        font-size: 30px;
+        font-weight: 800;
+        box-shadow: 0 35px 80px -10px rgba(9, 13, 22, 0.4);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .s12-feature-trio {
+        display: flex;
+        gap: 30px;
+      }
+
+      .s12-trio-tile {
+        background: var(--card-white);
+        border: 1px solid var(--card-border);
+        border-radius: 22px;
+        padding: 22px 40px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-weight: 800;
+        font-size: 19px;
+        color: var(--text-primary);
+        box-shadow: var(--shadow-studio-md);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Main HyperFrames Root Container -->
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="30"
+      data-fps="60"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- Background Audio Bed (High-Energy 128 BPM Fast Beat) -->
+      <audio
+        id="bg-music"
+        src="./assets/music/bgm_fast_natural.mp3"
+        data-start="0"
+        data-duration="30"
+        data-track-index="0"
+        data-volume="0.9"
+      ></audio>
+
+      <!-- Deep Immersive Studio Environment (Architectural Sunbeams & Ambient Horizon) -->
+      <div class="studio-ambient-vignette"></div>
+      <div class="studio-caustic-beam" id="studio-beam" data-layout-allow-overflow="true"></div>
+      <div class="studio-floor-horizon"></div>
+      <div class="studio-soft-glow glow-orange" id="glow-orange-el" data-layout-allow-overflow="true"></div>
+      <div class="studio-soft-glow glow-blue" id="glow-blue-el" data-layout-allow-overflow="true"></div>
+      <div class="studio-soft-glow glow-mint" id="glow-mint-el" data-layout-allow-overflow="true"></div>
+      <div class="studio-window-shadow"></div>
+
+      <!-- Multi-Plane 3D Floating Bokeh Dust Field -->
+      <div class="ambient-particles-stage" id="ambient-particles" data-layout-ignore="true">
+        <div class="ambient-particle" style="left: 12%; top: 16%; width: 220px; height: 220px; background: radial-gradient(circle, rgba(234,88,12,0.18) 0%, transparent 70%);"></div>
+        <div class="ambient-particle" style="left: 78%; top: 22%; width: 280px; height: 280px; background: radial-gradient(circle, rgba(37,99,235,0.16) 0%, transparent 70%);"></div>
+        <div class="ambient-particle" style="left: 45%; top: 68%; width: 240px; height: 240px; background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%);"></div>
+        <div class="ambient-particle" style="left: 84%; top: 64%; width: 210px; height: 210px; background: radial-gradient(circle, rgba(212,175,55,0.18) 0%, transparent 70%);"></div>
+        <div class="ambient-particle" style="left: 6%; top: 58%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(124,58,237,0.14) 0%, transparent 70%);"></div>
+        <div class="ambient-particle" style="left: 20%; top: 82%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(245,158,11,0.16) 0%, transparent 70%);"></div>
+        <div class="ambient-particle" style="left: 88%; top: 12%; width: 190px; height: 190px; background: radial-gradient(circle, rgba(234,88,12,0.14) 0%, transparent 70%);"></div>
+        <div class="ambient-particle" style="left: 35%; top: 28%; width: 260px; height: 260px; background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);"></div>
+      </div>
+
+      <!-- ======================================================================
+           3D CAMERA RIG (CAMERA RECOIL + PERSPECTIVE TILT STAGE)
+           ====================================================================== -->
+      <div id="camera-recoil">
+        <div id="camera-stage">
+          <!-- SCENE 1: THE MORNING BLACKOUT (0.00s - 2.20s) -->
+          <div class="scene" id="scene-1">
+          <div class="headline-container">
+            <div class="eyebrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Morning Rush // 07:40 AM
+            </div>
+            <h1 class="main-title">
+              <span class="word-mask"><span class="word">Where</span></span>
+              <span class="word-mask"><span class="word">should</span></span>
+              <span class="word-mask"><span class="word">you</span></span>
+              <span class="word-mask"><span class="word">be</span></span>
+              <span class="word-mask"><span class="word highlight-orange">right now?</span></span>
+            </h1>
+          </div>
+
+          <div class="studio-card s1-clock-card" id="s1-card">
+            <div class="specular-sheen" id="s1-sheen"></div>
+            <div class="s1-time-tag" data-layout-ignore="true">
+              <img src="assets/images/tis-official-logo.png" style="width: 22px; height: 22px; object-fit: contain; vertical-align: middle; margin-right: 8px;" alt="TIS Logo" />
+              Official Campus Time
+            </div>
+            <div class="s1-time-display" id="s1-clock-text">07:40:00</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--text-secondary);">
+              Ho Chi Minh City // The International School
+            </div>
+          </div>
+
+          <div class="s1-flank-cards">
+            <div class="s1-mini-card" id="s1-flank-1">
+              <div class="s1-icon-box" style="background: var(--accent-orange-soft); color: var(--accent-orange);">
+                <div class="s1-bell-box">
+                  <span class="bell-shaker" id="s1-bell">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                  </span>
+                </div>
+              </div>
+              <div>
+                <div style="font-size: 18px; font-weight: 800;">First Bell Warning</div>
+                <div style="font-size: 15px; color: var(--text-muted);">5 Minutes to Homeroom</div>
+              </div>
+            </div>
+            <div class="s1-mini-card" id="s1-flank-2">
+              <div class="s1-icon-box" style="background: var(--accent-blue-soft); color: var(--accent-blue);">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div>
+                <div style="font-size: 18px; font-weight: 800;">720+ Students</div>
+                <div style="font-size: 15px; color: var(--text-muted);">Navigating Campus Hallways</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCENE 2: OBSOLETE PAPER VS. APP (2.20s - 4.30s) -->
+        <div class="scene" id="scene-2">
+          <div class="headline-container">
+            <div class="eyebrow" style="color: #dc2626;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              The Dilemma
+            </div>
+            <h1 class="main-title">
+              <span class="word-mask"><span class="word">Paper</span></span>
+              <span class="word-mask"><span class="word">schedules</span></span>
+              <span class="word-mask"><span class="word">are</span></span>
+              <span class="word-mask"><span class="word" style="color: #dc2626;">obsolete.</span></span>
+            </h1>
+          </div>
+
+          <div class="s2-comparison-container">
+            <!-- Obsolete Paper Sheet -->
+            <div class="s2-paper-card" id="s2-paper">
+              <div class="s2-obsolete-stamp" id="s2-stamp" data-layout-ignore="true">OBSOLETE</div>
+              <div class="s2-paper-stamp" data-layout-ignore="true">Outdated</div>
+              <div style="font-weight: 800; font-size: 24px; margin-bottom: 14px; color: #475569;">Semester Timetable (Printed)</div>
+              <div style="font-size: 16px; color: #64748b; line-height: 1.6;" data-layout-ignore="true">
+                • Monday: Period 1 Math (Room 301)<br>
+                • Tuesday: Period 2 Chemistry<br>
+                • Teacher Substitute: Unknown<br>
+                • Last Print: 3 Weeks Ago
+              </div>
+            </div>
+
+            <!-- The 3D iPhone App Mockup with Apple Human Interface -->
+            <div class="s2-phone-mockup" id="s2-phone" style="position: relative;">
+              <div class="s2-phone-screen" style="position: relative;">
+                <!-- iOS Top Status Bar & Dynamic Island -->
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 6px 2px; font-size: 13px; font-weight: 800; color: #090d16;">
+                  <span style="font-family: var(--font-mono); letter-spacing: -0.02em;">07:40</span>
+                  <div class="s2-dynamic-island" id="s2-island">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+                    <span style="font-size: 10px; font-weight: 800; color: #ffffff; letter-spacing: 0.06em;">TIS LIVE</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 5px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+                    <svg width="18" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"/><line x1="22" y1="11" x2="22" y2="13"/></svg>
+                  </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-weight: 800; font-size: 22px;">Today's Schedule</span>
+                  <span style="font-size: 13px; font-weight: 800; background: var(--accent-green-soft); color: var(--accent-green); padding: 6px 12px; border-radius: 8px;" data-layout-ignore="true">LIVE SYNC</span>
+                </div>
+
+                <!-- Primary Happening Now Interactive Card -->
+                <div id="s2-live-card" style="background: #f8fafc; border-radius: 22px; padding: 20px 22px; border: 1px solid rgba(0,0,0,0.06); position: relative; overflow: hidden; transform-origin: center center;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 13px; font-weight: 800; color: var(--accent-orange); text-transform: uppercase;">Happening Now</div>
+                    <span style="font-size: 11px; font-weight: 800; color: #10b981; background: rgba(16,185,129,0.12); padding: 3px 8px; border-radius: 6px;">Room 504 Active</span>
+                  </div>
+                  <div style="font-size: 22px; font-weight: 900; margin-top: 6px;">Biology 10</div>
+                  <div style="font-size: 15px; color: var(--text-secondary); margin-top: 2px;">Ms. Hanh • 07:45 - 08:30</div>
+                  <div id="s2-card-expand" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.06); font-size: 13px; font-weight: 700; color: #0a84ff; display: flex; align-items: center; gap: 6px; opacity: 0; height: 0; overflow: hidden;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Lab Equipment Ready • Attendance Synced
+                  </div>
+                </div>
+
+                <!-- Secondary Upcoming Card -->
+                <div style="background: #ffffff; border-radius: 18px; padding: 18px 22px; border: 1px solid rgba(0,0,0,0.06);">
+                  <div style="font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Next Up (08:35)</div>
+                  <div style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin-top: 4px;">English Literature</div>
+                  <div style="font-size: 14px; color: var(--text-muted); margin-top: 2px;">Room 302 • Mr. Robert</div>
+                </div>
+
+                <!-- Human Touch Indicator Circle -->
+                <div id="s2-touch-indicator" class="human-touch-indicator" style="top: 215px; left: 190px;">
+                  <div class="human-touch-core"></div>
+                  <div class="human-touch-ring" id="s2-touch-ring"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCENE 3: THE ACADEMIC OPERATING SYSTEM (4.30s - 6.50s) -->
+        <div class="scene" id="scene-3">
+          <div class="headline-container">
+            <div class="eyebrow" style="color: var(--accent-blue);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              System Architecture
+            </div>
+            <h1 class="main-title">
+              <span class="word-mask"><span class="word">The</span></span>
+              <span class="word-mask"><span class="word">Academic</span></span>
+              <span class="word-mask"><span class="word highlight-blue">Operating System.</span></span>
+            </h1>
+          </div>
+
+          <div class="s3-orbit-stage" id="s3-stage">
+            <div class="s3-orbital-ring-outer" id="s3-orbit-ring" data-layout-ignore="true">
+              <svg width="320" height="320" viewBox="0 0 320 320">
+                <circle cx="160" cy="160" r="148" fill="none" stroke="rgba(212,175,55,0.45)" stroke-width="2" stroke-dasharray="10 14"/>
+                <circle cx="160" cy="160" r="128" fill="none" stroke="rgba(212,175,55,0.25)" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="s3-core-crest" id="s3-crest">
+              <div class="specular-sheen" id="s3-crest-sheen"></div>
+              <img src="assets/images/tis-official-logo.png" id="s3-crest-img" style="width: 140px; height: 140px; object-fit: contain; filter: drop-shadow(0 12px 28px rgba(212, 175, 55, 0.45)); will-change: transform;" alt="TIS Crest" />
+            </div>
+
+            <div class="s3-orbit-tile" id="s3-tile-1" style="top: 20px; left: 60px;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+              Google Sheets 2-Way
+            </div>
+
+            <div class="s3-orbit-tile" id="s3-tile-2" style="top: 20px; right: 60px;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-orange)" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+              Cloudflare 142ms Edge
+            </div>
+
+            <div class="s3-orbit-tile" id="s3-tile-3" style="bottom: 30px; left: 80px;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.58 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+              100% Offline PWA
+            </div>
+
+            <div class="s3-orbit-tile" id="s3-tile-4" style="bottom: 30px; right: 80px;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              12-Grade Matrix
+            </div>
+          </div>
+        </div>
+
+        <!-- SCENE 4: PERIOD 1 BIOLOGY & CONFETTI (6.50s - 8.70s) -->
+        <div class="scene" id="scene-4">
+          <div class="headline-container">
+            <div class="eyebrow" style="color: var(--accent-orange);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 10"/></svg>
+              Live Class Tracking
+            </div>
+            <h1 class="main-title">
+              <span class="word-mask"><span class="word">Period</span></span>
+              <span class="word-mask"><span class="word">1:</span></span>
+              <span class="word-mask"><span class="word highlight-orange">Advanced Biology</span></span>
+            </h1>
+          </div>
+
+          <div class="studio-card s4-period-monitor" id="s4-card">
+            <div class="specular-sheen" id="s4-sheen"></div>
+            <div class="s4-subject-header">
+              <div>
+                <div style="font-size: 34px; font-weight: 900;">Grade 10 • Room 504</div>
+                <div style="font-size: 18px; color: var(--text-secondary); margin-top: 6px;">
+                  Instructor: Dr. Nguyen • 07:45 - 08:30
+                </div>
+              </div>
+              <div style="background: var(--accent-orange-soft); color: var(--accent-orange); font-weight: 800; font-size: 16px; padding: 10px 22px; border-radius: 14px;" id="s4-status-badge">
+                IN PROGRESS
+              </div>
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 19px; margin-bottom: 12px;">
+                <span>Class Completion</span>
+                <span id="s4-percent-label">0%</span>
+              </div>
+              <div class="s4-progress-bar-bg">
+                <div class="s4-progress-bar-fill" id="s4-fill">
+                  <div class="s4-progress-bead"></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--card-border-subtle); padding-top: 24px;">
+              <div style="display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 17px; color: var(--text-secondary);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                Next: Recess & Refreshments (08:30)
+              </div>
+              <div style="font-family: var(--font-mono); font-weight: 800; font-size: 20px; color: var(--accent-orange);" id="s4-countdown">
+                45m 00s remaining
+              </div>
+            </div>
+          </div>
+
+          <div id="s4-confetti-box"></div>
+        </div>
+
+        <!-- SCENE 5: EMERGENCY SUBSTITUTE RESOLUTION & CHAT (8.70s - 11.00s) -->
+        <div class="scene" id="scene-5">
+          <div class="headline-container">
+            <div class="eyebrow" style="color: var(--accent-green);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Zero Interruption
+            </div>
+            <h1 class="main-title">
+              <span class="word-mask"><span class="word">Substitutes</span></span>
+              <span class="word-mask"><span class="word">resolved</span></span>
+              <span class="word-mask"><span class="word">in</span></span>
+              <span class="word-mask"><span class="word highlight-green">0.4 seconds.</span></span>
+            </h1>
+          </div>
+
+          <div class="s5-stage-wrapper">
+            <!-- Left: Authentic iMessage Chat Dispatch (Per /text-message-animation skill) -->
+            <div class="studio-card s5-chat-card" id="s5-chat-box">
+              <div class="s5-chat-header">
+                <div class="s5-chat-avatar">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0a84ff" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div>
+                  <div style="font-weight: 800; font-size: 17px; color: var(--text-primary);">Faculty Dispatch Bot</div>
+                  <div style="font-size: 13px; font-weight: 700; color: #10b981;">● Active Now • Instant Relay</div>
+                </div>
+              </div>
+
+              <div class="s5-chat-body">
+                <!-- Received Bubble -->
+                <div class="s5-bubble received" id="s5-msg-1">
+                  <div style="font-size: 12px; font-weight: 800; color: #dc2626; margin-bottom: 3px;" data-layout-ignore="true">URGENT NOTIFICATION</div>
+                  Period 2 Biology: Mr. Nam unavailable. Cover needed in Room 504.
+                </div>
+
+                <!-- Typing indicator -->
+                <div class="s5-typing-bubble" id="s5-typing">
+                  <div class="s5-dot dot-1"></div>
+                  <div class="s5-dot dot-2"></div>
+                  <div class="s5-dot dot-3"></div>
+                </div>
+
+                <!-- Sent Bubble -->
+                <div class="s5-bubble sent" id="s5-msg-2">
+                  Confirmed! Taking Period 2 & 3. Room 504 ready. 🚀
+                </div>
+                <div class="s5-msg-receipt" id="s5-receipt">
+                  <span>07:41 AM</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0a84ff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/><polyline points="20 12 11 17 8 14"/></svg>
+                  <span style="color: #0a84ff;">Delivered • Read</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Faculty Reassignment Dispatch Card -->
+            <div class="studio-card s5-substitute-card" id="s5-card">
+              <div class="specular-sheen" id="s5-sheen"></div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 800; font-size: 20px;">Faculty Reassignment Dispatch</span>
+                <span style="font-size: 12px; font-weight: 800; background: #fee2e2; color: #dc2626; padding: 6px 14px; border-radius: 8px;" data-layout-ignore="true">AUTO-REASSIGNED</span>
+              </div>
+
+              <div class="s5-diff-row">
+                <div class="s5-teacher-block" id="s5-old-teacher">
+                  <div class="s5-avatar-box" style="background: #f1f5f9; color: #64748b;">MN</div>
+                  <div>
+                    <div style="font-weight: 800; font-size: 20px; text-decoration: line-through; color: #94a3b8;">Mr. Nam</div>
+                    <div style="font-size: 14px; color: #94a3b8;">Unavailable</div>
+                  </div>
+                </div>
+
+                <div class="swap-arrow-glow" id="s5-swap-arrow">➔</div>
+
+                <div class="s5-teacher-block" id="s5-new-teacher">
+                  <div class="s5-avatar-box" style="background: var(--accent-green-soft); color: var(--accent-green);">MH</div>
+                  <div>
+                    <div style="font-weight: 800; font-size: 20px; color: var(--text-primary);">Ms. Hanh</div>
+                    <div style="font-size: 14px; font-weight: 800; color: var(--accent-green);">Room 504 Active</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 700; color: var(--text-secondary);">
+                <span>Broadcasted to 720+ student phones</span>
+                <span style="color: var(--accent-green); font-weight: 800;">✓ Synced in 0.4s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCENE 6: GOOGLE SHEETS LIVE SYNC (11.00s - 13.50s) -->
+        <div class="scene" id="scene-6">
+          <div class="headline-container">
+            <div class="eyebrow" style="color: var(--accent-green);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Admin Dashboard
+            </div>
+            <h1 class="main-title">
+              <span class="word-mask"><span class="word">Edit</span></span>
+              <span class="word-mask"><span class="word">in</span></span>
+              <span class="word-mask"><span class="word">Sheets.</span></span>
+              <span class="word-mask"><span class="word highlight-green">Live everywhere.</span></span>
+            </h1>
+          </div>
+
+          <div class="s6-sheet-window" id="s6-window" style="position: relative;">
+            <div class="s6-laser-scan" id="s6-laser"></div>
+            <div class="s6-window-header">
+              <div class="s6-window-controls">
+                <div class="window-dot" style="background: #ef4444;"></div>
+                <div class="window-dot" style="background: #f59e0b;"></div>
+                <div class="window-dot" style="background: #10b981;"></div>
+              </div>
+              <div style="font-size: 16px; font-weight: 800; color: var(--text-secondary);">
+                TIS_Master_Schedule_2026.xlsx • Google Sheets API
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="font-size: 13px; font-weight: 800; color: var(--accent-green); background: rgba(16,185,129,0.12); padding: 5px 12px; border-radius: 8px;">
+                  ● Auto-Sync 0.1s
+                </div>
+                <div id="s6-sync-btn" style="font-size: 13px; font-weight: 800; color: #ffffff; background: #0a84ff; padding: 6px 14px; border-radius: 8px; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(10,132,255,0.3); transform-origin: center center;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                  Sync Now
+                </div>
+              </div>
+            </div>
+
+            <table class="s6-table">
+              <thead>
+                <tr>
+                  <th>Period</th>
+                  <th>Subject</th>
+                  <th>Teacher</th>
+                  <th>Room</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>P1 (07:45)</td>
+                  <td>Biology 10</td>
+                  <td>Ms. Hanh</td>
+                  <td>Room 504</td>
+                  <td><span style="color: var(--accent-green); font-weight: 800;">● Confirmed</span></td>
+                </tr>
+                <tr id="s6-target-row" style="background: #ffffff;">
+                  <td>P2 (08:35)</td>
+                  <td>English Literature</td>
+                  <td id="s6-teacher-cell" style="position: relative;">
+                    <span id="s6-teacher-name">Mr. Robert</span>
+                    <div id="s6-cell-selection" class="s6-cell-selection-box">
+                      <div class="s6-cell-handle"></div>
+                    </div>
+                  </td>
+                  <td>Room 302</td>
+                  <td><span id="s6-status-cell" style="color: var(--accent-green); font-weight: 800;">● Scheduled</span></td>
+                </tr>
+                <tr>
+                  <td>P3 (09:25)</td>
+                  <td>World History</td>
+                  <td>Ms. Linh</td>
+                  <td>Lab 2</td>
+                  <td><span style="color: var(--accent-green); font-weight: 800;">● Confirmed</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- macOS / Apple Human Interface Vector Cursor -->
+            <div id="s6-cursor" class="human-cursor" style="left: 0; top: 0;">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <path d="M6 3L23 15.5L14.5 17.5L20 28.5L16 30.5L10.5 19.5L6 24V3Z" fill="#111827" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+              <div class="human-click-ring" id="s6-click-ring"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCENE 7: 142MS EDGE SPEEDOMETER (13.50s - 15.80s) -->
+        <div class="scene" id="scene-7">
+          <div class="headline-container">
+            <div class="eyebrow" style="color: var(--accent-orange);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Edge Performance
+            </div>
+            <h1 class="main-title">
+              <span class="word-mask"><span class="word">Blazing</span></span>
+              <span class="word-mask"><span class="word">fast.</span></span>
+              <span class="word-mask"><span class="word highlight-orange">142ms worldwide.</span></span>
+            </h1>
+          </div>
+
+          <div class="s7-speed-stage">
+            <div class="studio-card s7-meter-card" id="s7-meter">
+              <div class="specular-sheen" id="s7-sheen"></div>
+              <div style="font-size: 15px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Cloudflare Workers Latency</div>
+              
+              <!-- High-Performance SVG Speedometer Dial & Rock-Solid HTML Pivot Needle -->
+              <div class="s7-gauge-wrapper">
+                <svg width="220" height="115" viewBox="0 0 220 115" class="s7-gauge-svg">
+                  <!-- Mathematical Background Track Arc: R=85 from (25, 105) to (195, 105) -->
+                  <path id="s7-gauge-track" d="M 25 105 A 85 85 0 0 1 195 105" fill="none" stroke="#e2e8f0" stroke-width="14" stroke-linecap="round"/>
+                  <!-- Mathematically Matched Active Meter Arc: R=85, stroke-dasharray=267.04 -->
+                  <path id="s7-gauge-bar" d="M 25 105 A 85 85 0 0 1 195 105" fill="none" stroke="url(#speed-grad)" stroke-width="14" stroke-linecap="round" stroke-dasharray="267.04" stroke-dashoffset="267.04"/>
+                  <defs>
+                    <linearGradient id="speed-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#ef4444"/>
+                      <stop offset="35%" stop-color="#f59e0b"/>
+                      <stop offset="65%" stop-color="#10b981"/>
+                      <stop offset="100%" stop-color="#059669"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <!-- Anchored Pivot Needle: Length 74px points right to inner contour of R=85 arc -->
+                <div id="s7-needle">
+                  <div style="position: absolute; left: -2px; bottom: 0; width: 4px; height: 74px; background: #ea580c; border-radius: 2px; transform-origin: bottom center;"></div>
+                  <div style="position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; border-radius: 50%; background: #090d16; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.25);">
+                    <div style="width: 6px; height: 6px; border-radius: 50%; background: #ffffff;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="s7-speed-num" id="s7-num">142ms</div>
+              <div style="font-size: 17px; font-weight: 800; color: var(--accent-green);">
+                ● SGN Node • 100% Cache Hit
+              </div>
+            </div>
+
+            <div class="s7-metric-deck">
+              <div class="s7-metric-tile" id="s7-tile-1">
+                <div class="s1-icon-box" style="background: var(--accent-orange-soft); color: var(--accent-orange);">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                </div>
+                <div>
+                  <div style="font-weight: 800; font-size: 20px;">Zero Wait Times</div>
+                  <div style="font-size: 15px; color: var(--text-muted);">Instant response for 720+ peers</div>
+                </div>
+              </div>
+
+              <div class="s7-metric-tile" id="s7-tile-2">
+                <div class="s1-icon-box" style="background: var(--accent-blue-soft); color: var(--accent-blue);">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div>
+                  <div style="font-weight: 800; font-size: 20px;">KV Edge Cache</div>
+                  <div style="font-size: 15px; color: var(--text-muted);">Global edge replication</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCENE 8: 100% OFFLINE PWA (15.80s - 18.20s) -->
+        <div class="scene" id="scene-8">
+          <div class="headline-container">
+            <div class="eyebrow" style="color: var(--accent-purple);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/></svg>
+              Offline Architecture
+            </div>
+            <h1 class="main-title">
+              <span class="word-mask"><span class="word">Zero</span></span>
+              <span class="word-mask"><span class="word">signal?</span></span>
+              <span class="word-mask"><span class="word" style="color: var(--accent-purple);">Zero problem.</span></span>
+            </h1>
+          </div>
+
+          <div class="s8-offline-hero">
+            <div class="s8-toggle-card" id="s8-card">
+              <div>
+                <div style="font-size: 26px; font-weight: 800;">Airplane Mode Active</div>
+                <div style="font-size: 17px; color: var(--text-secondary); margin-top: 6px;">ServiceWorker Offline Cache</div>
+              </div>
+              <div class="s8-ios-switch" id="s8-switch" style="position: relative;">
+                <div class="s8-switch-knob" id="s8-knob"></div>
+                <!-- Human Touch Indicator on Switch -->
+                <div id="s8-touch-tap" class="human-touch-indicator" style="top: 50%; left: 18px; margin-top: -24px; margin-left: -24px;">
+                  <div class="human-touch-core"></div>
+                  <div class="human-touch-ring" id="s8-haptic-ring"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="studio-card" style="padding: 40px 50px; width: 460px;" id="s8-sub-card">
+              <div class="specular-sheen" id="s8-sheen"></div>
+              <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span style="font-weight: 800; font-size: 22px;">100% Retained</span>
+              </div>
+              <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.6;" data-layout-ignore="true">
+                Full timetable, room directory & substitute alerts load in 0.00s without internet.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCENE 9: 12-GRADE UNIFIED MATRIX (18.20s - 20.60s) -->
+        <div class="scene" id="scene-9">
+          <div class="headline-container">
+            <div class="eyebrow" style="color: var(--accent-blue);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              Campus Synchronicity
+            </div>
+            <h1 class="main-title">
+              <span class="word-mask"><span class="word">One</span></span>
+              <span class="word-mask"><span class="word">platform.</span></span>
+              <span class="word-mask"><span class="word highlight-blue">All 12 grades.</span></span>
+            </h1>
+          </div>
+
+          <!-- Apple Human Interface Segmented Control -->
+          <div class="s9-segmented-control" id="s9-segments">
+            <div class="s9-segment-pill" id="s9-pill"></div>
+            <div class="s9-segment-tab" id="s9-tab-1">Primary (1–5)</div>
+            <div class="s9-segment-tab" id="s9-tab-2">Middle (6–8)</div>
+            <div class="s9-segment-tab active" id="s9-tab-3">High School (9–12)</div>
+          </div>
+
+          <div class="s9-grade-grid" id="s9-grid">
+            <div class="s9-grade-tile">
+              <div style="font-weight: 800; font-size: 22px;">Grade 1–5</div>
+              <div style="font-size: 15px; color: var(--text-muted);">Primary Division</div>
+            </div>
+            <div class="s9-grade-tile">
+              <div style="font-weight: 800; font-size: 22px;">Grade 6–8</div>
+              <div style="font-size: 15px; color: var(--text-muted);">Middle School</div>
+            </div>
+            <div class="s9-grade-tile active-grade" id="s9-hero-tile">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 800; font-size: 22px; color: var(--accent-orange);">Grade 10</span>
+                <span style="font-size: 11px; font-weight: 800; background: var(--accent-orange-soft); color: var(--accent-orange); padding: 4px 8px; border-radius: 6px;" data-layout-ignore="true">ACTIVE</span>
+              </div>
+              <div style="font-size: 15px; color: var(--text-secondary);">High School Core</div>
+            </div>
+            <div class="s9-grade-tile">
+              <div style="font-weight: 800; font-size: 22px;">Grade 11–12</div>
+              <div style="font-size: 15px; color: var(--text-muted);">Senior Diploma</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCENE 10: EVENING NOTIFICATION DISPATCH (20.60s - 23.00s) -->
+        <div class="scene" id="scene-10">
+          <div class="headline-container">
+            <div class="eyebrow" style="color: var(--accent-orange);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Evening Briefing // 19:30 PM
+            </div>
+            <h1 class="main-title">
+              <span class="word-mask"><span class="word">Never</span></span>
+              <span class="word-mask"><span class="word">wake</span></span>
+              <span class="word-mask"><span class="word">up</span></span>
+              <span class="word-mask"><span class="word highlight-orange">guessing your day.</span></span>
+            </h1>
+          </div>
+
+          <div class="s10-notification-card" id="s10-card">
+            <div class="specular-sheen" id="s10-sheen"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border-subtle); padding-bottom: 18px;">
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <div class="brand-logo-icon" style="width: 42px; height: 42px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; padding: 4px;">
+                  <img src="assets/images/tis-official-logo.png" style="width: 100%; height: 100%; object-fit: contain;" alt="TIS Logo" />
+                </div>
+                <span style="font-weight: 800; font-size: 19px;">Tomorrow's Timetable Ready</span>
+              </div>
+              <span style="font-size: 14px; font-weight: 700; color: var(--text-muted);">Just now</span>
+            </div>
+
+            <div class="s10-check-row">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Uniform: Physical Education Day</span>
+            </div>
+            <div class="s10-check-row">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Prepare: Biology Lab Notebook (Room 504)</span>
+            </div>
+            <div class="s10-check-row">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>First Bell: 07:45 AM Sharp</span>
+            </div>
+
+            <!-- Apple Human Interface Action Button -->
+            <div id="s10-action-btn" style="margin-top: 22px; padding: 14px 24px; background: #f8fafc; border: 1.5px solid rgba(0,0,0,0.06); border-radius: 16px; display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 16px; color: var(--accent-orange); box-shadow: 0 4px 12px rgba(0,0,0,0.02); transform-origin: center center;">
+              <span>View Full Schedule</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCENE 11: THE VISION QUOTE (23.00s - 25.50s) -->
+        <div class="scene" id="scene-11">
+          <div class="s11-quote-wrapper" id="s11-quote">
+            <div class="s11-quote-text">
+              "Give students wonderful tools.<br />
+              <span class="highlight-orange">And they'll do wonderful things."</span>
+            </div>
+            <div style="font-size: 22px; font-weight: 700; color: var(--text-muted); margin-top: 32px; display: flex; align-items: center; justify-content: center; gap: 14px;">
+              <img src="assets/images/tis-official-logo.png" style="width: 36px; height: 36px; object-fit: contain;" alt="TIS Logo" />
+              <span>Designed for The International School</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCENE 12: MONUMENTAL PAYOFF (25.50s - 30.00s) -->
+        <div class="scene" id="scene-12">
+          <div class="s12-hero-lockup" id="s12-lockup">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 18px;">
+              <div class="s12-tis-emblem" id="s12-emblem">
+                <div class="specular-sheen" id="s12-emblem-sheen"></div>
+                <img src="assets/images/tis-official-logo.png" style="width: 105px; height: 105px; object-fit: contain; filter: drop-shadow(0 14px 28px rgba(234, 88, 12, 0.3)); will-change: transform;" alt="TIS Official Logo" />
+              </div>
+              <div class="eyebrow" style="margin-bottom: 0;">The International School // Official System</div>
+              <h1 class="s12-title">
+                <span class="word-mask"><span class="word">STOP GUESSING.</span></span><br />
+                <span class="word-mask"><span class="word highlight-orange">START KNOWING.</span></span>
+              </h1>
+            </div>
+
+            <div class="s12-url-capsule" id="s12-capsule">
+              <div class="specular-sheen" id="s12-sheen"></div>
+              <span>tis-schedule.iluvsunset.workers.dev</span>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent-orange)" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </div>
+
+            <div class="s12-feature-trio">
+              <div class="s12-trio-tile">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2.5"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/></svg>
+                100% Offline
+              </div>
+              <div class="s12-trio-tile">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Live Sub Sync
+              </div>
+              <div class="s12-trio-tile">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-orange)" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                142ms Edge
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- ======================================================================
+         GSAP 3 CINEMATIC CAMERA & CHOREOGRAPHY ENGINE
+         ====================================================================== -->
+    <script>
+      gsap.registerPlugin(TextPlugin);
+      const tl = gsap.timeline({ paused: true });
+
+      // Register timeline for HyperFrames deterministic rendering
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+
+      // ========================================================================
+      // 1. CONTINUOUS 3D CAMERA ORCHESTRATION (#camera-stage)
+      // High-velocity Apple-style kinetic camera trajectory across 30 seconds
+      // ========================================================================
+      tl.set("#camera-stage", { transformOrigin: "50% 50% -200px" }, 0)
+      tl.set("#s7-needle", { transformOrigin: "0 0" }, 0)
+      tl.set("#s7-gauge-bar", { strokeDashoffset: 267.04 }, 0)
+        .fromTo("#camera-stage", 
+          { scale: 0.92, rotateX: 5, rotateY: -4, z: -80 }, 
+          { scale: 1.04, rotateX: -2, rotateY: 3, z: 40, duration: 2.2, ease: "power1.out" }, 0)
+        .to("#camera-stage", 
+          { scale: 0.96, rotateX: 4, rotateY: -5, z: -60, duration: 2.1, ease: "power2.inOut" }, 2.2)
+        .to("#camera-stage", 
+          { scale: 1.06, rotateX: -4, rotateY: 4, z: 80, duration: 2.2, ease: "power2.inOut" }, 4.3)
+        .to("#camera-stage", 
+          { scale: 1.01, rotateX: 3, rotateY: -3, z: 20, duration: 2.2, ease: "power2.inOut" }, 6.5)
+        .to("#camera-stage", 
+          { scale: 1.05, rotateX: -3, rotateY: 3, z: 60, duration: 2.3, ease: "power2.inOut" }, 8.7)
+        .to("#camera-stage", 
+          { scale: 0.98, rotateX: 5, rotateY: -4, z: -40, duration: 2.5, ease: "power2.inOut" }, 11.0)
+        .to("#camera-stage", 
+          { scale: 1.07, rotateX: -5, rotateY: 3, z: 90, duration: 2.3, ease: "power2.inOut" }, 13.5)
+        .to("#camera-stage", 
+          { scale: 1.02, rotateX: 4, rotateY: -4, z: 30, duration: 2.4, ease: "power2.inOut" }, 15.8)
+        .to("#camera-stage", 
+          { scale: 0.99, rotateX: -3, rotateY: 3, z: 10, duration: 2.4, ease: "power2.inOut" }, 18.2)
+        .to("#camera-stage", 
+          { scale: 1.0, rotateX: 0, rotateY: 0, z: 0, duration: 2.4, ease: "power2.inOut" }, 20.6)
+        .to("#camera-stage", 
+          { scale: 1.08, rotateX: 0, rotateY: 0, z: 100, duration: 2.5, ease: "power1.inOut" }, 23.0)
+        .to("#camera-stage", 
+          { scale: 1.15, rotateX: -3, rotateY: 1, z: 160, duration: 4.5, ease: "power2.out" }, 25.5);
+
+      // ========================================================================
+      // 2. DEEP IMMERSIVE ENVIRONMENT LIGHTING & VOLUMETRIC SUNBEAM
+      // ========================================================================
+      tl.fromTo("#studio-beam", 
+        { rotate: -10, scale: 0.92, opacity: 0.5 }, 
+        { rotate: 10, scale: 1.18, opacity: 0.88, duration: 30, ease: "none" }, 0)
+        .fromTo("#glow-orange-el", 
+        { x: -60, y: -40, scale: 0.88 }, 
+        { x: 90, y: 60, scale: 1.18, duration: 30, ease: "none" }, 0)
+        .fromTo("#glow-blue-el", 
+        { x: 50, y: 40, scale: 1.12 }, 
+        { x: -80, y: -60, scale: 0.92, duration: 30, ease: "none" }, 0)
+        .fromTo("#glow-mint-el", 
+        { x: -30, y: 0, opacity: 0.16 }, 
+        { x: 60, y: -50, opacity: 0.36, duration: 30, ease: "none" }, 0);
+
+      // ========================================================================
+      // 3. MULTI-PLANE 3D BOKEH DUST DRIFT (CONTINUOUS GENTLE FLOATING ACROSS 30S)
+      // ========================================================================
+      tl.fromTo(".ambient-particle:nth-child(1)", { y: 0, x: 0 }, { y: -100, x: 60, duration: 30, ease: "none" }, 0)
+        .fromTo(".ambient-particle:nth-child(2)", { y: 0, x: 0 }, { y: 80, x: -70, duration: 30, ease: "none" }, 0)
+        .fromTo(".ambient-particle:nth-child(3)", { y: 0, x: 0 }, { y: -70, x: -60, duration: 30, ease: "none" }, 0)
+        .fromTo(".ambient-particle:nth-child(4)", { y: 0, x: 0 }, { y: 90, x: 50, duration: 30, ease: "none" }, 0)
+        .fromTo(".ambient-particle:nth-child(5)", { y: 0, x: 0 }, { y: -80, x: 70, duration: 30, ease: "none" }, 0)
+        .fromTo(".ambient-particle:nth-child(6)", { y: 0, x: 0 }, { y: 70, x: 60, duration: 30, ease: "none" }, 0)
+        .fromTo(".ambient-particle:nth-child(7)", { y: 0, x: 0 }, { y: -90, x: -50, duration: 30, ease: "none" }, 0)
+        .fromTo(".ambient-particle:nth-child(8)", { y: 0, x: 0 }, { y: 100, x: -40, duration: 30, ease: "none" }, 0);
+
+      // ========================================================================
+      // 4. CAMERA RECOIL IMPULSE SHAKES (#camera-recoil)
+      // High-energy physical recoil on every scene impact & transition
+      // ========================================================================
+      tl.fromTo("#camera-recoil", { y: 0, x: 0 }, { y: 9, x: -4, duration: 0.05, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 0.35)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: -15, x: 6, duration: 0.06, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 2.18)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: 18, x: -8, duration: 0.06, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 2.70)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: -14, x: -6, duration: 0.06, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 4.30)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: 14, x: 6, duration: 0.06, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 6.52)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: 16, x: -7, duration: 0.06, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 8.10)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: -14, x: 8, duration: 0.05, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 8.75)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: 10, x: -5, duration: 0.05, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 9.90)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: 15, x: 6, duration: 0.06, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 11.02)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: -16, x: -8, duration: 0.06, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 13.50)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: 12, x: 7, duration: 0.05, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 13.68)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: 14, x: -6, duration: 0.06, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 15.80)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: 10, x: 6, duration: 0.05, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 16.65)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: -15, x: 7, duration: 0.06, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 18.25)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: 15, x: -6, duration: 0.06, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 20.62)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: -14, x: 7, duration: 0.06, repeat: 1, yoyo: true, ease: "power1.inOut", immediateRender: false }, 23.00)
+        .fromTo("#camera-recoil", { y: 0, x: 0 }, { y: 24, x: 0, duration: 0.08, repeat: 1, yoyo: true, ease: "power2.out", immediateRender: false }, 25.50);
+
+      // ========================================================================
+      // SCENE 1: THE MORNING BLACKOUT (0.00s - 2.20s)
+      // Forward Warp Shatter Exit
+      // ========================================================================
+      tl.set("#scene-1", { autoAlpha: 1, zIndex: 10 }, 0)
+        .from("#scene-1 .word", {
+          yPercent: 120,
+          opacity: 0,
+          stagger: 0.04,
+          duration: 0.55,
+          ease: "expo.out"
+        }, 0.05)
+        .from("#s1-card", {
+          scale: 0.78,
+          opacity: 0,
+          y: 80,
+          rotateX: 22,
+          duration: 0.7,
+          ease: "back.out(1.7)"
+        }, 0.15)
+        .to("#s1-sheen", { x: "250%", duration: 0.85, ease: "power2.inOut" }, 0.4)
+        .fromTo("#s1-card", 
+          { scale: 1 }, 
+          { scale: 1.04, duration: 0.1, yoyo: true, repeat: 1, ease: "power2.out", immediateRender: false }, 0.35)
+        .to("#s1-bell", {
+          rotation: 30,
+          duration: 0.045,
+          repeat: 13,
+          yoyo: true,
+          ease: "power1.inOut"
+        }, 0.35)
+        .from("#s1-flank-1", { x: -90, opacity: 0, scale: 0.8, duration: 0.5, ease: "back.out(1.5)" }, 0.45)
+        .from("#s1-flank-2", { x: 90, opacity: 0, scale: 0.8, duration: 0.5, ease: "back.out(1.5)" }, 0.55)
+        .fromTo("#s1-flank-1", { y: 0, rotateY: 0 }, { y: -10, rotateY: 4, duration: 0.6, repeat: 1, yoyo: true, ease: "sine.inOut", immediateRender: false }, 0.95)
+        .fromTo("#s1-flank-2", { y: 0, rotateY: 0 }, { y: 10, rotateY: -4, duration: 0.6, repeat: 1, yoyo: true, ease: "sine.inOut", immediateRender: false }, 1.0)
+        .to("#s1-clock-text", {
+          text: "07:40:02",
+          duration: 1.2,
+          ease: "none"
+        }, 0.8)
+        // Noticeable Transition 1: Card forward shatter into lens, flanks fling outward
+        .to("#s1-card", {
+          scale: 1.48,
+          z: 420,
+          rotateX: -18,
+          opacity: 0,
+          duration: 0.32,
+          ease: "power2.in"
+        }, 1.92)
+        .to("#s1-flank-1", { x: -600, rotateZ: -28, opacity: 0, duration: 0.3, ease: "power2.in" }, 1.92)
+        .to("#s1-flank-2", { x: 600, rotateZ: 28, opacity: 0, duration: 0.3, ease: "power2.in" }, 1.92)
+        .to("#scene-1 .headline-container", { y: -80, opacity: 0, duration: 0.25, ease: "power2.in" }, 1.95)
+        .set("#scene-1", { autoAlpha: 0 }, 2.24);
+
+      // ========================================================================
+      // SCENE 2: OBSOLETE PAPER VS. APP (2.20s - 4.30s)
+      // Heavy Binder Slam & Lateral Whip-Sweep Ejection
+      // ========================================================================
+      tl.set("#scene-2", { autoAlpha: 1, zIndex: 11 }, 2.15)
+        .from("#scene-2 .word", {
+          yPercent: 120,
+          opacity: 0,
+          stagger: 0.04,
+          duration: 0.45,
+          ease: "expo.out"
+        }, 2.18)
+        .fromTo("#s2-paper", {
+          y: -440,
+          x: -60,
+          rotateX: 45,
+          rotateZ: -25,
+          scale: 1.3,
+          opacity: 0
+        }, {
+          y: 0,
+          x: 0,
+          rotateX: 0,
+          rotateZ: -14,
+          scale: 1,
+          opacity: 1,
+          duration: 0.48,
+          ease: "back.out(2.2)"
+        }, 2.18)
+        .fromTo("#s2-phone", {
+          x: 480,
+          opacity: 0,
+          rotateY: -60,
+          rotateX: 20,
+          scale: 0.7
+        }, {
+          x: 0,
+          opacity: 1,
+          rotateY: -22,
+          rotateX: 10,
+          scale: 1,
+          duration: 0.52,
+          ease: "back.out(1.8)"
+        }, 2.25)
+        .fromTo("#s2-stamp", 
+          { scale: 4.2, opacity: 0, rotate: -35 }, 
+          { scale: 1, opacity: 1, rotate: -18, duration: 0.22, ease: "back.out(3.5)", immediateRender: false }, 2.70)
+        .fromTo("#s2-paper", 
+          { y: 0, rotate: -14, scaleX: 1, scaleY: 1 }, 
+          { y: 22, rotate: -8, scaleX: 1.08, scaleY: 0.92, duration: 0.08, repeat: 1, yoyo: true, ease: "power2.out", immediateRender: false }, 2.70)
+        // Apple Human Interface Touch Interaction on iPhone Timetable
+        .fromTo("#s2-touch-indicator",
+          { opacity: 0, scale: 0.4, x: 50, y: 50 },
+          { opacity: 1, scale: 1, x: 0, y: 0, duration: 0.28, ease: "back.out(2.0)" }, 2.82)
+        .to("#s2-touch-indicator", { scale: 0.82, duration: 0.09, ease: "power2.in" }, 3.10)
+        .fromTo("#s2-touch-ring",
+          { scale: 0.5, opacity: 0.9 },
+          { scale: 2.2, opacity: 0, duration: 0.35, ease: "power2.out" }, 3.12)
+        .fromTo("#s2-live-card",
+          { scale: 1 },
+          { scale: 0.96, duration: 0.08, ease: "power2.in", immediateRender: false }, 3.12)
+        .to("#s2-live-card", { scale: 1.02, duration: 0.16, ease: "back.out(2.5)" }, 3.20)
+        .to("#s2-card-expand", { height: 28, opacity: 1, duration: 0.22, ease: "power2.out" }, 3.20)
+        .to("#s2-touch-indicator", { opacity: 0, scale: 1.3, duration: 0.2, ease: "power2.out" }, 3.32)
+        .to("#s2-paper", {
+          opacity: 0.15,
+          filter: "grayscale(100%) blur(4px)",
+          scale: 0.84,
+          rotate: -6,
+          duration: 0.55,
+          ease: "power2.out"
+        }, 3.3)
+        .to("#s2-phone", {
+          rotateY: -6,
+          rotateX: 3,
+          scale: 1.1,
+          z: 70,
+          duration: 0.75,
+          ease: "power1.inOut"
+        }, 3.3)
+        // Noticeable Transition 2: Whip-Sweep Ejection
+        .to("#s2-paper", {
+          x: -880,
+          rotateY: -65,
+          rotateZ: -32,
+          opacity: 0,
+          duration: 0.35,
+          ease: "power3.in"
+        }, 3.98)
+        .to("#s2-phone", {
+          x: 880,
+          rotateY: 65,
+          rotateZ: 32,
+          opacity: 0,
+          duration: 0.35,
+          ease: "power3.in"
+        }, 4.0)
+        .to("#scene-2 .headline-container", {
+          scale: 0.7,
+          opacity: 0,
+          duration: 0.28,
+          ease: "power2.in"
+        }, 4.02)
+        .set("#scene-2", { autoAlpha: 0 }, 4.35);
+
+      // ========================================================================
+      // SCENE 3: THE ACADEMIC OPERATING SYSTEM & TIS CREST (4.30s - 6.50s)
+      // Orbital Core Spatial Explosion & Hyper-Drive Implosion
+      // ========================================================================
+      tl.set("#scene-3", { autoAlpha: 1, zIndex: 12 }, 4.25)
+        .from("#scene-3 .word", {
+          yPercent: 120,
+          opacity: 0,
+          stagger: 0.04,
+          duration: 0.45,
+          ease: "expo.out"
+        }, 4.28)
+        .fromTo("#s3-crest", {
+          scale: 0,
+          opacity: 0,
+          rotationY: 0,
+          rotationZ: -35,
+          z: -400
+        }, {
+          scale: 1,
+          opacity: 1,
+          rotationY: 0,
+          rotationZ: 0,
+          z: 0,
+          duration: 0.75,
+          ease: "back.out(2.2)"
+        }, 4.30)
+        .fromTo("#s3-orbit-ring", 
+          { scale: 0, opacity: 0, rotate: 180 }, 
+          { scale: 1, opacity: 1, rotate: -360, duration: 2.0, ease: "power1.inOut", immediateRender: false }, 4.30)
+        .fromTo("#s3-tile-1", { x: -450, y: -280, scale: 0, opacity: 0 }, { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.8)" }, 4.55)
+        .fromTo("#s3-tile-2", { x: 450, y: -280, scale: 0, opacity: 0 }, { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.8)" }, 4.62)
+        .fromTo("#s3-tile-3", { x: -450, y: 280, scale: 0, opacity: 0 }, { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.8)" }, 4.69)
+        .fromTo("#s3-tile-4", { x: 450, y: 280, scale: 0, opacity: 0 }, { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.8)" }, 4.76)
+        // 3D Apple Jewel Tilt & Specular Sheen (Strictly Forward Facing - Zero Backwards Mirrored Flips)
+        .fromTo("#s3-crest", 
+          { rotateY: 0, rotateX: 0 }, 
+          { rotateY: 18, rotateX: -8, duration: 0.8, repeat: 1, yoyo: true, ease: "sine.inOut", immediateRender: false }, 4.45)
+        .fromTo("#s3-crest-sheen",
+          { x: "-150%" },
+          { x: "200%", duration: 0.85, ease: "power2.inOut", immediateRender: false }, 4.55)
+        .fromTo("#s3-tile-1, #s3-tile-3", 
+          { y: 0, x: 0 }, 
+          { y: -12, x: 4, duration: 0.5, repeat: 1, yoyo: true, ease: "sine.inOut", immediateRender: false }, 5.4)
+        .fromTo("#s3-tile-2, #s3-tile-4", 
+          { y: 0, x: 0 }, 
+          { y: 12, x: -4, duration: 0.5, repeat: 1, yoyo: true, ease: "sine.inOut", immediateRender: false }, 5.45)
+        // Noticeable Transition 3: Hyper-Drive Implosion & Forward Push-Through
+        .to("#s3-tile-1, #s3-tile-2, #s3-tile-3, #s3-tile-4", {
+          x: 0,
+          y: 0,
+          scale: 0,
+          opacity: 0,
+          duration: 0.25,
+          ease: "power2.in"
+        }, 6.18)
+        .to("#s3-orbit-ring", { scale: 0.2, opacity: 0, duration: 0.22, ease: "power2.in" }, 6.20)
+        .to("#s3-crest", {
+          scale: 3.5,
+          z: 600,
+          opacity: 0,
+          duration: 0.28,
+          ease: "expo.in"
+        }, 6.22)
+        .to("#scene-3 .headline-container", {
+          scale: 1.4,
+          z: 300,
+          opacity: 0,
+          duration: 0.26,
+          ease: "power2.in"
+        }, 6.24)
+        .set("#scene-3", { autoAlpha: 0 }, 6.55);
+
+      // ========================================================================
+      // SCENE 4: PERIOD 1 BIOLOGY & APPLE STATUS MORPH (6.50s - 8.70s)
+      // Perspective Drop & Rocket Launch Ejection
+      // ========================================================================
+      tl.set("#scene-4", { autoAlpha: 1, zIndex: 13 }, 6.45)
+        .from("#scene-4 .word", {
+          yPercent: 120,
+          opacity: 0,
+          stagger: 0.04,
+          duration: 0.45,
+          ease: "expo.out"
+        }, 6.48)
+        .fromTo("#s4-card", {
+          y: -220,
+          scale: 0.65,
+          rotateX: 25,
+          opacity: 0
+        }, {
+          y: 0,
+          scale: 1.0,
+          rotateX: 0,
+          opacity: 1,
+          duration: 0.58,
+          ease: "back.out(2.0)"
+        }, 6.52)
+        .to("#s4-sheen", { x: "250%", duration: 0.8, ease: "power2.inOut" }, 6.80)
+        .fromTo("#s4-fill", 
+          { scaleX: 0 }, 
+          { scaleX: 1, duration: 1.25, ease: "power2.inOut", immediateRender: false }, 6.85)
+        .to("#s4-percent-label", {
+          innerText: "100%",
+          snap: { innerText: 1 },
+          duration: 1.25,
+          ease: "power2.inOut"
+        }, 6.85)
+        .fromTo("#s4-status-badge",
+          { scaleX: 0.82, scaleY: 1.22 },
+          { scaleX: 1.18, scaleY: 0.88, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.out", immediateRender: false }, 8.1)
+        .to("#s4-status-badge", {
+          backgroundColor: "#ecfdf5",
+          color: "#047857",
+          text: "COMPLETED",
+          duration: 0.2
+        }, 8.1)
+        .fromTo("#s4-card", 
+          { scaleX: 1, scaleY: 1 }, 
+          { scaleX: 1.05, scaleY: 0.96, duration: 0.12, repeat: 1, yoyo: true, ease: "power2.out", immediateRender: false }, 8.1)
+        .call(() => {
+          const box = document.getElementById("s4-confetti-box");
+          if (box && box.children.length === 0) {
+            const colors = ["#ff5500", "#2563eb", "#10b981", "#7c3aed", "#f59e0b", "#ec4899"];
+            for (let i = 0; i < 72; i++) {
+              const flake = document.createElement("div");
+              flake.className = "s4-confetti-flake";
+              flake.style.background = colors[i % colors.length];
+              flake.style.left = "960px";
+              flake.style.top = "570px";
+              box.appendChild(flake);
+              const angle = (i / 72) * Math.PI * 2;
+              const dist = 270 + ((i * 29) % 320);
+              gsap.to(flake, {
+                x: Math.cos(angle) * dist,
+                y: Math.sin(angle) * dist - 130,
+                rotationX: ((i * 45) % 720),
+                rotationY: ((i * 65) % 720),
+                rotationZ: ((i * 35) % 720),
+                opacity: 0,
+                duration: 1.15,
+                ease: "power3.out"
+              });
+            }
+          }
+        }, null, 8.1)
+        // Noticeable Transition 4: Rocket Launch Ejection Upwards
+        .to("#s4-card", {
+          y: -780,
+          scale: 0.82,
+          rotateZ: 7,
+          opacity: 0,
+          duration: 0.35,
+          ease: "power3.in"
+        }, 8.42)
+        .to("#scene-4 .headline-container", {
+          y: -80,
+          opacity: 0,
+          duration: 0.25,
+          ease: "power2.in"
+        }, 8.45)
+        .set("#scene-4", { autoAlpha: 0 }, 8.78);
+
+      // ========================================================================
+      // SCENE 5: EMERGENCY SUBSTITUTE RESOLUTION & CHAT (8.70s - 11.00s)
+      // Dual Lateral Slam & 3D Split-Door Ejection
+      // ========================================================================
+      tl.set("#scene-5", { autoAlpha: 1, zIndex: 14 }, 8.65)
+        .from("#scene-5 .word", {
+          yPercent: 120,
+          opacity: 0,
+          stagger: 0.04,
+          duration: 0.45,
+          ease: "expo.out"
+        }, 8.68)
+        .fromTo("#s5-chat-box", {
+          x: -720,
+          rotateY: -35,
+          opacity: 0
+        }, {
+          x: 0,
+          rotateY: 0,
+          opacity: 1,
+          duration: 0.52,
+          ease: "back.out(2.0)"
+        }, 8.70)
+        .fromTo("#s5-card", {
+          x: 720,
+          rotateY: 35,
+          opacity: 0
+        }, {
+          x: 0,
+          rotateY: 0,
+          opacity: 1,
+          duration: 0.52,
+          ease: "back.out(2.0)"
+        }, 8.75)
+        .from("#s5-msg-1", {
+          scale: 0.82,
+          y: 24,
+          opacity: 0,
+          duration: 0.35,
+          ease: "back.out(1.6)"
+        }, 8.95)
+        .from("#s5-typing", {
+          scale: 0.65,
+          opacity: 0,
+          duration: 0.2,
+          ease: "back.out(1.5)"
+        }, 9.25)
+        .fromTo(".dot-1", { y: 0, opacity: 0.35 }, { y: -6, opacity: 1, duration: 0.16, repeat: 2, yoyo: true, immediateRender: false }, 9.3)
+        .fromTo(".dot-2", { y: 0, opacity: 0.35 }, { y: -6, opacity: 1, duration: 0.16, repeat: 2, yoyo: true, immediateRender: false }, 9.38)
+        .fromTo(".dot-3", { y: 0, opacity: 0.35 }, { y: -6, opacity: 1, duration: 0.16, repeat: 2, yoyo: true, immediateRender: false }, 9.46)
+        .to("#s5-typing", { scale: 0.75, opacity: 0, duration: 0.15 }, 9.75)
+        .from("#s5-msg-2", {
+          scale: 0.82,
+          y: 24,
+          opacity: 0,
+          duration: 0.35,
+          ease: "back.out(1.7)"
+        }, 9.82)
+        .from("#s5-receipt", { opacity: 0, y: 10, duration: 0.25 }, 10.0)
+        .to("#s5-sheen", { x: "250%", duration: 0.8, ease: "power2.inOut" }, 9.9)
+        .fromTo("#s5-card", 
+          { scale: 1 }, 
+          { scale: 1.05, duration: 0.12, repeat: 1, yoyo: true, ease: "power2.out", immediateRender: false }, 9.9)
+        .to("#s5-swap-arrow", { scale: 1.5, rotate: 360, duration: 0.35, ease: "back.out(2)" }, 9.95)
+        .from("#s5-new-teacher", {
+          x: 50,
+          opacity: 0,
+          scale: 0.88,
+          duration: 0.45,
+          ease: "back.out(1.6)"
+        }, 10.05)
+        // Noticeable Transition 5: 3D Split Door Swing Ejection
+        .to("#s5-chat-box", {
+          x: -620,
+          rotateY: -75,
+          opacity: 0,
+          duration: 0.35,
+          ease: "power2.in"
+        }, 10.72)
+        .to("#s5-card", {
+          x: 620,
+          rotateY: 75,
+          opacity: 0,
+          duration: 0.35,
+          ease: "power2.in"
+        }, 10.72)
+        .to("#scene-5 .headline-container", {
+          scale: 0.8,
+          opacity: 0,
+          duration: 0.25,
+          ease: "power2.in"
+        }, 10.75)
+        .set("#scene-5", { autoAlpha: 0 }, 11.08);
+
+      // ========================================================================
+      // SCENE 6: GOOGLE SHEETS LIVE SYNC (11.00s - 13.50s)
+      // Isometric Slam & Hyper-Scroll Acceleration
+      // ========================================================================
+      tl.set("#scene-6", { autoAlpha: 1, zIndex: 15 }, 10.95)
+        .from("#scene-6 .word", {
+          yPercent: 120,
+          opacity: 0,
+          stagger: 0.04,
+          duration: 0.45,
+          ease: "expo.out"
+        }, 11.0)
+        .fromTo("#s6-window", {
+          y: -340,
+          rotateX: 30,
+          scale: 0.78,
+          opacity: 0
+        }, {
+          y: 0,
+          rotateX: 0,
+          scale: 1,
+          opacity: 1,
+          duration: 0.55,
+          ease: "back.out(2.0)"
+        }, 11.02)
+        .fromTo("#s6-laser", 
+          { y: 0, opacity: 0 }, 
+          { y: 260, opacity: 1, duration: 1.1, ease: "power2.inOut", immediateRender: false }, 11.35)
+        .to("#s6-laser", { opacity: 0, duration: 0.2 }, 12.45)
+        // Apple macOS Vector Cursor Direct Manipulation
+        .fromTo("#s6-cursor",
+          { x: 860, y: 380, opacity: 0, scale: 1 },
+          { x: 440, y: 198, opacity: 1, duration: 0.45, ease: "power2.out" }, 11.45)
+        // Click on Teacher cell
+        .to("#s6-cursor", { scale: 0.82, duration: 0.08, ease: "power2.in" }, 11.90)
+        .fromTo("#s6-click-ring",
+          { scale: 0.3, opacity: 0.95 },
+          { scale: 2.2, opacity: 0, duration: 0.32, ease: "power2.out" }, 11.92)
+        .to("#s6-cursor", { scale: 1, duration: 0.12, ease: "power2.out" }, 11.98)
+        .fromTo("#s6-cell-selection",
+          { opacity: 0, scale: 0.92 },
+          { opacity: 1, scale: 1, duration: 0.15, ease: "back.out(2.0)" }, 11.92)
+        .fromTo("#s6-target-row", 
+          { backgroundColor: "#ffffff" }, 
+          { backgroundColor: "#dcfce7", duration: 0.3, ease: "power1.inOut" }, 11.95)
+        .to("#s6-teacher-name", {
+          text: "Ms. Hanh (Sub)",
+          duration: 0.35,
+          ease: "none"
+        }, 12.0)
+        .fromTo("#s6-status-cell",
+          { scale: 0.8, color: "#10b981" },
+          { scale: 1.15, duration: 0.15, yoyo: true, repeat: 1, ease: "back.out(2.5)" }, 12.15)
+        // Cursor moves up to "Sync Now" button and clicks
+        .to("#s6-cursor", { x: 920, y: 36, duration: 0.35, ease: "power2.inOut" }, 12.35)
+        .to("#s6-cursor", { scale: 0.82, duration: 0.08, ease: "power2.in" }, 12.72)
+        .fromTo("#s6-sync-btn",
+          { scale: 1 },
+          { scale: 0.94, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.out" }, 12.72)
+        .to("#s6-cursor", { opacity: 0, scale: 1.2, duration: 0.2, ease: "power2.in" }, 12.85)
+        // Noticeable Transition 6: Hyper-Scroll Downward Acceleration
+        .to("#s6-window", {
+          y: 680,
+          scaleY: 1.3,
+          opacity: 0,
+          duration: 0.32,
+          ease: "power3.in"
+        }, 13.22)
+        .to("#scene-6 .headline-container", {
+          y: -80,
+          opacity: 0,
+          duration: 0.25,
+          ease: "power2.in"
+        }, 13.25)
+        .set("#scene-6", { autoAlpha: 0 }, 13.55);
+
+      // ========================================================================
+      // SCENE 7: 142MS EDGE SPEEDOMETER (13.50s - 15.80s)
+      // 100% MATHEMATICAL LOCKSTEP GAUGE & Centrifugal Ejection
+      // ========================================================================
+      tl.set("#scene-7", { autoAlpha: 1, zIndex: 16 }, 13.45)
+        .from("#scene-7 .word", {
+          yPercent: 120,
+          opacity: 0,
+          stagger: 0.04,
+          duration: 0.45,
+          ease: "expo.out"
+        }, 13.48)
+        .fromTo("#s7-meter", {
+          z: -500,
+          scale: 0.45,
+          rotateZ: -16,
+          opacity: 0
+        }, {
+          z: 0,
+          scale: 1,
+          rotateZ: 0,
+          opacity: 1,
+          duration: 0.58,
+          ease: "back.out(2.4)"
+        }, 13.50)
+        .to("#s7-sheen", { x: "250%", duration: 0.8, ease: "power2.inOut" }, 13.75)
+        // Speedometer: Needle & Colored Gradient Arc rev in 100% MATHEMATICAL LOCKSTEP
+        // Starting at -80° (bar at 245), revving to +52° (142° arc = 142ms, bar at 56.4)
+        .fromTo("#s7-needle", 
+          { rotate: -80 }, 
+          { rotate: 52, duration: 0.85, ease: "back.out(2.4)", immediateRender: false }, 13.68)
+        .fromTo("#s7-gauge-bar", 
+          { strokeDashoffset: 245 }, 
+          { strokeDashoffset: 56.4, duration: 0.85, ease: "back.out(2.4)", immediateRender: false }, 13.68)
+        // Settling micro-vibration on both needle and arc tip together
+        .to("#s7-needle", 
+          { rotate: 49, duration: 0.08, yoyo: true, repeat: 3, ease: "sine.inOut" }, 14.55)
+        .to("#s7-gauge-bar", 
+          { strokeDashoffset: 60.8, duration: 0.08, yoyo: true, repeat: 3, ease: "sine.inOut" }, 14.55)
+        .fromTo("#s7-meter", 
+          { scale: 1 }, 
+          { scale: 1.05, duration: 0.12, repeat: 1, yoyo: true, ease: "power2.out", immediateRender: false }, 13.7)
+        .fromTo("#s7-num", 
+          { text: "980ms", scale: 1.3 }, 
+          { text: "142ms", scale: 1.0, duration: 0.9, ease: "expo.out", immediateRender: false }, 13.75)
+        .fromTo("#s7-tile-1", { x: 140, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: "back.out(1.8)" }, 13.88)
+        .fromTo("#s7-tile-2", { x: 140, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: "back.out(1.8)" }, 14.05)
+        // Noticeable Transition 7: Centrifugal Ejection to Right
+        .to("#s7-meter", {
+          x: 900,
+          rotateZ: 26,
+          scale: 0.65,
+          opacity: 0,
+          duration: 0.35,
+          ease: "power3.in"
+        }, 15.52)
+        .to("#s7-tile-1, #s7-tile-2", {
+          x: 520,
+          opacity: 0,
+          duration: 0.28,
+          ease: "power2.in"
+        }, 15.55)
+        .to("#scene-7 .headline-container", {
+          scale: 0.8,
+          opacity: 0,
+          duration: 0.25,
+          ease: "power2.in"
+        }, 15.55)
+        .set("#scene-7", { autoAlpha: 0 }, 15.85);
+
+      // ========================================================================
+      // SCENE 8: 100% OFFLINE PWA & APPLE JELLY MORPH (15.80s - 18.20s)
+      // Vault Door Slide & Domino Flip into Floor
+      // ========================================================================
+      tl.set("#scene-8", { autoAlpha: 1, zIndex: 17 }, 15.75)
+        .from("#scene-8 .word", {
+          yPercent: 120,
+          opacity: 0,
+          stagger: 0.04,
+          duration: 0.45,
+          ease: "expo.out"
+        }, 15.78)
+        .fromTo("#s8-card", {
+          x: -740,
+          rotateZ: -16,
+          opacity: 0
+        }, {
+          x: 0,
+          rotateZ: 0,
+          opacity: 1,
+          duration: 0.52,
+          ease: "back.out(2.0)"
+        }, 15.80)
+        .fromTo("#s8-sub-card", {
+          x: 740,
+          rotateZ: 16,
+          opacity: 0
+        }, {
+          x: 0,
+          rotateZ: 0,
+          opacity: 1,
+          duration: 0.52,
+          ease: "back.out(2.0)"
+        }, 15.88)
+        .to("#s8-sheen", { x: "250%", duration: 0.8, ease: "power2.inOut" }, 16.25)
+        // Apple iOS Human Touch Pointer on Airplane Mode Toggle
+        .fromTo("#s8-touch-tap",
+          { opacity: 0, scale: 0.4 },
+          { opacity: 1, scale: 1, duration: 0.22, ease: "back.out(2.0)" }, 16.35)
+        .to("#s8-touch-tap", { scale: 0.82, duration: 0.1, ease: "power2.in" }, 16.58)
+        .fromTo("#s8-haptic-ring",
+          { scale: 0.5, opacity: 0.95 },
+          { scale: 2.4, opacity: 0, duration: 0.35, ease: "power2.out" }, 16.60)
+        .to("#s8-switch", { backgroundColor: "#10b981", duration: 0.25 }, 16.65)
+        .fromTo("#s8-knob", 
+          { x: 0, scaleX: 1, scaleY: 1 }, 
+          { x: 42, scaleX: 1.45, scaleY: 0.75, duration: 0.16, ease: "power2.in", immediateRender: false }, 16.65)
+        .to("#s8-knob", { scaleX: 1, scaleY: 1, duration: 0.15, ease: "back.out(2.5)" }, 16.81)
+        .to("#s8-touch-tap", { x: 42, duration: 0.16, ease: "power2.in" }, 16.65)
+        .to("#s8-touch-tap", { opacity: 0, scale: 1.3, duration: 0.2, ease: "power2.out" }, 16.85)
+        .fromTo("#s8-card", 
+          { scale: 1 }, 
+          { scale: 1.05, duration: 0.12, repeat: 1, yoyo: true, ease: "power2.out", immediateRender: false }, 16.65)
+        // Noticeable Transition 8: Domino Flip into Floor
+        .to("#s8-card, #s8-sub-card", {
+          rotateX: -78,
+          y: 360,
+          scale: 0.72,
+          opacity: 0,
+          duration: 0.35,
+          ease: "power2.in"
+        }, 17.92)
+        .to("#scene-8 .headline-container", {
+          y: -80,
+          opacity: 0,
+          duration: 0.25,
+          ease: "power2.in"
+        }, 17.95)
+        .set("#scene-8", { autoAlpha: 0 }, 18.25);
+
+      // ========================================================================
+      // SCENE 9: 12-GRADE UNIFIED MATRIX (18.20s - 20.60s)
+      // Apple Segmented Control Tab Switch & 3D Card Fan-Out
+      // ========================================================================
+      tl.set("#scene-9", { autoAlpha: 1, zIndex: 18 }, 18.15)
+        .from("#scene-9 .word", {
+          yPercent: 120,
+          opacity: 0,
+          stagger: 0.04,
+          duration: 0.45,
+          ease: "expo.out"
+        }, 18.18)
+        // Apple Segmented Control entrance & sliding indicator
+        .fromTo("#s9-segments",
+          { y: -30, opacity: 0, scale: 0.9 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, 18.20)
+        .fromTo("#s9-pill",
+          { x: 0 },
+          { x: 340, duration: 0.55, ease: "back.out(2.0)" }, 18.32)
+        .to("#s9-tab-1", { color: "#8b949e", duration: 0.2 }, 18.32)
+        .to("#s9-tab-3", { color: "#090d16", duration: 0.2 }, 18.45)
+        .fromTo(".s9-grade-tile:nth-child(1)", 
+          { scale: 0.3, opacity: 0, y: 100 }, 
+          { scale: 1, opacity: 1, y: 12, rotateZ: -7, duration: 0.5, ease: "back.out(2.0)", immediateRender: false }, 18.25)
+        .fromTo(".s9-grade-tile:nth-child(2)", 
+          { scale: 0.3, opacity: 0, y: 100 }, 
+          { scale: 1, opacity: 1, y: 4, rotateZ: -2, duration: 0.5, ease: "back.out(2.0)", immediateRender: false }, 18.32)
+        .fromTo(".s9-grade-tile:nth-child(3)", 
+          { scale: 0.3, opacity: 0, y: 100 }, 
+          { scale: 1.18, opacity: 1, y: -10, z: 80, duration: 0.55, ease: "back.out(2.2)", immediateRender: false }, 18.40)
+        .fromTo(".s9-grade-tile:nth-child(4)", 
+          { scale: 0.3, opacity: 0, y: 100 }, 
+          { scale: 1, opacity: 1, y: 10, rotateZ: 5, duration: 0.5, ease: "back.out(2.0)", immediateRender: false }, 18.48)
+        // Noticeable Transition 9: Accordion Squeeze Inward
+        .to("#s9-segments", { scale: 0.2, opacity: 0, duration: 0.25, ease: "power2.in" }, 20.30)
+        .to(".s9-grade-tile", {
+          scaleX: 0.08,
+          scaleY: 0.08,
+          opacity: 0,
+          duration: 0.3,
+          stagger: 0.03,
+          ease: "power3.in"
+        }, 20.32)
+        .to("#scene-9 .headline-container", {
+          scale: 0.8,
+          opacity: 0,
+          duration: 0.25,
+          ease: "power2.in"
+        }, 20.35)
+        .set("#scene-9", { autoAlpha: 0 }, 20.65);
+
+      // ========================================================================
+      // SCENE 10: APPLE NOTIFICATION DROP & TIS APP ICON (20.60s - 23.00s)
+      // Authentic Spring Drop & Downward Platform Slide
+      // ========================================================================
+      tl.set("#scene-10", { autoAlpha: 1, zIndex: 19 }, 20.55)
+        .from("#scene-10 .word", {
+          yPercent: 120,
+          opacity: 0,
+          stagger: 0.04,
+          duration: 0.45,
+          ease: "expo.out"
+        }, 20.58)
+        .fromTo("#s10-card", {
+          y: -250,
+          opacity: 0,
+          scale: 0.82
+        }, {
+          y: 0,
+          opacity: 1,
+          scale: 1.0,
+          duration: 0.58,
+          ease: "back.out(2.2)"
+        }, 20.62)
+        .to("#s10-sheen", { x: "250%", duration: 0.8, ease: "power2.inOut" }, 20.85)
+        .from(".s10-check-row", {
+          x: -45,
+          opacity: 0,
+          stagger: 0.07,
+          duration: 0.32,
+          ease: "power2.out"
+        }, 20.80)
+        .fromTo(".s10-check-row svg", 
+          { scale: 0, rotate: -45 }, 
+          { scale: 1, rotate: 0, stagger: 0.07, duration: 0.3, ease: "back.out(2.4)", immediateRender: false }, 20.80)
+        .fromTo("#s10-action-btn",
+          { y: 20, opacity: 0, scale: 0.9 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.8)" }, 21.05)
+        .fromTo("#s10-action-btn",
+          { scale: 1 },
+          { scale: 0.96, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.out" }, 21.90)
+        // Noticeable Transition 10: Downward Platform Slide
+        .to("#s10-card", {
+          y: 450,
+          scale: 0.85,
+          opacity: 0,
+          duration: 0.32,
+          ease: "power3.in"
+        }, 22.72)
+        .to("#scene-10 .headline-container", {
+          y: -80,
+          opacity: 0,
+          duration: 0.25,
+          ease: "power2.in"
+        }, 22.75)
+        .set("#scene-10", { autoAlpha: 0 }, 23.05);
+
+      // ========================================================================
+      // SCENE 11: THE VISION QUOTE & TIS CREST (23.00s - 25.50s)
+      // Prestige Reveal & Climax Shatter
+      // ========================================================================
+      tl.set("#scene-11", { autoAlpha: 1, zIndex: 20 }, 22.95)
+        .fromTo("#s11-quote", {
+          scale: 0.78,
+          z: -160,
+          opacity: 0
+        }, {
+          scale: 1.0,
+          z: 0,
+          opacity: 1,
+          duration: 0.65,
+          ease: "back.out(1.8)"
+        }, 23.0)
+        // Noticeable Transition 11: Explosive Forward Climax Shatter
+        .to("#s11-quote", {
+          scale: 1.65,
+          z: 550,
+          opacity: 0,
+          duration: 0.32,
+          ease: "power2.in"
+        }, 25.22)
+        .set("#scene-11", { autoAlpha: 0 }, 25.55);
+
+      // ========================================================================
+      // SCENE 12: MONUMENTAL PAYOFF & OFFICIAL TIS EMBLEM (25.50s - 30.00s)
+      // The Monumental Climax
+      // ========================================================================
+      tl.set("#scene-12", { autoAlpha: 1, zIndex: 21 }, 25.45)
+        .fromTo("#s12-emblem",
+          { scale: 2.6, opacity: 0, y: -80, rotateX: 45 },
+          { scale: 1, opacity: 1, y: 0, rotateX: 0, duration: 0.62, ease: "back.out(2.8)", immediateRender: false }, 25.50)
+        .to("#s12-emblem-sheen", { x: "250%", duration: 0.9, ease: "power2.inOut" }, 25.75)
+        .from("#scene-12 .word", {
+          yPercent: 120,
+          opacity: 0,
+          stagger: 0.05,
+          duration: 0.55,
+          ease: "expo.out"
+        }, 25.60)
+        .fromTo("#s12-capsule", 
+          { y: 28, scale: 0.90, opacity: 0 }, 
+          { y: 0, scale: 1, opacity: 1, duration: 0.50, ease: "back.out(1.5)", immediateRender: false }, 25.95)
+        .fromTo("#s12-sheen", 
+          { x: "-150%" }, 
+          { x: "250%", duration: 0.85, ease: "power2.inOut" }, 26.50)
+        .to("#s12-capsule", 
+          { scale: 1.025, duration: 0.12, repeat: 1, yoyo: true, ease: "power2.out" }, 27.40)
+        .from(".s12-trio-tile", {
+          y: 50,
+          opacity: 0,
+          scale: 0.82,
+          stagger: 0.1,
+          duration: 0.5,
+          ease: "back.out(1.8)"
+        }, 26.20);
+    </script>
+  </body>
+</html>

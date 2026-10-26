@@ -1,0 +1,1 @@
+Static PDF timetables belong in 2004. We built TIS Schedule: real-time classroom telemetry, live Google Sheets sync, and zero forgotten books for The International School. Stop guessing, start knowing: tis-schedule.iluvsunset.workers.dev

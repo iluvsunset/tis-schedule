@@ -67,10 +67,14 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        e.stopPropagation();
         toggleFullscreen();
         return;
       }
       if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        e.stopPropagation();
         toggleSound();
         return;
       }
@@ -90,7 +94,7 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
       const handleActivity = (e: Event) => {
         // Allow clicking interactive controls without dismissing
         const target = e.target;
-        if (target instanceof Element && target.closest('button')) return;
+        if (target instanceof Element && target.closest('button, [data-interactive="true"]')) return;
         onDismiss();
       };
 
@@ -109,21 +113,20 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
   }, [onDismiss, locked, isMuted]);
 
   // Responsive device tier detection & video source selection:
-  // Mobile (<768px): Keep same original logo video as requested
-  // Tablet (768px - 1023px) or low-spec devices: Hardware-optimized 720p (4.3MB, level 3.1) with AAC audio
-  // Laptop / Desktop (>=1024px): Crisp 1080p promo video (11.3MB, level 4.1) with AAC audio
+  // Hardware-optimized for 4GB RAM Windows 11 PC & low-spec laptops (zero-lag H.264 Main profile 30fps)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const isTabletOrLowEnd = typeof window !== 'undefined' && (
-    (window.innerWidth >= 768 && window.innerWidth < 1024) ||
+  const isLowEndDevice = typeof window !== 'undefined' && (
+    isMobile ||
+    (window.innerWidth < 1024) ||
     // @ts-ignore
-    (typeof navigator !== 'undefined' && navigator.deviceMemory && navigator.deviceMemory <= 4)
+    (typeof navigator !== 'undefined' && navigator.deviceMemory && navigator.deviceMemory <= 4) ||
+    // @ts-ignore
+    (typeof navigator !== 'undefined' && navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
   );
 
-  const videoSource = isMobile
-    ? '/The_International_School_Logo_mobile.mp4'
-    : isTabletOrLowEnd
-      ? '/tis-promo-remotion-720p.mp4'
-      : '/tis-promo-remotion-final-30s.mp4';
+  const videoSource = isLowEndDevice
+    ? '/tis-promo-720p-lowend.mp4'
+    : '/tis-promo-1080p-30fps.mp4';
 
   // Play video continuously in a loop with robust autoplay handling
   useEffect(() => {
@@ -271,13 +274,19 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.35, ease: 'easeInOut' }}
-      onClick={locked ? undefined : onDismiss}
+      onClick={(e) => {
+        if (locked) return;
+        if (e.target instanceof Element && e.target.closest('button, [data-interactive="true"]')) {
+          return;
+        }
+        onDismiss();
+      }}
       className={`fixed inset-0 z-[999998] bg-[#f7f4eb] w-screen h-screen select-none overflow-hidden ${
         locked ? 'cursor-default' : 'cursor-pointer'
       }`}
     >
-      {/* Background: School Video Seamlessly Floating Fullscreen (Responsive layout & low-end device optimization) */}
-      <div className="absolute inset-0 flex items-center justify-center overflow-hidden z-0 pointer-events-none bg-white">
+      {/* Background: School Video Seamlessly Floating Fullscreen (Hardware-accelerated Direct3D / MPO zero-copy overlay) */}
+      <div className="absolute inset-0 flex items-center justify-center overflow-hidden z-0 pointer-events-none bg-black">
         <video
           ref={(el) => {
             if (el) {
@@ -295,11 +304,7 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
           playsInline
           preload="auto"
           poster="/tis-intro-poster.webp"
-          className={`w-full h-full ${
-            isMobile
-              ? 'object-contain scale-[1.55] sm:scale-100 sm:object-cover'
-              : 'object-cover'
-          } transition-transform duration-500 transform-gpu relative z-10`}
+          className="w-full h-full object-cover relative z-10"
         />
       </div>
 
@@ -315,8 +320,9 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
           {/* Fullscreen Toggle Button */}
           <button
             type="button"
+            data-interactive="true"
             onClick={toggleFullscreen}
-            className="btn-cozy bg-white/95 backdrop-blur-md px-3.5 sm:px-4 py-2 rounded-2xl border-[1.5px] border-[#ded0bf] shadow-puffy flex items-center gap-2 text-xs font-mono font-bold text-[var(--fg)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all cursor-pointer"
+            className="btn-cozy bg-white/98 px-3.5 sm:px-4 py-2 rounded-2xl border-[1.5px] border-[#ded0bf] shadow-puffy flex items-center gap-2 text-xs font-mono font-bold text-[var(--fg)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all cursor-pointer"
             title="Toggle Fullscreen (F)"
           >
             {isFullscreen ? (
@@ -332,33 +338,32 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
           </button>
 
           {/* Audio Mute/Unmute Button (available for desktop/tablet promo video with soundtrack) */}
-          {!isMobile && (
-            <button
-              type="button"
-              onClick={toggleSound}
-              className={`btn-cozy bg-white/95 backdrop-blur-md px-3.5 sm:px-4 py-2 rounded-2xl border-[1.5px] shadow-puffy flex items-center gap-2 text-xs font-mono font-bold transition-all cursor-pointer ${
-                !isMuted 
-                  ? 'border-[var(--accent)] text-[var(--accent)] bg-[#ffedd5]' 
-                  : 'border-[#ded0bf] text-[var(--fg)] hover:text-[var(--accent)] hover:border-[var(--accent)]'
-              }`}
-              title={isMuted ? 'Unmute Audio (M)' : 'Mute Audio (M)'}
-            >
-              {!isMuted ? (
-                <Volume2 className="w-4 h-4 text-[var(--accent)] animate-pulse" />
-              ) : (
-                <VolumeX className="w-4 h-4 text-[#9a3412]" />
-              )}
-              <span className="hidden sm:inline font-mono text-xs font-bold tracking-wide">
-                {!isMuted
-                  ? (language === 'vi' ? 'Tắt Âm (M)' : 'Mute (M)')
-                  : (language === 'vi' ? 'Bật Âm (M)' : 'Unmute (M)')}
-              </span>
-            </button>
-          )}
+          <button
+            type="button"
+            data-interactive="true"
+            onClick={toggleSound}
+            className={`btn-cozy bg-white/98 px-3.5 sm:px-4 py-2 rounded-2xl border-[1.5px] shadow-puffy flex items-center gap-2 text-xs font-mono font-bold transition-all cursor-pointer ${
+              !isMuted 
+                ? 'border-[var(--accent)] text-[var(--accent)] bg-[#ffedd5]' 
+                : 'border-[#ded0bf] text-[var(--fg)] hover:text-[var(--accent)] hover:border-[var(--accent)]'
+            }`}
+            title={isMuted ? 'Unmute Audio (M)' : 'Mute Audio (M)'}
+          >
+            {!isMuted ? (
+              <Volume2 className="w-4 h-4 text-[var(--accent)] animate-pulse" />
+            ) : (
+              <VolumeX className="w-4 h-4 text-[#9a3412]" />
+            )}
+            <span className="hidden sm:inline font-mono text-xs font-bold tracking-wide">
+              {!isMuted
+                ? (language === 'vi' ? 'Tắt Âm (M)' : 'Mute (M)')
+                : (language === 'vi' ? 'Bật Âm (M)' : 'Unmute (M)')}
+            </span>
+          </button>
         </div>
 
         {/* Class / Room Pill */}
-        <div className="bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border-[1.5px] border-[#ded0bf] shadow-puffy flex items-center gap-2 pointer-events-auto">
+        <div className="bg-white/98 px-3.5 py-1.5 rounded-2xl border-[1.5px] border-[#ded0bf] shadow-puffy flex items-center gap-2 pointer-events-auto">
           <span className="px-2.5 py-0.5 rounded-xl bg-[#ffedd5] text-[#9a3412] font-black text-xs border border-[#fed7aa] shadow-xs">
             {gradeName}
           </span>
@@ -378,7 +383,7 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
         transition={{ delay: 0.15, duration: 0.35, ease: 'easeOut' }}
         className="absolute top-16 sm:top-auto sm:bottom-8 left-4 sm:left-8 right-4 sm:right-auto z-20 pointer-events-auto"
       >
-        <div className="bg-white/95 backdrop-blur-xl px-4 py-2.5 sm:px-6 sm:py-5 rounded-2xl sm:rounded-3xl border-[1.5px] border-[#ded0bf] shadow-puffy flex items-center justify-between sm:flex-col sm:items-start sm:gap-2 relative overflow-hidden text-left sm:min-w-[280px]">
+        <div className="bg-white/98 px-4 py-2.5 sm:px-6 sm:py-5 rounded-2xl sm:rounded-3xl border-[1.5px] border-[#ded0bf] shadow-puffy flex items-center justify-between sm:flex-col sm:items-start sm:gap-2 relative overflow-hidden text-left sm:min-w-[280px]">
           {/* Soft decorative background tint */}
           <div className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-[#fef3c7]/60 blur-xl pointer-events-none" />
 
@@ -412,7 +417,7 @@ export const ScreensaverVideoLoop: React.FC<ScreensaverVideoLoopProps> = ({
           transition={{ delay: 0.2, duration: 0.35, ease: 'easeOut' }}
           className="absolute bottom-4 sm:bottom-8 left-4 right-4 sm:left-auto sm:right-8 z-20 pointer-events-auto sm:w-[380px] md:w-[410px] flex flex-col items-stretch sm:items-end"
         >
-          <div className="bg-white/95 backdrop-blur-xl w-full rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 border-[1.5px] border-[#ded0bf] shadow-puffy text-[var(--fg)] flex flex-col gap-2.5 sm:gap-3 relative overflow-hidden">
+          <div className="bg-white/98 w-full rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 border-[1.5px] border-[#ded0bf] shadow-puffy text-[var(--fg)] flex flex-col gap-2.5 sm:gap-3 relative overflow-hidden">
             {/* Header: Status Badge & Time Interval */}
             <div className="flex items-center justify-between gap-2 text-xs font-bold">
               <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-black tracking-wider uppercase bg-[#ffedd5] text-[#9a3412] border border-[#fed7aa] shadow-xs flex items-center gap-1.5">
